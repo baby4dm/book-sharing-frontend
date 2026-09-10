@@ -1,12 +1,24 @@
 import { IconMoon, IconSun } from "@tabler/icons-react";
 import { useTheme } from "../../context/ThemeContext";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  classNameIcon?: string;
+  classNameButton?: string;
+}
+
+export function ThemeToggle({
+  classNameIcon,
+  classNameButton,
+}: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <button onClick={toggleTheme}>
-      {theme === "light" ? <IconMoon /> : <IconSun />}
+    <button className={classNameButton} onClick={toggleTheme}>
+      {theme === "light" ? (
+        <IconMoon className={classNameIcon} />
+      ) : (
+        <IconSun className={classNameIcon} />
+      )}
     </button>
   );
 }

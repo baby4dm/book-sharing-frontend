@@ -151,9 +151,8 @@ export default function RegisterPage() {
             required
           />
         </div>
-        <div className="min-h-5">
-          {error && <p className="text-sm text-destructive">{error}</p>}
-        </div>
+
+        {error && <p className="text-sm text-destructive">{error}</p>}
         <Button
           type="submit"
           className="w-full cursor-pointer h-10 md:h-11 lg:text-base"

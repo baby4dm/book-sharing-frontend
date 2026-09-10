@@ -19,7 +19,11 @@ export default function AuthCardLayout({
        lg:flex-row lg:justify-center"
       >
         <div className="flex flex-col gap-5.5 items-start w-full md:items-center md:text-center">
-          <img className="h-5 lg:h-7" src="/logo.svg" alt="Book share logo" />
+          <img
+            className="h-5 lg:h-7 dark:invert"
+            src="/logo.svg"
+            alt="Book share logo"
+          />
           <div className="flex flex-col gap-2">
             {title}
             <p className="text-sm font-normal text-muted-foreground lg:text-base">
