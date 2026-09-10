@@ -8,6 +8,7 @@ interface AuthContextValue {
   login: (email: string, password: string) => Promise<void>;
   register: (email: string, password: string, name: string) => Promise<void>;
   logout: () => void;
+  setTokenDirectly: (token: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -33,6 +34,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setToken(null);
     localStorage.removeItem(AUTH_TOKEN_KEY);
   }
+  function setTokenDirectly(token: string) {
+    localStorage.setItem(AUTH_TOKEN_KEY, token);
+    setToken(token);
+  }
 
   return (
     <AuthContext.Provider
@@ -42,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         register,
         logout,
+        setTokenDirectly,
       }}
     >
       {children}
