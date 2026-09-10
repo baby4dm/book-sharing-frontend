@@ -1,4 +1,4 @@
-import { IconBell, IconMenu2, IconX } from "@tabler/icons-react";
+import { IconBell, IconBook, IconMenu2, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 
 import {
@@ -11,7 +11,8 @@ import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
-  { path: "/", label: "Стрічка", icon: IconHome },
+  { path: "feed", label: "Спільнота", icon: IconHome },
+  { path: "/", label: "Каталог", icon: IconBook },
   { path: "/requests", label: "Заявки", icon: IconFileText },
   { path: "/exchanges", label: "Обміни", icon: IconArrowsExchange },
   { path: "/chat", label: "Чат", icon: IconMessageCircle },
