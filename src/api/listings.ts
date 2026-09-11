@@ -2,7 +2,7 @@ import type {
   ListingFilters,
   ListingResponse,
   Page,
-} from "@/features/listing/types";
+} from "@/features/listings/types";
 import apiClient from "./client";
 
 export async function getListings(

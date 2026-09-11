@@ -1,5 +1,5 @@
 import { IconBell, IconBook, IconMenu2, IconX } from "@tabler/icons-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   IconHome,
@@ -11,7 +11,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
-  { path: "feed", label: "Спільнота", icon: IconHome },
+  { path: "/feed", label: "Спільнота", icon: IconHome },
   { path: "/", label: "Каталог", icon: IconBook },
   { path: "/requests", label: "Заявки", icon: IconFileText },
   { path: "/exchanges", label: "Обміни", icon: IconArrowsExchange },
@@ -20,6 +20,15 @@ const navItems = [
 export default function Header() {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    document.body.style.overflow = navIsOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [navIsOpen]);
+
   return (
     <header className="h-15 shadow-md px-4 py-3 flex items-center w-full relative bg-popover lg:h-18 lg:px-6 xl:px-12">
       <div className="flex items-center justify-between w-full">
@@ -52,7 +61,7 @@ export default function Header() {
           })}
         </nav>
         {navIsOpen && (
-          <nav className="lg:hidden w-full flex flex-col gap-2 absolute top-15 py-4 left-0 px-6 z-10 bg-bg h-full">
+          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-10 bg-popover overflow-y-auto">
             {navItems.map((item) => {
               const isActive = location.pathname == item.path;
 
