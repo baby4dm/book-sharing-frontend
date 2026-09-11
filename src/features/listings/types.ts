@@ -23,6 +23,7 @@ export interface ListingResponse {
   photoUrls: string[];
   createdAt: string;
   updatedAt: string;
+  ownerCity: string;
 }
 
 export interface ListingFilters {
