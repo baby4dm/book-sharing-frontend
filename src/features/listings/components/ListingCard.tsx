@@ -71,7 +71,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         <p className="absolute top-0 right-0 text-xs bg-muted-foreground py-0.5 px-1.5 rounded-md flex items-center justify-center text-muted font-light shadow-md">
           {formatDaysAgo(listing.createdAt)}
         </p>
-        <p className="bg-secondary text-muted-foreground py-1 px-4 rounded-md w-fit text-xs font-bold">
+        <p className="bg-accent-vivid text-muted py-1 px-4 rounded-md w-fit text-xs font-bold">
           {listing.bookGenre ?? "Жанр невідомий"}
         </p>
       </div>

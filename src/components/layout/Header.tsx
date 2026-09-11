@@ -1,4 +1,10 @@
-import { IconBell, IconBook, IconMenu2, IconX } from "@tabler/icons-react";
+import {
+  IconBell,
+  IconBook,
+  IconLogout2,
+  IconMenu2,
+  IconX,
+} from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -7,8 +13,10 @@ import {
   IconArrowsExchange,
   IconMessageCircle,
 } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ThemeToggle } from "./ThemeToggle";
+import { Button } from "../ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const navItems = [
   { path: "/feed", label: "Спільнота", icon: IconHome },
@@ -19,7 +27,10 @@ const navItems = [
 ];
 export default function Header() {
   const [navIsOpen, setNavIsOpen] = useState(false);
+  const [userMenuIsOpen, setUserMenuIsOpen] = useState(false);
   const location = useLocation();
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.overflow = navIsOpen ? "hidden" : "";
@@ -29,6 +40,16 @@ export default function Header() {
     };
   }, [navIsOpen]);
 
+  useEffect(() => {
+    if (!userMenuIsOpen) return;
+
+    function handleClickOutside() {
+      setUserMenuIsOpen(false);
+    }
+
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [userMenuIsOpen]);
   return (
     <header className="h-15 shadow-md px-4 py-3 flex items-center w-full relative bg-popover lg:h-18 lg:px-6 xl:px-12">
       <div className="flex items-center justify-between w-full">
@@ -83,12 +104,28 @@ export default function Header() {
                 </Link>
               );
             })}
-            <div className="border-t border-t-border flex w-full justify-between py-4 px-5 items-center">
+            <div className="border-t border-t-border flex w-full justify-between pt-4 px-5 items-center">
               <p className="text-muted-foreground text-sm font-light">
                 Тема оформлення
               </p>
-              <ThemeToggle classNameIcon="stroke-1 text-muted-foreground" />
+              <ThemeToggle
+                clickFn={() => setNavIsOpen(false)}
+                classNameIcon="stroke-1 text-muted-foreground"
+              />
             </div>
+            <Button
+              variant="ghost"
+              className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
+              onClick={(e) => {
+                e.stopPropagation();
+                setUserMenuIsOpen(false);
+                logout();
+                navigate("/login");
+              }}
+            >
+              <IconLogout2 className="text-accent-vivid h-10 w-10" />
+              <span className="text-base">Вийти</span>
+            </Button>
           </nav>
         )}
         <div className="flex items-center gap-3 h-full lg:gap-4">
@@ -98,8 +135,32 @@ export default function Header() {
           />
           <IconBell className="text-muted-foreground stroke-1 h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
 
-          <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center lg:h-8 lg:w-8 cursor-pointer hover:scale-110 transition-all">
+          <div
+            className={`relative h-7 w-7 rounded-full bg-primary flex 
+              items-center justify-center lg:h-8 lg:w-8 cursor-pointer ${!userMenuIsOpen && "hover:scale-110"} transition-all`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setUserMenuIsOpen((prev) => !prev);
+            }}
+          >
             <p className="text-primary-foreground text-xs font-medium">ОК</p>
+            {userMenuIsOpen && (
+              <div className="hidden bg-card lg:flex absolute border border-border rounded-sm top-10">
+                <Button
+                  variant="ghost"
+                  className="cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setUserMenuIsOpen(false);
+                    logout();
+                    navigate("/login");
+                  }}
+                >
+                  <IconLogout2 />
+                  <span>Вийти</span>
+                </Button>
+              </div>
+            )}
           </div>
           <button
             onClick={() => setNavIsOpen((prev) => !prev)}
