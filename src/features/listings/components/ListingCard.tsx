@@ -61,7 +61,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const status = statusConfig[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
   return (
-    <div className="bg-card w-full shadow-md rounded-xl p-4 flex flex-col border border-border gap-3">
+    <div className="bg-card shadow-md rounded-xl p-4 flex flex-col border border-border gap-3 min-w-[300px] max-w-[325px] w-full mx-auto">
       <div className="w-full relative flex flex-col gap-4">
         <img
           className="h-90 w-full rounded-2xl shadow-sm"
@@ -76,14 +76,14 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </p>
       </div>
       <div>
-        <h2 className="text-foreground font-bold text-lg">
+        <h2 className="text-foreground font-bold text-lg leading-none">
           {listing.bookTitle}
         </h2>
         <p className="text-foreground font-light text-xs">
           {listing.bookAuthor ?? "Автор невідомий"}
         </p>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 h-full">
         <div className="flex gap-2">
           <div className="flex gap-1 items-center">
             <status.icon className={`${status.color} w-5 h-5`} />
@@ -100,7 +100,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
         <Button
           disabled={!isAvailable}
-          className="text-sm font-normal cursor-pointer"
+          className="text-sm font-normal cursor-pointer mt-auto"
         >
           {status.buttonLabel}
         </Button>

@@ -51,7 +51,7 @@ export default function Header() {
     return () => document.removeEventListener("click", handleClickOutside);
   }, [userMenuIsOpen]);
   return (
-    <header className="h-15 shadow-md px-4 py-3 flex items-center w-full relative bg-popover lg:h-18 lg:px-6 xl:px-12">
+    <header className="h-15 shadow-md px-4 py-3 flex items-center w-full bg-popover lg:h-18 lg:px-6 xl:px-12">
       <div className="flex items-center justify-between w-full">
         <img
           className="h-5 lg:h-6 dark:invert"
@@ -134,18 +134,19 @@ export default function Header() {
             classNameIcon="stroke-1 text-muted-foreground h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all"
           />
           <IconBell className="text-muted-foreground stroke-1 h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
-
-          <div
-            className={`relative h-7 w-7 rounded-full bg-primary flex 
+          <div className="relative">
+            <div
+              className={`h-7 w-7 rounded-full bg-primary flex 
               items-center justify-center lg:h-8 lg:w-8 cursor-pointer ${!userMenuIsOpen && "hover:scale-110"} transition-all`}
-            onClick={(e) => {
-              e.stopPropagation();
-              setUserMenuIsOpen((prev) => !prev);
-            }}
-          >
-            <p className="text-primary-foreground text-xs font-medium">ОК</p>
+              onClick={(e) => {
+                e.stopPropagation();
+                setUserMenuIsOpen((prev) => !prev);
+              }}
+            >
+              <p className="text-primary-foreground text-xs font-medium">ОК</p>
+            </div>
             {userMenuIsOpen && (
-              <div className="hidden bg-card lg:flex absolute border border-border rounded-sm top-10">
+              <div className="hidden bg-card lg:flex absolute border border-border rounded-sm top-10 -right-2.5">
                 <Button
                   variant="ghost"
                   className="cursor-pointer"

@@ -26,11 +26,13 @@ export interface ListingResponse {
   ownerCity: string;
 }
 
+type SortOption = "createdAt,asc" | "createdAt,desc";
 export interface ListingFilters {
-  genre?: string;
-  city?: string;
+  genre?: string[];
+  city?: string[];
   deliveryMethod?: DeliveryMethod;
   status?: ListingStatus;
+  sort?: SortOption;
   search?: string;
 }
 
