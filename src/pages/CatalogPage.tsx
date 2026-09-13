@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/Spinner";
 import ListingCard from "@/features/listings/components/ListingCard";
 import ListingFilterPanel from "@/features/listings/components/ListingFilterPanel";
 import { useListings } from "@/features/listings/hooks/useListings";
@@ -21,6 +22,7 @@ export default function CatalogPage() {
   function updateFilters(filters: ListingFilters) {
     setFilters((prev) => ({ ...prev, ...filters }));
   }
+
   return (
     <section className="w-full px-4 py-6 md:px-2 lg:px-12 flex flex-col gap-4">
       <ListingFilterPanel filters={filters} onUpdateFilters={updateFilters} />
@@ -38,7 +40,7 @@ export default function CatalogPage() {
           className="cursor-pointer w-full max-w-60 h-11 self-center mt-5"
           onClick={() => fetchNextPage()}
         >
-          Завантажити ще
+          {isFetchingNextPage ? <Spinner size={20} /> : "Завантажити ще"}
         </Button>
       )}
     </section>
