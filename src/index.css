@@ -159,14 +159,16 @@
 
   --accent-vivid: #8b7cf0;
 }
-
+@theme inline {
+  --breakpoint-3xl: 120rem;
+  --breakpoint-4xl: 160rem;
+}
 @theme inline {
   /* ============================================================
      "ПЕРЕКЛАД" CSS-змінних вище у реальні Tailwind utility-класи.
      Без цього блоку --primary існувала б як звичайна CSS-змінна,
      але класу bg-primary/text-primary просто не існувало б.
      ============================================================ */
-
   --font-sans: "Inter Variable", sans-serif;
   --font-heading: var(--font-sans);
 

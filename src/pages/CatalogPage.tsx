@@ -24,11 +24,11 @@ export default function CatalogPage() {
   }
 
   return (
-    <section className="w-full px-4 py-6 md:px-2 lg:px-12 flex flex-col gap-4">
+    <section className="w-full px-4 py-6 md:px-2 lg:px-12 xl:px-16 2xl:px-20 flex flex-col gap-4">
       <ListingFilterPanel filters={filters} onUpdateFilters={updateFilters} />
       <div
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 
-      gap-4 max-w-175 md:max-w-300 lg:max-w-350 mx-auto"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
+      gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-[1900px] mx-auto"
       >
         {allListings.map((listing) => (
           <ListingCard key={listing.id} listing={listing} />

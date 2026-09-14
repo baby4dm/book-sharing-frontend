@@ -1,5 +1,9 @@
 import { Button } from "@/components/ui/button";
-import type { ListingResponse, ListingStatus } from "../types";
+import {
+  SETTLEMENT_TYPE_LABELS,
+  type ListingResponse,
+  type ListingStatus,
+} from "../types";
 import {
   IconArchive,
   IconBooks,
@@ -94,7 +98,9 @@ export default function ListingCard({ listing }: ListingCardProps) {
           <div className="flex gap-1 items-center">
             <IconMapPin className="w-5 h-5 text-accent-vivid" />
             <span className="text-xs text-muted-foreground">
-              {listing.ownerCity ?? "Місто не вказано"}
+              {!listing.settlementName
+                ? "Місто не вказано"
+                : `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}.${listing.settlementName}, ${listing.region}`}
             </span>
           </div>
         </div>

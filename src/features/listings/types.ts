@@ -5,6 +5,12 @@ export type ListingStatus =
   | "ARCHIVED";
 
 export type DeliveryMethod = "PICKUP" | "MAIL";
+export type SettlementType = "CITY" | "VILLAGE" | "SETTLEMENT";
+export const SETTLEMENT_TYPE_LABELS: Record<string, string> = {
+  CITY: "Місто",
+  VILLAGE: "Село",
+  SETTLEMENT: "Селище",
+};
 
 export interface ListingResponse {
   id: string;
@@ -23,7 +29,9 @@ export interface ListingResponse {
   photoUrls: string[];
   createdAt: string;
   updatedAt: string;
-  ownerCity: string;
+  settlementType: SettlementType;
+  region: string;
+  settlementName: string;
 }
 
 type SortOption = "createdAt,asc" | "createdAt,desc";
