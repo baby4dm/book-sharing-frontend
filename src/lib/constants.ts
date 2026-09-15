@@ -1,3 +1,12 @@
+import type { ListingStatus } from "@/features/listings/types";
+import {
+  IconCheck,
+  IconClock,
+  IconBooks,
+  IconArchive,
+} from "@tabler/icons-react";
+import type { ComponentType } from "react";
+
 export const AUTH_TOKEN_KEY = "authToken";
 export const GENRES = [
   "Класика",
@@ -10,3 +19,38 @@ export const GENRES = [
   "Антиутопія",
   "Жахи",
 ] as const;
+
+export const STATUS_CONFIG: Record<
+  ListingStatus,
+  {
+    label: string;
+    buttonLabel: string;
+    color: string;
+    icon: ComponentType<{ size?: number; className?: string }>;
+  }
+> = {
+  AVAILABLE: {
+    label: "Доступна",
+    buttonLabel: "Подати заявку",
+    color: "text-success",
+    icon: IconCheck,
+  },
+  RESERVED: {
+    label: "Зарезервована",
+    buttonLabel: "Уже зарезервована",
+    color: "text-warning",
+    icon: IconClock,
+  },
+  IN_EXCHANGE: {
+    label: "У читанні",
+    buttonLabel: "Зараз у читача",
+    color: "text-info",
+    icon: IconBooks,
+  },
+  ARCHIVED: {
+    label: "Архівовано",
+    buttonLabel: "Знято з публікації",
+    color: "text-muted-foreground",
+    icon: IconArchive,
+  },
+};

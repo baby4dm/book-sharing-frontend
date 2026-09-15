@@ -1,78 +1,26 @@
 import { Button } from "@/components/ui/button";
-import {
-  SETTLEMENT_TYPE_LABELS,
-  type ListingResponse,
-  type ListingStatus,
-} from "../types";
-import {
-  IconArchive,
-  IconBook,
-  IconBooks,
-  IconCheck,
-  IconClock,
-  IconMapPin,
-} from "@tabler/icons-react";
-import { useState, type ComponentType } from "react";
+import { SETTLEMENT_TYPE_LABELS, type ListingResponse } from "../types";
+import { IconBook, IconMapPin } from "@tabler/icons-react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { STATUS_CONFIG } from "@/lib/constants";
+import { formatDaysAgo } from "@/lib/utils";
 
 interface ListingCardProps {
   listing: ListingResponse;
 }
 
-const statusConfig: Record<
-  ListingStatus,
-  {
-    label: string;
-    buttonLabel: string;
-    color: string;
-    icon: ComponentType<{ size?: number; className?: string }>;
-  }
-> = {
-  AVAILABLE: {
-    label: "Доступна",
-    buttonLabel: "Подати заявку",
-    color: "text-success",
-    icon: IconCheck,
-  },
-  RESERVED: {
-    label: "Зарезервована",
-    buttonLabel: "Уже зарезервована",
-    color: "text-warning",
-    icon: IconClock,
-  },
-  IN_EXCHANGE: {
-    label: "У читанні",
-    buttonLabel: "Зараз у читача",
-    color: "text-info",
-    icon: IconBooks,
-  },
-  ARCHIVED: {
-    label: "Архівовано",
-    buttonLabel: "Знято з публікації",
-    color: "text-muted-foreground",
-    icon: IconArchive,
-  },
-};
-
-function formatDaysAgo(createdAt: string): string {
-  const days = Math.floor(
-    (Date.now() - new Date(createdAt).getTime()) / (1000 * 60 * 60 * 24),
-  );
-  if (days === 0) return "Сьогодні";
-  if (days === 1) return "Вчора";
-  return `${days} дні тому`;
-}
-
 export default function ListingCard({ listing }: ListingCardProps) {
   const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
-  const status = statusConfig[listing.status];
+  const status = STATUS_CONFIG[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
   return (
     <Link
       to={`/listings/${listing.id}`}
       className="bg-card shadow-md rounded-xl cursor-pointer
-      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto hover:shadow-2xl hover:scale-105 transition-all duration-200"
+      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto 
+      hover:shadow-2xl hover:scale-105 transition-all duration-200"
     >
       <div className="w-full relative flex flex-col gap-4">
         <div className="relative h-90 w-full rounded-2xl overflow-hidden">
@@ -97,7 +45,10 @@ export default function ListingCard({ listing }: ListingCardProps) {
           )}
         </div>
 
-        <p className="absolute top-0 right-0 text-xs bg-muted-foreground py-0.5 px-1.5 rounded-md flex items-center justify-center text-muted font-light shadow-md">
+        <p
+          className="absolute top-0 right-0 text-xs bg-muted-foreground py-0.5 
+        px-1.5 rounded-md flex items-center justify-center text-muted font-light shadow-md"
+        >
           {formatDaysAgo(listing.createdAt)}
         </p>
         <p className="bg-accent-vivid text-muted py-1 px-4 rounded-md w-fit text-xs font-bold">

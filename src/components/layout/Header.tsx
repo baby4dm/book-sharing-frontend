@@ -82,7 +82,7 @@ export default function Header() {
           })}
         </nav>
         {navIsOpen && (
-          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-10 bg-popover overflow-y-auto">
+          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-999 bg-popover overflow-y-auto">
             {navItems.map((item) => {
               const isActive = location.pathname == item.path;
 
