@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ListingCardSkeleton } from "@/features/listings/components/ListingCardSkeleton";
 import { Spinner } from "@/components/ui/Spinner";
 import ListingCard from "@/features/listings/components/ListingCard";
 import ListingFilterPanel from "@/features/listings/components/ListingFilterPanel";
@@ -22,17 +23,40 @@ export default function CatalogPage() {
   function updateFilters(filters: ListingFilters) {
     setFilters((prev) => ({ ...prev, ...filters }));
   }
-
+  if (isError) {
+    return (
+      <section className="w-full px-4 py-16 flex flex-col items-center gap-3 text-center">
+        <p className="text-foreground font-semibold">
+          Не вдалось завантажити оголошення
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Перевірте з'єднання з інтернетом і спробуйте ще раз
+        </p>
+        <Button
+          variant="outline"
+          className="cursor-pointer mt-2"
+          onClick={() => window.location.reload()}
+        >
+          Спробувати ще раз
+        </Button>
+      </section>
+    );
+  }
   return (
-    <section className="w-full px-4 py-6 md:px-2 lg:px-12 xl:px-16 2xl:px-20 flex flex-col gap-4">
+    <section className="w-full px-4 py-6 md:px-4 xl:px-16 2xl:px-20 flex flex-col gap-4">
       <ListingFilterPanel filters={filters} onUpdateFilters={updateFilters} />
       <div
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
-      gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-[1900px] mx-auto"
+      gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-800 mx-auto"
       >
-        {allListings.map((listing) => (
-          <ListingCard key={listing.id} listing={listing} />
-        ))}
+        {isLoading &&
+          Array.from({ length: 16 }).map((_, i) => (
+            <ListingCardSkeleton key={i} />
+          ))}
+        {!isLoading &&
+          allListings.map((listing) => (
+            <ListingCard key={listing.id} listing={listing} />
+          ))}
       </div>
       {hasNextPage && (
         <Button

@@ -6,12 +6,13 @@ import {
 } from "../types";
 import {
   IconArchive,
+  IconBook,
   IconBooks,
   IconCheck,
   IconClock,
   IconMapPin,
 } from "@tabler/icons-react";
-import type { ComponentType } from "react";
+import { useState, type ComponentType } from "react";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -62,16 +63,35 @@ function formatDaysAgo(createdAt: string): string {
 }
 
 export default function ListingCard({ listing }: ListingCardProps) {
+  const [imageIsLoaded, setImageIsLoaded] = useState(false);
+  const [imageIsFailed, setImageIsFailed] = useState(false);
   const status = statusConfig[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
   return (
-    <div className="bg-card shadow-md rounded-xl p-4 flex flex-col border border-border gap-3 min-w-75 max-w-81.25 w-full mx-auto">
+    <div className="bg-card shadow-md rounded-xl  p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto">
       <div className="w-full relative flex flex-col gap-4">
-        <img
-          className="h-90 w-full rounded-2xl shadow-sm"
-          src={listing.bookCoverUrl ?? ""}
-          alt={listing.bookTitle}
-        />
+        <div className="relative h-90 w-full rounded-2xl overflow-hidden">
+          {!imageIsLoaded && !imageIsFailed && (
+            <div className="absolute inset-0 bg-border shimmer rounded-2xl" />
+          )}
+
+          {imageIsFailed || !listing.bookCoverUrl ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-secondary rounded-2xl">
+              <IconBook size={32} className="text-muted-foreground" />
+            </div>
+          ) : (
+            <img
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                imageIsLoaded ? "opacity-100" : "opacity-0"
+              }`}
+              src={listing.bookCoverUrl}
+              alt={listing.bookTitle}
+              onLoad={() => setImageIsLoaded(true)}
+              onError={() => setImageIsFailed(true)}
+            />
+          )}
+        </div>
+
         <p className="absolute top-0 right-0 text-xs bg-muted-foreground py-0.5 px-1.5 rounded-md flex items-center justify-center text-muted font-light shadow-md">
           {formatDaysAgo(listing.createdAt)}
         </p>
