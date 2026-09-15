@@ -13,6 +13,7 @@ import {
   IconMapPin,
 } from "@tabler/icons-react";
 import { useState, type ComponentType } from "react";
+import { Link } from "react-router-dom";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -68,7 +69,11 @@ export default function ListingCard({ listing }: ListingCardProps) {
   const status = statusConfig[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
   return (
-    <div className="bg-card shadow-md rounded-xl  p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto">
+    <Link
+      to={`/listings/${listing.id}`}
+      className="bg-card shadow-md rounded-xl cursor-pointer
+      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto hover:shadow-2xl hover:scale-105 transition-all duration-200"
+    >
       <div className="w-full relative flex flex-col gap-4">
         <div className="relative h-90 w-full rounded-2xl overflow-hidden">
           {!imageIsLoaded && !imageIsFailed && (
@@ -81,7 +86,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
             </div>
           ) : (
             <img
-              className={`w-full h-full object-cover transition-opacity duration-300 ${
+              className={`w-full h-full transition-opacity duration-300 ${
                 imageIsLoaded ? "opacity-100" : "opacity-0"
               }`}
               src={listing.bookCoverUrl}
@@ -131,6 +136,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
           {status.buttonLabel}
         </Button>
       </div>
-    </div>
+    </Link>
   );
 }

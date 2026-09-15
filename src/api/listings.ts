@@ -21,6 +21,12 @@ export async function getListings(
   return response.data;
 }
 
+export async function getListing(id: string): Promise<ListingResponse> {
+  const response = await apiClient.get<ListingResponse>(`/api/listings/${id}`);
+
+  return response.data;
+}
+
 export async function getCities() {
   const response = await apiClient.get<string[]>("/api/listings/cities");
   return response.data;

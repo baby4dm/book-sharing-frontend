@@ -10,6 +10,7 @@ import MainLayout from "@/components/layout/MainLayout";
 import ProtectedRoute from "@/components/routes/ProtectedRoute";
 import GuestOnlyRoute from "@/components/routes/GuestOnlyRoute";
 import FeedPage from "@/pages/FeedPage";
+import ListingDetailPage from "@/pages/ListingDetailPage";
 
 const routes = [
   {
@@ -17,6 +18,7 @@ const routes = [
     element: <MainLayout />,
     children: [
       { index: true, element: <CatalogPage /> },
+      { path: "listings/:id", element: <ListingDetailPage /> },
       {
         element: <ProtectedRoute />,
         children: [
