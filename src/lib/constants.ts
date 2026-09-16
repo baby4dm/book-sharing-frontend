@@ -19,7 +19,10 @@ export const GENRES = [
   "Антиутопія",
   "Жахи",
 ] as const;
-
+export const DELIVERY_METHODS = {
+  PICKUP: "Особиста зустріч",
+  MAIL: "Поштою",
+};
 export const STATUS_CONFIG: Record<
   ListingStatus,
   {
