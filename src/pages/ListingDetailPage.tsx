@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/Spinner";
 import { useListing } from "@/features/listings/hooks/useListing";
 import { SETTLEMENT_TYPE_LABELS } from "@/features/listings/types";
 import { DELIVERY_METHODS, STATUS_CONFIG } from "@/lib/constants";
@@ -18,11 +19,8 @@ import { Link, useParams } from "react-router-dom";
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data: listing, isLoading, error } = useListing(id!);
+  const [avatarFailed, setAvatarFailed] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
-  if (!listing) {
-    return;
-  }
-  const status = STATUS_CONFIG[listing.status];
   function goNextPhoto() {
     if (listing?.photoUrls) {
       if (currentPhoto === listing?.photoUrls.length - 1) {
@@ -41,11 +39,44 @@ export default function ListingDetailPage() {
       }
     }
   }
+
+  if (isLoading) {
+    return (
+      <section className="w-full px-4 py-16 flex items-center justify-center">
+        <Spinner size={40} />
+      </section>
+    );
+  }
+  if (error) {
+    return (
+      <section className="w-full px-4 py-16 flex flex-col items-center gap-3 text-center">
+        <p className="text-foreground font-semibold">
+          Не вдалось завантажити оголошення
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Перевірте з'єднання з інтернетом і спробуйте ще раз
+        </p>
+        <Button
+          variant="outline"
+          className="cursor-pointer mt-2"
+          onClick={() => window.location.reload()}
+        >
+          Спробувати ще раз
+        </Button>
+      </section>
+    );
+  }
+  if (!listing) {
+    return null;
+  }
+
+  const status = STATUS_CONFIG[listing.status];
   return (
     <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 lg:max-w-350 lg:mx-auto md:py-8">
       <Button
         variant="outline"
         className="max-w-40 cursor-pointer"
+        nativeButton={false}
         render={
           <Link
             to="/"
@@ -159,18 +190,18 @@ export default function ListingDetailPage() {
           </div>
           <div className="w-full flex flex-col gap-5 border-t border-border py-4 lg:flex-row lg:items-center">
             <div className="w-full flex items-center gap-2 lg:flex-1 lg:gap-4">
-              <div
-                className="w-11 h-11 rounded-full bg-cover bg-center bg-accent-vivid lg:w-13 lg:h-13"
-                style={
-                  listing.ownerAvatarUrl
-                    ? {
-                        backgroundImage: `url(${listing.ownerAvatarUrl})`,
-                      }
-                    : undefined
-                }
-              >
-                {!listing.ownerAvatarUrl && (
-                  <p>{listing.ownerName.substring(0, 1).toLowerCase()}</p>
+              <div className="relative w-11 h-11 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
+                {listing.ownerAvatarUrl && !avatarFailed ? (
+                  <img
+                    src={listing.ownerAvatarUrl}
+                    alt={listing.ownerName}
+                    className="w-full h-full object-cover"
+                    onError={() => setAvatarFailed(true)}
+                  />
+                ) : (
+                  <p className="text-primary-foreground text-sm font-semibold">
+                    {listing.ownerName.substring(0, 1).toUpperCase()}
+                  </p>
                 )}
               </div>
               <div className="flex flex-col">
