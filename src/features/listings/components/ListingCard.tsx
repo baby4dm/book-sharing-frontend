@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import RequestFormDialog from "./RequestFormDialog";
+import RequestFormDialog from "../../requests/components/RequestFormDialog";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -25,7 +25,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
     e.stopPropagation();
 
     if (!isAuthenticated) {
-      navigate("/login", { state: { from: location } });
+      navigate("/login", { state: { from: location.pathname } });
       return;
     }
     setRequestDialogIsOpen(true);

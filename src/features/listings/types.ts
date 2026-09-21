@@ -53,9 +53,3 @@ export interface Page<T> {
   first: boolean;
   last: boolean;
 }
-
-export interface ListingRequestRequest {
-  desiredDeadline: string;
-  preferredDeliveryMethod: DeliveryMethod;
-  message: string;
-}

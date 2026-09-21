@@ -32,7 +32,3 @@ export async function getCities() {
   const response = await apiClient.get<string[]>("/api/listings/cities");
   return response.data;
 }
-
-export async function createRequest(request: ListingRequestRequest) {
-  const response = await apiClient.post();
-}
