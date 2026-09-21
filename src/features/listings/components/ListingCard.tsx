@@ -2,9 +2,11 @@ import { Button } from "@/components/ui/button";
 import { SETTLEMENT_TYPE_LABELS, type ListingResponse } from "../types";
 import { IconBook, IconMapPin } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import RequestFormDialog from "./RequestFormDialog";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -13,8 +15,21 @@ interface ListingCardProps {
 export default function ListingCard({ listing }: ListingCardProps) {
   const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
+  const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const status = STATUS_CONFIG[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
+  function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: location } });
+      return;
+    }
+    setRequestDialogIsOpen(true);
+  }
   return (
     <Link
       to={`/listings/${listing.id}`}
@@ -82,10 +97,19 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
         <Button
           disabled={!isAvailable}
+          onClick={(e) => handleClick(e)}
           className="text-sm font-normal cursor-pointer mt-auto"
         >
           {status.buttonLabel}
         </Button>
+
+        {requestDialogIsOpen && (
+          <RequestFormDialog
+            listing={listing}
+            open={requestDialogIsOpen}
+            onOpenChange={setRequestDialogIsOpen}
+          />
+        )}
       </div>
     </Link>
   );
