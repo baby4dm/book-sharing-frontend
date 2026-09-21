@@ -1,5 +1,6 @@
 import type {
   ListingFilters,
+  ListingRequestRequest,
   ListingResponse,
   Page,
 } from "@/features/listings/types";
@@ -32,4 +33,6 @@ export async function getCities() {
   return response.data;
 }
 
-export async function createRequest(request: ListingRequestRequest) {}
+export async function createRequest(request: ListingRequestRequest) {
+  const response = await apiClient.post();
+}
