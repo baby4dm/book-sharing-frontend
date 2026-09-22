@@ -14,3 +14,15 @@ export async function createRequest(
   );
   return response.data;
 }
+
+export async function getSentRequests(): Promise<RequestResponse[]> {
+  const response = await apiClient.get<RequestResponse[]>("/api/requests/my");
+  return response.data;
+}
+
+export async function getReceivedRequests(): Promise<RequestResponse[]> {
+  const response = await apiClient.get<RequestResponse[]>(
+    "/api/requests/received",
+  );
+  return response.data;
+}

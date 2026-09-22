@@ -61,7 +61,7 @@ export default function ListingFilterPanel({
   }
 
   return (
-    <div className="w-full max-w-500 self-center">
+    <div className="w-full max-w-500 self-center 3xl:max-w-530">
       <div className="flex gap-2 items-center w-full">
         <SearchInput
           handleChange={(value) => onUpdateFilters({ search: value })}
