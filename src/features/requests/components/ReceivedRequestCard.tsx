@@ -4,6 +4,8 @@ import { REQUEST_STATUS_CONFIG } from "../types";
 import { useState } from "react";
 import { DELIVERY_METHODS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { useApproveRequest } from "../hooks/useApproveRequest";
+import { useRejectRequest } from "../hooks/useRejectRequest";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -11,6 +13,8 @@ interface RequestCardProps {
 
 export default function ReceivedRequestCard({ request }: RequestCardProps) {
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const { mutate: approve, isPending: isApproving } = useApproveRequest();
+  const { mutate: reject, isPending: isRejecting } = useRejectRequest();
   const statusData = REQUEST_STATUS_CONFIG[request.status];
   return (
     <div className="border border-muted shadow-sm rounded-lg p-3 flex flex-col gap-3 max-w-160 w-full md:max-w-200 md:gap-4 lg:gap-5 lg:max-w-220 md:p-4 lg:p-6">
@@ -75,10 +79,11 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           Відхилити
         </Button>
         <Button
+          onClick={() => approve(request.id)}
           className="flex-1 text-sm cursor-pointer"
-          disabled={request.status !== "PENDING"}
+          disabled={request.status !== "PENDING" || isApproving}
         >
-          Підтвердити
+          {isApproving ? "Підтвердження..." : "Підтвердити"}
         </Button>
       </div>
     </div>

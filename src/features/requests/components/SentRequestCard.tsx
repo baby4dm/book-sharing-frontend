@@ -3,6 +3,7 @@ import type { RequestResponse } from "../types";
 import { REQUEST_STATUS_CONFIG } from "../types";
 import { DELIVERY_METHODS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { useCancelRequest } from "../hooks/cancelRequest";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -10,6 +11,7 @@ interface RequestCardProps {
 
 export default function SentRequestCard({ request }: RequestCardProps) {
   const statusData = REQUEST_STATUS_CONFIG[request.status];
+  const { mutate: cancel, isPending } = useCancelRequest();
   return (
     <div className="border border-muted shadow-sm rounded-lg p-3 flex flex-col gap-3 max-w-160 w-full md:max-w-200 lg:max-w-220 md:p-4 lg:p-6">
       <div className="flex items-start justify-between gap-2">
@@ -36,9 +38,11 @@ export default function SentRequestCard({ request }: RequestCardProps) {
       {request.status == "PENDING" && (
         <Button
           variant="outline"
+          onClick={() => cancel(request.id)}
+          disabled={isPending}
           className="lg:max-w-50 self-end cursor-pointer"
         >
-          Скасувати
+          {isPending ? "Скасування..." : "Скасувати"}
         </Button>
       )}
       {request.status !== "PENDING" &&
