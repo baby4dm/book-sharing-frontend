@@ -1,9 +1,4 @@
-import {
-  IconCalendar,
-  IconClock,
-  IconMail,
-  IconStarFilled,
-} from "@tabler/icons-react";
+import { IconCalendar, IconMail, IconStarFilled } from "@tabler/icons-react";
 import type { RequestResponse } from "../types";
 import { REQUEST_STATUS_CONFIG } from "../types";
 import { useState } from "react";

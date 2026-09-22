@@ -20,7 +20,7 @@ export default function SentRequestsList() {
   if (!data || data.length === 0) {
     return (
       <p className="text-sm text-muted-foreground py-8 text-center">
-        Поки що немає отриманих заявок
+        Поки що немає надісланих заявок
       </p>
     );
   }

@@ -4,7 +4,7 @@ import SentRequestsList from "@/features/requests/components/SentRequestsList";
 
 export default function RequestsPage() {
   return (
-    <section className="w-full p-4 flex justify-center text-center md:px-8">
+    <section className="w-full p-4 flex justify-center md:px-8">
       <Tabs
         defaultValue="received"
         className="w-full flex flex-col gap-4 lg:gap-8"

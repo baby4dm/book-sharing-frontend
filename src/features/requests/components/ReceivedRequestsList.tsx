@@ -1,4 +1,4 @@
-import useReceivedRequests from "../hooks/useReceivedRequests";
+import { useReceivedRequests } from "../hooks/useReceivedRequests";
 import ReceivedRequestCard from "./ReceivedRequestCard";
 
 export default function ReceivedRequestsList() {
