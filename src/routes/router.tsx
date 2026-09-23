@@ -11,6 +11,7 @@ import ProtectedRoute from "@/components/routes/ProtectedRoute";
 import GuestOnlyRoute from "@/components/routes/GuestOnlyRoute";
 import FeedPage from "@/pages/FeedPage";
 import ListingDetailPage from "@/pages/ListingDetailPage";
+import ProfilePage from "@/pages/ProfilePage";
 
 const routes = [
   {
@@ -25,6 +26,7 @@ const routes = [
           { path: "requests", element: <RequestsPage /> },
           { path: "exchanges", element: <ExchangesPage /> },
           { path: "chat", element: <ChatPage /> },
+          { path: "profile", element: <ProfilePage /> },
         ],
       },
       { path: "feed", element: <FeedPage /> },

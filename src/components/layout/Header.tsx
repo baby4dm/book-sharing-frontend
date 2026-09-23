@@ -135,16 +135,17 @@ export default function Header() {
           />
           <IconBell className="text-muted-foreground stroke-1 h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
           <div className="relative">
-            <div
+            <Link
               className={`h-7 w-7 rounded-full bg-primary flex 
               items-center justify-center lg:h-8 lg:w-8 cursor-pointer ${!userMenuIsOpen && "hover:scale-110"} transition-all`}
-              onClick={(e) => {
-                e.stopPropagation();
-                setUserMenuIsOpen((prev) => !prev);
-              }}
+              to="/profile"
+              // onClick={(e) => {
+              //   e.stopPropagation();
+              //   setUserMenuIsOpen((prev) => !prev);
+              // }}
             >
               <p className="text-primary-foreground text-xs font-medium">ОК</p>
-            </div>
+            </Link>
             {userMenuIsOpen && (
               <div className="hidden bg-card lg:flex absolute border border-border rounded-sm top-10 -right-2.5">
                 <Button
