@@ -5,7 +5,8 @@ import { useState } from "react";
 import { DELIVERY_METHODS } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
 import { useApproveRequest } from "../hooks/useApproveRequest";
-import { useRejectRequest } from "../hooks/useRejectRequest";
+import { AxiosError } from "axios";
+import RejectReasonDialog from "./RejectReasonDialog";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -13,8 +14,14 @@ interface RequestCardProps {
 
 export default function ReceivedRequestCard({ request }: RequestCardProps) {
   const [avatarFailed, setAvatarFailed] = useState(false);
-  const { mutate: approve, isPending: isApproving } = useApproveRequest();
-  const { mutate: reject, isPending: isRejecting } = useRejectRequest();
+  const {
+    mutate: approve,
+    isPending: isApproving,
+    isError: isApprovingError,
+    error: approvingError,
+  } = useApproveRequest();
+
+  const [rejectDialogIsOpen, setRejectDialogIsOpen] = useState<boolean>(false);
   const statusData = REQUEST_STATUS_CONFIG[request.status];
   return (
     <div className="border border-muted shadow-sm rounded-lg p-3 flex flex-col gap-3 max-w-160 w-full md:max-w-200 md:gap-4 lg:gap-5 lg:max-w-220 md:p-4 lg:p-6">
@@ -69,12 +76,23 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           «{request.message}»
         </p>
       )}
-
+      {isApprovingError && (
+        <p className="text-xs text-destructive">
+          {approvingError instanceof AxiosError
+            ? (approvingError.response?.data?.message ??
+              "Не вдалось підтвердити заявку")
+            : "Не вдалось підтвердити заявку"}
+        </p>
+      )}
       <div className="w-full flex justify-between items-center gap-4 mt-2 lg:max-w-100">
         <Button
           variant="outline"
           disabled={request.status !== "PENDING"}
           className="flex-1 text-sm cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            setRejectDialogIsOpen(true);
+          }}
         >
           Відхилити
         </Button>
@@ -86,6 +104,11 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           {isApproving ? "Підтвердження..." : "Підтвердити"}
         </Button>
       </div>
+      <RejectReasonDialog
+        requestId={request.id}
+        open={rejectDialogIsOpen}
+        onOpenChange={setRejectDialogIsOpen}
+      />
     </div>
   );
 }
