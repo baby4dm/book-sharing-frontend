@@ -57,7 +57,7 @@ export default function RejectReasonDialog({
         onClick={(e) => e.stopPropagation()}
       >
         <DialogHeader>
-          <DialogTitle>Відхилити заявку</DialogTitle>
+          <DialogTitle className="text-lg">Відхилити заявку</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
@@ -80,7 +80,7 @@ export default function RejectReasonDialog({
           {validationError && (
             <p className="text-xs text-destructive">{validationError}</p>
           )}
-          <Button type="submit" disabled={isRejecting}>
+          <Button type="submit" disabled={isRejecting} className="cursor-pointer">
             {isRejecting ? "Надсилання" : "Відхилити"}
           </Button>
         </form>
