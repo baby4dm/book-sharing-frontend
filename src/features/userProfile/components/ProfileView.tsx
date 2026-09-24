@@ -59,81 +59,70 @@ export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground md:text-base">
-            {userData.bio ||
-              "Люблю фантастику і детективи. Завжди рада обмінятись книгою або порадити щось цікаве!"}
+            {userData.bio}
           </p>
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3 w-full md:grid-cols-3 max-w-120 md:max-w-160">
-        {userData.ratingAvg && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <IconStarFilled className="text-yellow-500 w-4 h-4 md:w-5 md:h-5" />
-              <span className="font-extrabold md:text-lg">
-                {userData.ratingAvg.toFixed(2)}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">
-              Рейтинг
-            </p>
-          </div>
-        )}
-        {userData.booksGiven && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <span className="font-extrabold md:text-lg">
-                {userData.booksGiven}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">Надано</p>
-          </div>
-        )}
-        {userData.booksTaken && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <span className="font-extrabold md:text-lg">
-                {userData.booksTaken}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">Взято</p>
-          </div>
-        )}
-        {userData.booksReturnedOnTime && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <span className="font-extrabold md:text-lg">
-                {userData.booksReturnedOnTime}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">
-              Повернено вчасно
-            </p>
-          </div>
-        )}
-        {userData.booksDamaged && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <span className="font-extrabold md:text-lg">
-                {userData.booksDamaged}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">
-              Пошкоджено
-            </p>
-          </div>
-        )}
-        {userData.booksOverdue && (
-          <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-            <p className="flex items-center gap-1">
-              <span className="font-extrabold md:text-lg">
-                {userData.booksOverdue}
-              </span>
-            </p>
-            <p className="text-sm text-muted-foreground md:text-base">
-              Протерміновано
-            </p>
-          </div>
-        )}
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <IconStarFilled className="text-yellow-500 w-4 h-4 md:w-5 md:h-5" />
+            <span className="font-extrabold md:text-lg">
+              {userData.ratingAvg.toFixed(2)}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">Рейтинг</p>
+        </div>
+
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <span className="font-extrabold md:text-lg">
+              {userData.booksGiven}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">Надано</p>
+        </div>
+
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <span className="font-extrabold md:text-lg">
+              {userData.booksTaken}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">Взято</p>
+        </div>
+
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <span className="font-extrabold md:text-lg">
+              {userData.booksReturnedOnTime}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Повернено вчасно
+          </p>
+        </div>
+
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <span className="font-extrabold md:text-lg">
+              {userData.booksDamaged}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Пошкоджено
+          </p>
+        </div>
+        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
+          <p className="flex items-center gap-1">
+            <span className="font-extrabold md:text-lg">
+              {userData.booksOverdue}
+            </span>
+          </p>
+          <p className="text-sm text-muted-foreground md:text-base">
+            Протерміновано
+          </p>
+        </div>
       </div>
     </div>
   );
