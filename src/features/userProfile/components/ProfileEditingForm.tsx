@@ -187,8 +187,12 @@ export default function ProfileEditingForm({
                 : ""}
           </p>
 
-          <Button type="submit" className="cursor-pointer mt-3">
-            Застосувати
+          <Button
+            disabled={isPending}
+            type="submit"
+            className="cursor-pointer mt-3"
+          >
+            {isPending ? "Збереження..." : "Застосувати"}
           </Button>
         </form>
       </div>
