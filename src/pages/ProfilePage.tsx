@@ -10,13 +10,15 @@ export default function ProfilePage() {
   if (isError) {
     return;
   }
-  if(isPending) {
-    return
+  if (isPending) {
+    return;
   }
   return (
-    <section className="w-full p-4 flex justify-center md:px-8">
-      {isEditing && <ProfileEditingForm />}
-      {!isEditing && <ProfileView userData={data} />}
+    <section className="w-full py-4 px-3 flex justify-center md:px-8 md:py-6">
+      {isEditing && (
+        <ProfileEditingForm userData={data} onEditing={setIsEditing} />
+      )}
+      {!isEditing && <ProfileView userData={data} onEditing={setIsEditing} />}
     </section>
   );
 }
