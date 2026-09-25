@@ -12,6 +12,7 @@ import GuestOnlyRoute from "@/components/routes/GuestOnlyRoute";
 import FeedPage from "@/pages/FeedPage";
 import ListingDetailPage from "@/pages/ListingDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
+import CreateListingPage from "@/pages/CreateListingPage";
 
 const routes = [
   {
@@ -27,6 +28,7 @@ const routes = [
           { path: "exchanges", element: <ExchangesPage /> },
           { path: "chat", element: <ChatPage /> },
           { path: "profile", element: <ProfilePage /> },
+          { path: "listings/create", element: <CreateListingPage /> },
         ],
       },
       { path: "feed", element: <FeedPage /> },

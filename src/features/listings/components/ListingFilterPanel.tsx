@@ -13,6 +13,7 @@ import { Label } from "@/components/ui/label";
 import MultiSelectCheckList from "@/components/ui/MultiSelectCheckList";
 import { GENRES } from "@/lib/constants";
 import { useCities } from "../hooks/useCities";
+import { useNavigate } from "react-router-dom";
 
 interface ListingFilterPanelProps {
   filters: ListingFilters;
@@ -31,6 +32,7 @@ export default function ListingFilterPanel({
   onUpdateFilters,
 }: ListingFilterPanelProps) {
   const [filterIsOpen, setFilterIsOpen] = useState(false);
+  const navigate = useNavigate();
   const [tempFilters, setTempFilters] = useState<ListingFilters>({});
   const { data } = useCities();
 
@@ -99,12 +101,18 @@ export default function ListingFilterPanel({
           <IconFilter size={16} className="text-muted-foreground" />
         </Button>
 
-        <Button className="hidden md:flex gap-2 items-center cursor-pointer h-10 px-6 shrink-0">
+        <Button
+          className="hidden md:flex gap-2 items-center cursor-pointer h-10 px-6 shrink-0"
+          onClick={() => navigate("listings/create")}
+        >
           <IconPlus size={16} />
           <span>Додати</span>
         </Button>
 
-        <Button className="md:hidden fixed rounded-full w-12 h-12 bottom-4 right-4 z-10 shadow-lg">
+        <Button
+          className="md:hidden fixed rounded-full w-12 h-12 bottom-4 right-4 z-10 shadow-lg"
+          onClick={() => navigate("listings/create")}
+        >
           <IconPlus size={20} />
         </Button>
       </div>
