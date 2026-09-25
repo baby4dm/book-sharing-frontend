@@ -105,19 +105,32 @@ export default function Header() {
                 classNameIcon="stroke-1 text-muted-foreground"
               />
             </div>
-            <Button
-              variant="ghost"
-              className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setUserMenuIsOpen(false);
-                logout();
-                navigate("/login");
-              }}
-            >
-              <IconLogout2 className="text-accent-vivid h-10 w-10" />
-              <span className="text-base">Вийти</span>
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="ghost"
+                className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setNavIsOpen(false);
+                  logout();
+                  navigate("/");
+                }}
+              >
+                <IconLogout2 className="text-accent-vivid h-10 w-10" />
+                <span className="text-base">Вийти</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate("/login");
+                }}
+              >
+                Увійти
+              </Button>
+            )}
           </nav>
         )}
         <div className="flex items-center gap-3 h-full lg:gap-4">
@@ -156,12 +169,21 @@ export default function Header() {
               onClick={(e) => {
                 e.stopPropagation();
                 logout();
-                navigate("/login");
+                navigate("/");
               }}
               className="hidden lg:flex h-full"
             >
               <IconLogout2 className="text-muted-foreground h-7 w-auto stroke-1 cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
             </button>
+          )}
+          {!isAuthenticated && (
+            <Button
+              variant="outline"
+              className="hidden lg:flex cursor-pointer"
+              onClick={() => navigate("/login")}
+            >
+              Увійти
+            </Button>
           )}
           <button
             onClick={() => setNavIsOpen((prev) => !prev)}
