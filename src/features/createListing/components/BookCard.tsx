@@ -15,7 +15,7 @@ export default function BookCard({ book, onSelect }: BookCardProps) {
       className="w-full flex gap-4 items-center border border-border rounded-md p-3 shadow-sm cursor-pointer hover:border-accent-vivid hover:outline-2 transition-all duration-100 hover:scale-[101%]"
       onClick={() => onSelect(book)}
     >
-      <div className="relative h-30 w-30 rounded-md overflow-hidden">
+      <div className="relative h-30 w-25 rounded-md overflow-hidden">
         {!imageIsLoaded && !imageIsFailed && (
           <div className="absolute inset-0 bg-border shimmer rounded-md" />
         )}
@@ -26,7 +26,7 @@ export default function BookCard({ book, onSelect }: BookCardProps) {
           </div>
         ) : (
           <img
-            className={`w-30 h-full transition-opacity duration-300 ${
+            className={`w-25 h-full transition-opacity duration-300 ${
               imageIsLoaded ? "opacity-100" : "opacity-0"
             }`}
             src={book.coverUrl}

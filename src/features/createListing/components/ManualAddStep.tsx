@@ -5,7 +5,6 @@ import { useState } from "react";
 import SingleSelectList from "@/components/ui/SingleSelectList";
 import { GENRES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 interface ManualAddStepProps {
   onCancel: () => void;
   onSelectBook: (book: BookSearchResult) => void;
@@ -63,13 +62,6 @@ export default function ManualAddStep({
 
   return (
     <div className="w-full flex flex-col gap-5 max-w-160 md:max-w-200 lg:max-w-220">
-      <Button
-        variant="ghost"
-        className="w-30 text-muted-foreground cursor-pointer"
-      >
-        <ArrowLeft />
-        <span>Крок 2 з 2</span>
-      </Button>
       <div>
         <h1 className="text-2xl font-extrabold">Додати книгу вручну</h1>
         <p className="text-sm text-muted-foreground">

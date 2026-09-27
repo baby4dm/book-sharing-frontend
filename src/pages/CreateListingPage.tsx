@@ -26,7 +26,9 @@ export default function CreateListingPage() {
         />
       )}
 
-      {step === "details" && <DetailsStep book={book!} />}
+      {step === "details" && (
+        <DetailsStep book={book!} onCancel={() => setStep("search")} />
+      )}
     </section>
   );
 }
