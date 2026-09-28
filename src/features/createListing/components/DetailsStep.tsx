@@ -15,6 +15,7 @@ import SingleSelectList from "@/components/ui/SingleSelectList";
 import { REGIONS } from "@/lib/constants";
 import { ArrowLeft } from "lucide-react";
 import { useResolveBook } from "../hooks/useResolveBook";
+import PhotoUploadGrid from "./PhotoUploadGrid";
 
 interface DetailsStepProps {
   book: BookSearchResult;
@@ -38,6 +39,7 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
   const [settlement, setSettlement] = useState<string>("");
   const [conditionDescription, setConditionDescription] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<string[]>([]);
   const { mutate } = useResolveBook();
 
   function toggleDeliveryMethod(method: DeliveryMethod) {
@@ -49,6 +51,8 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
       }
     });
   }
+
+  function handlePhotosChange() {}
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -124,6 +128,7 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
         </div>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <PhotoUploadGrid photos={photos} onChange={setPhotos} />
         <div className="flex flex-col gap-1.5">
           <Label>Стан примірника</Label>
           <Textarea

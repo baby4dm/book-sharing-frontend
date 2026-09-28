@@ -28,7 +28,6 @@ const navItems = [
 ];
 export default function Header() {
   const [navIsOpen, setNavIsOpen] = useState(false);
-  const [userMenuIsOpen, setUserMenuIsOpen] = useState(false);
   const location = useLocation();
   const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -142,11 +141,10 @@ export default function Header() {
           {isAuthenticated && (
             <div className="relative">
               <Link
-                className={`h-7 w-7 rounded-full bg-primary flex 
-              items-center justify-center lg:h-8 lg:w-8 cursor-pointer ${!userMenuIsOpen && "hover:scale-110"} transition-all`}
+                className="h-7 w-7 rounded-full bg-primary flex 
+              items-center justify-center lg:h-8 lg:w-8 cursor-pointer hover:scale-105"
                 to="/profile"
               >
-                {/* <p className="text-primary-foreground text-xs font-medium">ОК</p> */}
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-primary flex items-center justify-center">
                   {userProfile?.avatarUrl && !avatarFailed ? (
                     <img
