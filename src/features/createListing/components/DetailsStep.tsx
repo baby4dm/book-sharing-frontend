@@ -16,13 +16,19 @@ import { REGIONS } from "@/lib/constants";
 import { ArrowLeft } from "lucide-react";
 import { useResolveBook } from "../hooks/useResolveBook";
 import PhotoUploadGrid from "./PhotoUploadGrid";
+import { useCreateListing } from "../hooks/useCreateListing";
 
 interface DetailsStepProps {
   book: BookSearchResult;
   onCancel: () => void;
+  onSuccess: () => void;
 }
 
-export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
+export default function DetailsStep({
+  book,
+  onCancel,
+  onSuccess,
+}: DetailsStepProps) {
   const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
   const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethod[]>([]);
@@ -40,7 +46,16 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
   const [conditionDescription, setConditionDescription] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
-  const { mutate } = useResolveBook();
+  const {
+    mutate: resolve,
+    isPending: isResolving,
+    error: resolveBookError,
+  } = useResolveBook();
+  const {
+    mutate: createListing,
+    isPending: isCreating,
+    error: createListingError,
+  } = useCreateListing();
 
   function toggleDeliveryMethod(method: DeliveryMethod) {
     setDeliveryMethods((prev) => {
@@ -51,8 +66,6 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
       }
     });
   }
-
-  function handlePhotosChange() {}
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -84,6 +97,33 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
         return;
       }
     }
+    resolve(
+      {
+        title: book.title,
+        isbn: book.isbn || undefined,
+        author: book.author || undefined,
+        description: book.description || undefined,
+        genre: book.genre || undefined,
+        coverUrl: book.coverUrl || undefined,
+        externalId: book.externalId || undefined,
+      },
+      {
+        onSuccess: (data) => {
+          createListing(
+            {
+              bookCatalogEntryId: data.id,
+              conditionDescription: conditionDescription,
+              deliveryMethods: deliveryMethods,
+              photoUrls: photos,
+              settlementType: settlementType!,
+              region: region,
+              settlementName: settlement,
+            },
+            { onSuccess: onSuccess },
+          );
+        },
+      },
+    );
   }
 
   return (
@@ -142,6 +182,7 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
           <div className="flex gap-2">
             <Button
               variant="outline"
+              type="button"
               className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
                 deliveryMethods.includes("PICKUP")
                   ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
@@ -153,6 +194,7 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
             </Button>
             <Button
               variant="outline"
+              type="button"
               className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
                 deliveryMethods.includes("MAIL")
                   ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
@@ -247,8 +289,14 @@ export default function DetailsStep({ book, onCancel }: DetailsStepProps) {
         <p className="text-sm md:text-base text-destructive h-4">
           {validationError}
         </p>
-        <Button type="submit" className="cursor-pointer mt-2">
-          Опублікувати оголошення
+        <Button
+          type="submit"
+          className="cursor-pointer mt-2"
+          disabled={isResolving || isCreating}
+        >
+          {isResolving && "Надсилання даних"}
+          {isCreating && "Створення оголошення"}
+          {!isCreating && !isResolving && "Опублікувати оголошення"}
         </Button>
       </form>
     </div>

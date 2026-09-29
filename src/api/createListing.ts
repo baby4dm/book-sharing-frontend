@@ -1,9 +1,12 @@
+import { data } from "react-router-dom";
 import type {
   BookCatalogEntry,
   BookSearchResult,
+  CreateListingRequest,
   ResolveBookPayload,
 } from "@/features/createListing/types";
 import apiClient from "./client";
+import type { ListingResponse } from "@/features/listings/types";
 
 export async function searchBook(query: string): Promise<BookSearchResult[]> {
   const response = await apiClient.get<BookSearchResult[]>(
@@ -36,4 +39,11 @@ export async function uploadFile(file: File): Promise<string> {
   );
 
   return response.data.url;
+}
+
+export async function createListing(
+  data: CreateListingRequest,
+): Promise<ListingResponse> {
+  const response = await apiClient.post<ListingResponse>("/api/listings", data);
+  return response.data;
 }

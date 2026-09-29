@@ -1,3 +1,9 @@
+import {
+  SETTLEMENT_TYPE_LABELS,
+  type DeliveryMethod,
+  type SettlementType,
+} from "./../listings/types";
+
 export interface BookSearchResult {
   title: string;
   author: string | null;
@@ -31,3 +37,13 @@ export interface BookCatalogEntry {
   createdAt: string;
 }
 export type Step = "search" | "manual" | "details";
+
+export interface CreateListingRequest {
+  bookCatalogEntryId: string;
+  conditionDescription: string;
+  deliveryMethods: DeliveryMethod[];
+  photoUrls: string[];
+  settlementType: SettlementType;
+  region: string;
+  settlementName: string;
+}
