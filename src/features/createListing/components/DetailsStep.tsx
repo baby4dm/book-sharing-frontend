@@ -21,7 +21,7 @@ import { useCreateListing } from "../hooks/useCreateListing";
 interface DetailsStepProps {
   book: BookSearchResult;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess: (id: string, title: string) => void;
 }
 
 export default function DetailsStep({
@@ -33,7 +33,7 @@ export default function DetailsStep({
   const [imageIsFailed, setImageIsFailed] = useState(false);
   const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethod[]>([]);
   const { data: profile } = useCurrentUserProfile();
-  const [useProfileLocation, setUseProfileLocation] = useState(true);
+  const [manualOverride, setManualOverride] = useState<boolean | null>(null);
   const profileLocationLabel = profile?.settlementName
     ? `${SETTLEMENT_TYPE_LABELS[profile.settlementType!].substring(0, 1).toLowerCase()}. ${profile.settlementName}`
     : null;
@@ -41,7 +41,7 @@ export default function DetailsStep({
   const [settlementType, setSettlementType] = useState<SettlementType | null>(
     null,
   );
-  const [region, setRegion] = useState<string>("");
+  const [region, setRegion] = useState<string | null>(null);
   const [settlement, setSettlement] = useState<string>("");
   const [conditionDescription, setConditionDescription] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -56,6 +56,13 @@ export default function DetailsStep({
     isPending: isCreating,
     error: createListingError,
   } = useCreateListing();
+  const hasProfileLocation = !!(
+    profile?.settlementType &&
+    profile.region &&
+    profile.settlementName
+  );
+
+  const useProfileLocation = manualOverride ?? hasProfileLocation;
 
   function toggleDeliveryMethod(method: DeliveryMethod) {
     setDeliveryMethods((prev) => {
@@ -83,20 +90,28 @@ export default function DetailsStep({
       setValidationError("Оберіть хоча б один спосіб доставки");
       return;
     }
-    if (!useProfileLocation) {
-      if (!settlementType) {
-        setValidationError("Оберіть тип населеного пункту");
-        return;
-      }
-      if (!region) {
-        setValidationError("Оберіть область");
-        return;
-      }
-      if (!settlement.trim()) {
-        setValidationError("Вкажіть населений пункт");
-        return;
-      }
+
+    const effectiveSettlementType = useProfileLocation
+      ? profile?.settlementType
+      : settlementType;
+    const effectiveRegion = useProfileLocation ? profile?.region : region;
+    const effectiveSettlementName = useProfileLocation
+      ? profile?.settlementName
+      : settlement.trim();
+
+    if (!effectiveSettlementType) {
+      setValidationError("Оберіть тип населеного пункту");
+      return;
     }
+    if (!effectiveRegion) {
+      setValidationError("Оберіть область");
+      return;
+    }
+    if (!effectiveSettlementName) {
+      setValidationError("Вкажіть населений пункт");
+      return;
+    }
+
     resolve(
       {
         title: book.title,
@@ -115,15 +130,30 @@ export default function DetailsStep({
               conditionDescription: conditionDescription,
               deliveryMethods: deliveryMethods,
               photoUrls: photos,
-              settlementType: settlementType!,
-              region: region,
-              settlementName: settlement,
+              settlementType: effectiveSettlementType,
+              region: effectiveRegion,
+              settlementName: effectiveSettlementName,
             },
-            { onSuccess: onSuccess },
+            {
+              onSuccess: (listing) => {
+                onSuccess(listing.id, listing.bookTitle);
+              },
+            },
           );
         },
       },
     );
+  }
+
+  function handleToggleProfileLocation() {
+    if (!hasProfileLocation) {
+      setValidationError(
+        "У профілі не вказано населений пункт. Спочатку вкажіть його в профілі",
+      );
+      return;
+    }
+    setValidationError(null);
+    setManualOverride(!useProfileLocation);
   }
 
   return (
@@ -210,7 +240,7 @@ export default function DetailsStep({
           <input
             type="checkbox"
             checked={useProfileLocation}
-            onChange={() => setUseProfileLocation((prev) => !prev)}
+            onChange={handleToggleProfileLocation}
             className="cursor-pointer w-4 h-4"
           />
           <span>
@@ -218,9 +248,7 @@ export default function DetailsStep({
           </span>
         </Label>
         {!useProfileLocation && (
-          <div
-            className={`flex flex-col gap-3 ${useProfileLocation ? "opacity-0" : "opacity-100"} transition-opacity duration-5000`}
-          >
+          <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1.5">
               <Label className="text-sm text-foreground">
                 Тип населеного пункту
@@ -286,9 +314,12 @@ export default function DetailsStep({
             </div>
           </div>
         )}
-        <p className="text-sm md:text-base text-destructive h-4">
-          {validationError}
-        </p>
+        {(validationError || resolveBookError || createListingError) && (
+          <p className="text-sm md:text-base text-destructive min-h-4">
+            {validationError ??
+              "Не вдалось опублікувати оголошення. Спробуйте ще раз."}
+          </p>
+        )}
         <Button
           type="submit"
           className="cursor-pointer mt-2"

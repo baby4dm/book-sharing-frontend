@@ -1,8 +1,4 @@
-import {
-  SETTLEMENT_TYPE_LABELS,
-  type DeliveryMethod,
-  type SettlementType,
-} from "./../listings/types";
+import { type DeliveryMethod, type SettlementType } from "./../listings/types";
 
 export interface BookSearchResult {
   title: string;
@@ -36,7 +32,7 @@ export interface BookCatalogEntry {
   externalId: string | null;
   createdAt: string;
 }
-export type Step = "search" | "manual" | "details";
+export type Step = "search" | "manual" | "details" | "success";
 
 export interface CreateListingRequest {
   bookCatalogEntryId: string;
