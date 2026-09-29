@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
+import { useAuth } from "@/context/AuthContext";
 import { useListing } from "@/features/listings/hooks/useListing";
 import { SETTLEMENT_TYPE_LABELS } from "@/features/listings/types";
+import RequestFormDialog from "@/features/requests/components/RequestFormDialog";
+import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { DELIVERY_METHODS, STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
 import {
@@ -14,13 +17,17 @@ import {
   IconStarFilled,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
+  const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const { data: listing, isLoading, error } = useListing(id!);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
+  const { data: user } = useCurrentUserProfile();
   function goNextPhoto() {
     if (listing?.photoUrls) {
       if (currentPhoto === listing?.photoUrls.length - 1) {
@@ -38,6 +45,17 @@ export default function ListingDetailPage() {
         setCurrentPhoto((prev) => prev - 1);
       }
     }
+  }
+
+  function handleClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!isAuthenticated) {
+      navigate("/login", { state: { from: location.pathname } });
+      return;
+    }
+    setRequestDialogIsOpen(true);
   }
 
   if (isLoading) {
@@ -225,9 +243,22 @@ export default function ListingDetailPage() {
               </div>
             </div>
 
-            <Button className="cursor-pointer w-full h-10 lg:flex-1 lg:max-w-50">
-              Подати заявку
-            </Button>
+            {user?.id !== listing.ownerId && (
+              <Button
+                className="cursor-pointer w-full h-10 lg:flex-1 lg:max-w-50"
+                onClick={(e) => handleClick(e)}
+              >
+                Подати заявку
+              </Button>
+            )}
+
+            {requestDialogIsOpen && (
+              <RequestFormDialog
+                listing={listing}
+                open={requestDialogIsOpen}
+                onOpenChange={setRequestDialogIsOpen}
+              />
+            )}
           </div>
         </div>
       </div>

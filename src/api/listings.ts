@@ -1,6 +1,5 @@
 import type {
   ListingFilters,
-  ListingRequestRequest,
   ListingResponse,
   Page,
 } from "@/features/listings/types";
@@ -18,6 +17,25 @@ export async function getListings(
       city: filters.city?.join(","),
     },
   });
+
+  return response.data;
+}
+
+export async function getCurrentUserListings(
+  filters: ListingFilters,
+  page: number = 0,
+): Promise<Page<ListingResponse>> {
+  const response = await apiClient.get<Page<ListingResponse>>(
+    "/api/listings/my",
+    {
+      params: {
+        ...filters,
+        page,
+        genre: filters.genre?.join(","),
+        city: filters.city?.join(","),
+      },
+    },
+  );
 
   return response.data;
 }

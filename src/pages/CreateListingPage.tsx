@@ -19,7 +19,7 @@ export default function CreateListingPage() {
     setStep("success");
   }
   return (
-    <section className="w-full p-4 flex justify-center md:px-8">
+    <section className="w-full p-4 flex justify-center md:px-8 pb-20">
       {step === "search" && (
         <BookSearchStep
           onSelectBook={handleSelectBook}

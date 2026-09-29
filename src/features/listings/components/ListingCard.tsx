@@ -10,9 +10,10 @@ import RequestFormDialog from "../../requests/components/RequestFormDialog";
 
 interface ListingCardProps {
   listing: ListingResponse;
+  owner?: boolean;
 }
 
-export default function ListingCard({ listing }: ListingCardProps) {
+export default function ListingCard({ listing, owner }: ListingCardProps) {
   const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
@@ -95,13 +96,15 @@ export default function ListingCard({ listing }: ListingCardProps) {
             </span>
           </div>
         </div>
-        <Button
-          disabled={!isAvailable}
-          onClick={(e) => handleClick(e)}
-          className="text-sm font-normal cursor-pointer mt-auto"
-        >
-          {status.buttonLabel}
-        </Button>
+        {!owner && (
+          <Button
+            disabled={!isAvailable}
+            onClick={(e) => handleClick(e)}
+            className="text-sm font-normal cursor-pointer mt-auto"
+          >
+            {status.buttonLabel}
+          </Button>
+        )}
 
         {requestDialogIsOpen && (
           <RequestFormDialog
