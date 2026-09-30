@@ -1,3 +1,5 @@
+import type { SortOption } from "@/lib/types";
+
 export type ListingStatus =
   | "AVAILABLE"
   | "RESERVED"
@@ -34,7 +36,6 @@ export interface ListingResponse {
   settlementName: string;
 }
 
-type SortOption = "createdAt,asc" | "createdAt,desc";
 export interface ListingFilters {
   genre?: string[];
   city?: string[];
@@ -42,14 +43,4 @@ export interface ListingFilters {
   status?: ListingStatus;
   sort?: SortOption;
   search?: string;
-}
-
-export interface Page<T> {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  number: number;
-  size: number;
-  first: boolean;
-  last: boolean;
 }

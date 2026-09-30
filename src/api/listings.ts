@@ -1,9 +1,9 @@
 import type {
   ListingFilters,
   ListingResponse,
-  Page,
 } from "@/features/listings/types";
 import apiClient from "./client";
+import type { Page } from "@/lib/types";
 
 export async function getListings(
   filters: ListingFilters,

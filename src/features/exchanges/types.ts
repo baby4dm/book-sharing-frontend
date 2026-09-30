@@ -1,3 +1,4 @@
+import type { SortOption } from "@/lib/types";
 import type { DeliveryMethod } from "../listings/types";
 
 export type ExchangeStatus =
@@ -57,4 +58,8 @@ export interface ExchangeResponse {
   extensionRequests: DeadlineExtensionResponse[];
   createdAt: string;
   completedAt: string | null;
+}
+
+export interface ExchangeFilters {
+  sort?: SortOption;
 }

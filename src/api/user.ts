@@ -15,3 +15,8 @@ export async function updateCurrentUser(
   const response = await apiClient.patch<UserResponse>("/api/users/me", data);
   return response.data;
 }
+
+export async function getUser(id: string): Promise<UserResponse> {
+  const response = await apiClient.get<UserResponse>("/api/clients/" + id);
+  return response.data;
+}
