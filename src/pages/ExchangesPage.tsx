@@ -1,3 +1,3 @@
 export default function ExchangesPage() {
-  return <h1>Exchanges Pages</h1>;
+  return <section className="w-full p-4 flex justify-center md:px-8"></section>;
 }
