@@ -10,10 +10,12 @@ import {
 import { useState, type ComponentType } from "react";
 import type { ExchangeResponse, ExchangeStatus } from "../types";
 import { Button } from "@/components/ui/button";
+import { useUser } from "@/features/user/hooks/useUser";
+import { STATUS_CONFIG } from "@/lib/constants";
 
 interface ExchangeCardProps {
   exchange: ExchangeResponse;
-  currentUserId: string
+  currentUserId: string;
 }
 const EXCHANGE_STATUS_CONFIG: Record<
   ExchangeStatus,
@@ -103,10 +105,16 @@ function pluralizeDays(n: number): string {
   }
   return "днів";
 }
-export default function ExchangeCard({ exchange, currentUserId }: ExchangeCardProps) {
-    const {data: owner} = 
-    const isIncomingExchange = currentUserId !== exchange.ownerId ? {avatarUrl: exchange};
-      const [avatarFailed, setAvatarFailed] = useState(false);
+export default function ExchangeCard({
+  exchange,
+  currentUserId,
+}: ExchangeCardProps) {
+  const isOwner = exchange.ownerId === currentUserId;
+  const counterpartId = isOwner ? exchange.readerId : exchange.ownerId;
+  const counterpartName = isOwner ? exchange.readerName : exchange.ownerName;
+  const { data: counterpartProfile } = useUser(counterpartId);
+  const [avatarFailed, setAvatarFailed] = useState(false);
+  const status = EXCHANGE_STATUS_CONFIG[exchange.status];
   return (
     <div className="w-full">
       <div>
@@ -114,18 +122,18 @@ export default function ExchangeCard({ exchange, currentUserId }: ExchangeCardPr
           <div>
             <h1>{exchange.bookTitle}</h1>
             <div>
-              <span>з {exchange.ownerName}</span>
+              <span>з {counterpartName}</span>
               <div className="relative w-7 h-7 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-9 md:h-9 lg:w-13 lg:h-13">
-                {exchange. && !avatarFailed ? (
+                {counterpartProfile?.avatarUrl && !avatarFailed ? (
                   <img
-                    src={request.requesterAvatarUrl}
-                    alt={request.requesterName}
+                    src={counterpartProfile.avatarUrl}
+                    alt={counterpartName}
                     className="w-full h-full object-cover"
                     onError={() => setAvatarFailed(true)}
                   />
                 ) : (
                   <p className="text-primary-foreground text-sm font-semibold">
-                    {request.requesterName.substring(0, 1).toUpperCase()}
+                    {counterpartName.substring(0, 1).toUpperCase()}
                   </p>
                 )}
               </div>
@@ -139,7 +147,10 @@ export default function ExchangeCard({ exchange, currentUserId }: ExchangeCardPr
             <p></p>
           </div>
         </div>
-        <p>{EXCHANGE_STATUS_CONFIG[exchange.status].label}</p>
+        <p className={`${status.bgColor} ${status.color}`}>
+          <status.icon />
+          <span>{status.label}</span>
+        </p>
       </div>
       <Button variant="outline">Переглянути деталі</Button>
     </div>

@@ -14,7 +14,7 @@ export default function ExchangesPage() {
   }
   console.log(data);
   return (
-    <section className="w-full p-4 flex flex-col md:px-8">
+    <section className="w-full p-4 flex flex-col gap-4 md:px-8">
       {data?.map((el) => (
         <ExchangeCard key={el.id} exchange={el} currentUserId={profile.id} />
       ))}
