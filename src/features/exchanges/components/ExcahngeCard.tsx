@@ -116,14 +116,14 @@ export default function ExchangeCard({
   const [avatarFailed, setAvatarFailed] = useState(false);
   const status = EXCHANGE_STATUS_CONFIG[exchange.status];
   return (
-    <div className="w-full">
-      <div>
-        <div>
-          <div>
-            <h1>{exchange.bookTitle}</h1>
-            <div>
-              <span>з {counterpartName}</span>
-              <div className="relative w-7 h-7 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-9 md:h-9 lg:w-13 lg:h-13">
+    <div className="w-full flex flex-col gap-3 border border-border rounded-md shadow-md p-4">
+      <div className="w-full flex justify-between">
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-3">
+            <h1 className="text-lg font-bold">{exchange.bookTitle}</h1>
+            <div className="flex gap-0.75 items-center">
+              <span>з</span>
+              <div className="relative w-5.5 h-5.5 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-9 md:h-9 lg:w-13 lg:h-13 ml-1.5">
                 {counterpartProfile?.avatarUrl && !avatarFailed ? (
                   <img
                     src={counterpartProfile.avatarUrl}
@@ -132,11 +132,12 @@ export default function ExchangeCard({
                     onError={() => setAvatarFailed(true)}
                   />
                 ) : (
-                  <p className="text-primary-foreground text-sm font-semibold">
+                  <p className="text-primary-foreground text-xs font-semibold">
                     {counterpartName.substring(0, 1).toUpperCase()}
                   </p>
                 )}
               </div>
+              <span>{counterpartName}</span>
             </div>
           </div>
           <div>
@@ -147,8 +148,10 @@ export default function ExchangeCard({
             <p></p>
           </div>
         </div>
-        <p className={`${status.bgColor} ${status.color}`}>
-          <status.icon />
+        <p
+          className={`${status.bgColor} ${status.color} rounded-lg flex gap-2 items-center h-fit text-xs py-1.5 px-2`}
+        >
+          <status.icon size={15} className="stroke-2" />
           <span>{status.label}</span>
         </p>
       </div>
