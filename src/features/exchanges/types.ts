@@ -11,23 +11,27 @@ export type ExchangeStatus =
 
 export interface ExchangePhotoResponse {
   id: string;
-  uploadedBy: string;
+  uploadedByUserId: string;
   stage: "HANDOVER" | "RETURN";
   url: string;
   note: string | null;
   createdAt: string;
 }
 
+export type ShipmentDirection = "TO_READER" | "TO_OWNER";
+export type ShipmentStatus = "PENDING" | "SHIPPED" | "DELIVERED";
+export type ShipmentCarrier = "NOVA_POSHTA" | "UKRPOSHTA" | "OTHER";
+
 export interface ShipmentInfoResponse {
   id: string;
-  direction: "TO_READER" | "TO_OWNER";
+  direction: ShipmentDirection;
   recipientName: string;
   recipientPhone: string;
-  carrier: "NOVA_POSHTA" | "UKRPOSHTA" | "OTHER";
+  carrier: ShipmentCarrier;
   city: string;
   branchNumber: string;
   waybillPhotoUrl: string | null;
-  status: "PENDING" | "SHIPPED" | "DELIVERED";
+  status: ShipmentStatus;
   shippedAt: string | null;
   deliveredAt: string | null;
 }

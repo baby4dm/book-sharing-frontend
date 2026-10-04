@@ -40,7 +40,9 @@ export async function getCurrentUserListings(
   return response.data;
 }
 
-export async function getListing(id: string): Promise<ListingResponse> {
+export async function getListing(
+  id: string | undefined,
+): Promise<ListingResponse> {
   const response = await apiClient.get<ListingResponse>(`/api/listings/${id}`);
 
   return response.data;

@@ -5,3 +5,10 @@ export async function getCurrentUserExchanges(): Promise<ExchangeResponse[]> {
   const response = await apiClient.get<ExchangeResponse[]>("/api/exchanges/my");
   return response.data;
 }
+
+export async function getExchange(id: string): Promise<ExchangeResponse> {
+  const response = await apiClient.get<ExchangeResponse>(
+    "/api/exchanges/" + id,
+  );
+  return response.data;
+}

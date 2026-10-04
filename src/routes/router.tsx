@@ -13,6 +13,7 @@ import FeedPage from "@/pages/FeedPage";
 import ListingDetailPage from "@/pages/ListingDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
 import CreateListingPage from "@/pages/CreateListingPage";
+import ExchangeDetailPage from "@/pages/ExchangeDetailPage";
 
 const routes = [
   {
@@ -29,6 +30,7 @@ const routes = [
           { path: "chat", element: <ChatPage /> },
           { path: "profile", element: <ProfilePage /> },
           { path: "listings/create", element: <CreateListingPage /> },
+          { path: "exchanges/:id", element: <ExchangeDetailPage /> },
         ],
       },
       { path: "feed", element: <FeedPage /> },

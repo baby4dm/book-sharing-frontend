@@ -1,9 +1,14 @@
+import type { ExchangeStatus } from "@/features/exchanges/types";
 import type { ListingStatus } from "@/features/listings/types";
 import {
   IconCheck,
   IconClock,
   IconBooks,
   IconArchive,
+  IconAlertTriangle,
+  IconBook,
+  IconGavel,
+  IconRotateClockwise,
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
 
@@ -84,3 +89,49 @@ export const REGIONS = [
   "Чернігівська область",
   "Автономна Республіка Крим",
 ] as const;
+export const EXCHANGE_STATUS_CONFIG: Record<
+  ExchangeStatus,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    icon: ComponentType<{ size?: number; className?: string }>;
+  }
+> = {
+  HANDOVER_PENDING: {
+    label: "Очікує передачі",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
+    icon: IconClock,
+  },
+  IN_READING: {
+    label: "У читанні",
+    color: "text-info",
+    bgColor: "bg-info/10",
+    icon: IconBook,
+  },
+  RETURN_PENDING: {
+    label: "Очікує повернення",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
+    icon: IconRotateClockwise,
+  },
+  COMPLETED: {
+    label: "Завершено",
+    color: "text-success",
+    bgColor: "bg-success/10",
+    icon: IconCheck,
+  },
+  OVERDUE: {
+    label: "Прострочено",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
+    icon: IconAlertTriangle,
+  },
+  DISPUTED: {
+    label: "Спір",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
+    icon: IconGavel,
+  },
+};

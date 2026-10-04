@@ -16,7 +16,7 @@ export async function updateCurrentUser(
   return response.data;
 }
 
-export async function getUser(id: string): Promise<UserResponse> {
-  const response = await apiClient.get<UserResponse>("/api/clients/" + id);
+export async function getUser(id: string | undefined): Promise<UserResponse> {
+  const response = await apiClient.get<UserResponse>("/api/users/" + id);
   return response.data;
 }
