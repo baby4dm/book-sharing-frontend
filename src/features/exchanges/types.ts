@@ -59,6 +59,7 @@ export interface ExchangeResponse {
   status: ExchangeStatus;
   handoverPhotos: ExchangePhotoResponse[];
   returnPhotos: ExchangePhotoResponse[];
+  disputePhotos: 
   shipments: ShipmentInfoResponse[];
   extensionRequests: DeadlineExtensionResponse[];
   createdAt: string;
