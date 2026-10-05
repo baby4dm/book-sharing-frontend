@@ -52,7 +52,7 @@ export default function Header() {
 
         <nav className="hidden w-full lg:flex gap-2 py-4 px-2 h-full ml-6">
           {navItems.map((item) => {
-            const isActive = location.pathname == item.path;
+            const isActive = location.pathname === item.path;
 
             return (
               <Link

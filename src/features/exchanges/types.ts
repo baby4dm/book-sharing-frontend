@@ -12,7 +12,8 @@ export type ExchangeStatus =
 export interface ExchangePhotoResponse {
   id: string;
   uploadedByUserId: string;
-  stage: "HANDOVER" | "RETURN";
+  uploadedByName: string;
+  stage: "HANDOVER" | "RETURN" | "DISPUTE";
   url: string;
   note: string | null;
   createdAt: string;
