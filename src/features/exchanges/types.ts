@@ -59,7 +59,7 @@ export interface ExchangeResponse {
   status: ExchangeStatus;
   handoverPhotos: ExchangePhotoResponse[];
   returnPhotos: ExchangePhotoResponse[];
-  disputePhotos: 
+  disputePhotos: ExchangePhotoResponse[];
   shipments: ShipmentInfoResponse[];
   extensionRequests: DeadlineExtensionResponse[];
   createdAt: string;
@@ -68,4 +68,21 @@ export interface ExchangeResponse {
 
 export interface ExchangeFilters {
   sort?: SortOption;
+}
+
+export interface SubmitPhotosPayload {
+  urls: string[];
+}
+
+export interface CreateShipmentPayload {
+  direction: ShipmentDirection;
+  recipientName: string;
+  recipientPhone: string;
+  carrier: ShipmentCarrier;
+  city: string;
+  branchNumber: string;
+}
+
+export interface ShipWaybillPayload {
+  waybillPhotoUrl: string;
 }
