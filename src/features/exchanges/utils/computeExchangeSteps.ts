@@ -5,6 +5,7 @@ import type {
 } from "../types";
 
 export type TimelineStepState = "completed" | "active" | "locked";
+
 export interface TimelineStep {
   key: string;
   title: string;
@@ -14,10 +15,16 @@ export interface TimelineStep {
   shipment: ShipmentInfoResponse | null;
 }
 
+function isSent(shipment: ShipmentInfoResponse | null): boolean {
+  return shipment?.status === "SHIPPED" || shipment?.status === "DELIVERED";
+}
+
 export function computeExchangeSteps(
   exchange: ExchangeResponse,
 ): TimelineStep[] {
   const isMail = exchange.deliveryMethod === "MAIL";
+  const status = exchange.status;
+
   const ownerHandoverPhotos = exchange.handoverPhotos.filter(
     (p) => p.uploadedByUserId === exchange.ownerId,
   );
@@ -33,7 +40,6 @@ export function computeExchangeSteps(
 
   const shipmentToReader =
     exchange.shipments.find((s) => s.direction === "TO_READER") ?? null;
-
   const shipmentToOwner =
     exchange.shipments.find((s) => s.direction === "TO_OWNER") ?? null;
 
@@ -49,43 +55,42 @@ export function computeExchangeSteps(
   });
 
   if (isMail) {
-    const state: TimelineStepState =
-      ownerHandoverPhotos.length === 0
-        ? "locked"
-        : shipmentToReader?.status === "SHIPPED" ||
-            shipmentToReader?.status === "DELIVERED"
-          ? "completed"
-          : "active";
-
+    let state: TimelineStepState;
+    if (status !== "HANDOVER_PENDING" || isSent(shipmentToReader)) {
+      state = "completed";
+    } else if (ownerHandoverPhotos.length === 0) {
+      state = "locked";
+    } else {
+      state = "active";
+    }
     steps.push({
       key: "shipping-to-reader",
       title: "В дорозі до читача",
-      state: state,
+      state,
       date: shipmentToReader?.shippedAt ?? null,
       photos: [],
       shipment: shipmentToReader,
     });
   }
 
-  const preDone = isMail
-    ? shipmentToReader?.status === "DELIVERED"
+  const readyToReceive = isMail
+    ? isSent(shipmentToReader)
     : ownerHandoverPhotos.length > 0;
-
   steps.push({
     key: "with-reader",
     title: "У читача",
     state:
-      exchange.status === "HANDOVER_PENDING"
-        ? preDone
+      status !== "HANDOVER_PENDING"
+        ? "completed"
+        : readyToReceive
           ? "active"
-          : "locked"
-        : "completed",
+          : "locked",
     date: readerHandoverPhotos[0]?.createdAt ?? null,
     photos: readerHandoverPhotos,
     shipment: null,
   });
 
-  const readingStarted = exchange.status !== "HANDOVER_PENDING";
+  const readingStarted = status !== "HANDOVER_PENDING";
   steps.push({
     key: "return-prep",
     title: "Повернення",
@@ -100,14 +105,14 @@ export function computeExchangeSteps(
   });
 
   if (isMail) {
-    const state: TimelineStepState =
-      readerReturnPhotos.length === 0
-        ? "locked"
-        : shipmentToOwner?.status === "SHIPPED" ||
-            shipmentToOwner?.status === "DELIVERED"
-          ? "completed"
-          : "active";
-
+    let state: TimelineStepState;
+    if (status === "COMPLETED" || isSent(shipmentToOwner)) {
+      state = "completed";
+    } else if (readerReturnPhotos.length === 0) {
+      state = "locked";
+    } else {
+      state = "active";
+    }
     steps.push({
       key: "shipping-to-owner",
       title: "В дорозі до власника",
@@ -118,20 +123,18 @@ export function computeExchangeSteps(
     });
   }
 
-  const returnPrepDone = isMail
-    ? shipmentToOwner?.status === "DELIVERED"
+  const returnArrived = isMail
+    ? isSent(shipmentToOwner)
     : readerReturnPhotos.length > 0;
-
   steps.push({
     key: "completed",
     title: "Завершено",
     state:
-      exchange.status === "COMPLETED"
+      status === "COMPLETED"
         ? "completed"
-        : exchange.status === "RETURN_PENDING" && returnPrepDone
+        : status === "RETURN_PENDING" && returnArrived
           ? "active"
           : "locked",
-
     date: exchange.completedAt,
     photos: ownerReturnPhotos,
     shipment: null,
