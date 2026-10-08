@@ -76,7 +76,6 @@ export function getStepAction(
         : waiting("Очікуємо підтвердження отримання від читача");
 
     case "return-prep":
-      // бекенд приймає фото повернення лише в IN_READING
       if (status !== "IN_READING") return null;
       return isReader
         ? { kind: "photos", mode: "RETURN" }
