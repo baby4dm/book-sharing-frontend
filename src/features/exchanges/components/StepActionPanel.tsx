@@ -7,6 +7,8 @@ import StepPhotosForm from "./StepPhotosForm";
 import { ConfirmActionDialog } from "./ConfirmActionDialog";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import { Button } from "@/components/ui/button";
+import WaybillForm from "./WaybillForm";
+import ShipmentAddressForm from "./ShipmentAddressForm";
 
 interface StepActionPanelProps {
   exchange: ExchangeResponse;
@@ -102,6 +104,32 @@ export default function StepActionPanel({
       return (
         <p className="text-xs text-muted-foreground mt-2">{action.text}</p>
       );
+
+    case "address":
+      return (
+        <ShipmentAddressForm
+          direction={action.direction}
+          onSubmit={(payload) => actions.createShipment.mutateAsync(payload)}
+        />
+      );
+
+    case "waybill": {
+      const shipment = exchange.shipments.find(
+        (s) => s.id === action.shipmentId,
+      );
+      if (!shipment) return null;
+      return (
+        <WaybillForm
+          shipment={shipment}
+          onSubmit={(waybillPhotoUrl) =>
+            actions.shipWaybill.mutateAsync({
+              shipmentId: shipment.id,
+              waybillPhotoUrl,
+            })
+          }
+        />
+      );
+    }
 
     default:
       return null;
