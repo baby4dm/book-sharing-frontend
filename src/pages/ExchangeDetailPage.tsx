@@ -59,7 +59,7 @@ export default function ExchangeDetailPage() {
   const counterpartRole = isOwner ? "Читач" : "Власник";
   const canRequestExtension = !isOwner && exchange.status === "IN_READING";
   return (
-    <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 md:max-w-200 md:mx-auto md:py-8">
+    <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 md:max-w-230 md:mx-auto md:py-8">
       <Button
         variant="outline"
         className="cursor-pointer w-30 text-muted-foreground"
@@ -117,7 +117,11 @@ export default function ExchangeDetailPage() {
           <span className="w-full">{status.label}</span>
         </p>
       </div>
-      <ExchangeTimeline steps={steps} />
+      <ExchangeTimeline
+        exchange={exchange}
+        steps={steps}
+        currentUserId={currentUser.id}
+      />
       {canRequestExtension && (
         <Button variant="outline" className="...">
           Запит на продовження дедлайну

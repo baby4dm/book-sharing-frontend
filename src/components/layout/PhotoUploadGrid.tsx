@@ -1,25 +1,35 @@
-import { useRef, useState } from "react";
-import { useUploadFile } from "../hooks/useUploadFile";
+import { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { IconPlus, IconX } from "@tabler/icons-react";
+import { useUploadFile } from "@/features/createListing/hooks/useUploadFile";
 
 const MAX_PHOTOS = 4;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 interface PhotoUploadGridProps {
   photos: string[];
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
+  onBusyChange?: (busy: boolean) => void;
+  label: string;
+  disabled?: boolean;
+  maxPhotos?: number;
 }
 
 export default function PhotoUploadGrid({
   photos,
   onChange,
+  onBusyChange,
+  label,
+  disabled = false,
+  maxPhotos = MAX_PHOTOS,
 }: PhotoUploadGridProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const { mutateAsync: upload } = useUploadFile();
-  const emptySlots = MAX_PHOTOS - uploadingCount - photos.length;
-
+  const emptySlots = maxPhotos - uploadingCount - photos.length;
+  useEffect(() => {
+    onBusyChange?.(uploadingCount > 0);
+  }, [uploadingCount, onBusyChange]);
   async function handleSelectFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
@@ -28,7 +38,7 @@ export default function PhotoUploadGrid({
     }
     setUploadError(null);
 
-    if (photos.length + uploadingCount >= MAX_PHOTOS) return;
+    if (photos.length + uploadingCount >= maxPhotos) return;
     if (!file.type.startsWith("image/")) {
       setUploadError("Оберіть файл зображення");
       return;
@@ -41,7 +51,7 @@ export default function PhotoUploadGrid({
     setUploadingCount((c) => c + 1);
     try {
       const url = await upload(file);
-      onChange((prev) => (prev.length >= MAX_PHOTOS ? prev : [...prev, url]));
+      onChange((prev) => (prev.length >= maxPhotos ? prev : [...prev, url]));
     } catch {
       setUploadError("Не вдалось завантажити фото. Спробуйте ще раз.");
     } finally {
@@ -54,9 +64,7 @@ export default function PhotoUploadGrid({
   }
   return (
     <div className="flex flex-col gap-3 my-4">
-      <Label>
-        Фото примірника <span>(необов'язоково, до 4 фото)</span>
-      </Label>
+      <Label>{label}</Label>
       <div className="flex gap-4 flex-wrap w-full justify-center">
         {photos.map((url, index) => (
           <div
@@ -68,13 +76,16 @@ export default function PhotoUploadGrid({
               alt={"Фото " + index}
               className="h-full object-contain"
             />
-            <button
-              type="button"
-              onClick={() => handleRemove(index)}
-              className="cursor-pointer absolute top-1 right-1 z-10"
-            >
-              <IconX className="text-muted-foreground hover:text-accent-vivid" />
-            </button>
+            {!disabled && (
+              <button
+                type="button"
+                onClick={() => handleRemove(index)}
+                className="cursor-pointer absolute top-1 right-1 z-10 disabled:cursor-not-allowed 
+                disabled:opacity-50 disabled:hover:text-muted-foreground"
+              >
+                <IconX className="text-muted-foreground hover:text-accent-vivid" />
+              </button>
+            )}
           </div>
         ))}
         {Array.from({ length: uploadingCount }).map((_, index) => (
@@ -91,6 +102,7 @@ export default function PhotoUploadGrid({
           <button
             key={`empty-` + index}
             type="button"
+            disabled={disabled}
             onClick={() => fileInputRef.current?.click()}
             className="cursor-pointer outline-2 outline-border rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-muted-foreground hover:text-accent-vivid"
           >
@@ -110,7 +122,7 @@ export default function PhotoUploadGrid({
         <p className="text-xs text-destructive self-center">{uploadError}</p>
       )}
       <p className="text-xs text-muted-foreground">
-        {uploadingCount + photos.length} з {MAX_PHOTOS} фото додано
+        {uploadingCount + photos.length} з {maxPhotos} фото додано
       </p>
     </div>
   );

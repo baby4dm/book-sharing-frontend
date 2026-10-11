@@ -15,7 +15,7 @@ import SingleSelectList from "@/components/ui/SingleSelectList";
 import { REGIONS } from "@/lib/constants";
 import { ArrowLeft } from "lucide-react";
 import { useResolveBook } from "../hooks/useResolveBook";
-import PhotoUploadGrid from "./PhotoUploadGrid";
+import PhotoUploadGrid from "../../../components/layout/PhotoUploadGrid";
 import { useCreateListing } from "../hooks/useCreateListing";
 
 interface DetailsStepProps {
@@ -198,7 +198,11 @@ export default function DetailsStep({
         </div>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <PhotoUploadGrid photos={photos} onChange={setPhotos} />
+        <PhotoUploadGrid
+          photos={photos}
+          onChange={setPhotos}
+          label="Фото примірника (необов'язоково, до 4 фото)"
+        />
         <div className="flex flex-col gap-1.5">
           <Label>Стан примірника</Label>
           <Textarea

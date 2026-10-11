@@ -30,16 +30,26 @@ export function ConfirmActionDialog({
   onConfirm,
 }: ConfirmActionDialogProps) {
   return (
-    <Dialog open={true} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
         {error && <p className="text-sm text-destructive">{error}</p>}
-        <DialogFooter>
-          <Button variant="outline">Скасувати</Button>
-          <Button disabled={isPending} onClick={onConfirm}>
+        <DialogFooter className="w-full">
+          <Button
+            variant="outline"
+            className="cursor-pointer flex-1"
+            onClick={() => onOpenChange(false)}
+          >
+            Скасувати
+          </Button>
+          <Button
+            className="cursor-pointer flex-1"
+            disabled={isPending}
+            onClick={onConfirm}
+          >
             {isPending ? "Надсилання..." : confirmLabel}
           </Button>
         </DialogFooter>

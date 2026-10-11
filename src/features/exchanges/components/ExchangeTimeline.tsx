@@ -7,6 +7,9 @@ import {
 } from "@tabler/icons-react";
 import type { ComponentType } from "react";
 import type { TimelineStep } from "../utils/computeExchangeSteps";
+import type { ExchangeResponse } from "../types";
+import { useExchangeActions } from "../hooks/useExchangeActions";
+import StepActionPanel from "./StepActionPanel";
 
 const STEP_ICONS: Record<
   string,
@@ -35,10 +38,17 @@ function formatStepDate(date: string | null): string | null {
 }
 
 interface ExchangeTimelineProps {
+  exchange: ExchangeResponse;
   steps: TimelineStep[];
+  currentUserId: string;
 }
 
-export default function ExchangeTimeline({ steps }: ExchangeTimelineProps) {
+export default function ExchangeTimeline({
+  exchange,
+  steps,
+  currentUserId,
+}: ExchangeTimelineProps) {
+  const actions = useExchangeActions(exchange.id);
   return (
     <div className="flex flex-col">
       {steps.map((step, index) => {
@@ -80,7 +90,7 @@ export default function ExchangeTimeline({ steps }: ExchangeTimelineProps) {
               )}
             </div>
 
-            <div className="pb-6 flex-1 min-w-0 h-full mt-2">
+            <div className="pb-6 flex-1 min-w-0 h-full mt-2 flex flex-col">
               <div className="flex items-baseline justify-between gap-2 h-full">
                 <p
                   className={`text-sm ${
@@ -128,6 +138,13 @@ export default function ExchangeTimeline({ steps }: ExchangeTimelineProps) {
                   ))}
                 </div>
               )}
+
+              <StepActionPanel
+                exchange={exchange}
+                step={step}
+                currentUserId={currentUserId}
+                actions={actions}
+              />
             </div>
           </div>
         );

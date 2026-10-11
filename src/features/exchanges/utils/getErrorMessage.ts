@@ -1,6 +1,6 @@
 import { isAxiosError } from "axios";
 
-export function getErroMessage(
+export function getErrorMessage(
   error: unknown,
   fallback = 'Не вдалось виконати дію. Спробуйте ще раз."',
 ): string {
