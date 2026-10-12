@@ -64,6 +64,7 @@ export interface ExchangeResponse {
   extensionRequests: DeadlineExtensionResponse[];
   createdAt: string;
   completedAt: string | null;
+  disputeReason: string | null;
 }
 
 export interface ExchangeFilters {
@@ -85,4 +86,9 @@ export interface CreateShipmentPayload {
 
 export interface ShipWaybillPayload {
   waybillPhotoUrl: string;
+}
+
+export interface OpenDisputePayload {
+  reason: string;
+  urls: string[];
 }

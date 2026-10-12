@@ -8,11 +8,11 @@ import type {
   ShipmentDirection,
 } from "../types";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import SingleSelectList from "@/components/ui/SingleSelectList";
 
 const CARRIERS: { value: ShipmentCarrier; label: string }[] = [
   { value: "NOVA_POSHTA", label: "Нова Пошта" },
   { value: "UKRPOSHTA", label: "Укрпошта" },
-  { value: "OTHER", label: "Інший перевізник" },
 ];
 
 const PHONE_REGEX = /^\+?380\d{9}$/;
@@ -22,7 +22,12 @@ interface ShipmentAddressFormProps {
   onSubmit: (payload: CreateShipmentPayload) => Promise<unknown>;
 }
 
-type Field = "recipientName" | "recipientPhone" | "city" | "branchNumber";
+type Field =
+  | "recipientName"
+  | "recipientPhone"
+  | "city"
+  | "branchNumber"
+  | "carrier";
 
 export default function ShipmentAddressForm({
   direction,
@@ -34,7 +39,9 @@ export default function ShipmentAddressForm({
     city: "",
     branchNumber: "",
   });
-  const [carrier, setCarrier] = useState<ShipmentCarrier>("NOVA_POSHTA");
+  const [carrierLabel, setCarrierLabel] = useState<string | null>(
+    CARRIERS[0].label,
+  );
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,6 +57,7 @@ export default function ShipmentAddressForm({
 
   function validate() {
     const next: Partial<Record<Field, string>> = {};
+    if (!carrierLabel) next.carrier = "Оберіть перевізника";
     if (!values.recipientName.trim()) next.recipientName = "Вкажіть ім'я";
     const phone = values.recipientPhone.replace(/[\s()-]/g, "");
     if (!PHONE_REGEX.test(phone)) {
@@ -65,12 +73,14 @@ export default function ShipmentAddressForm({
     if (!validate()) return;
     setIsSubmitting(true);
     setSubmitError(null);
+    const selectedCarrier = CARRIERS.find((c) => c.label === carrierLabel);
+    if (!selectedCarrier) return;
     try {
       await onSubmit({
         direction,
         recipientName: values.recipientName.trim(),
         recipientPhone: values.recipientPhone.replace(/[\s()-]/g, ""),
-        carrier,
+        carrier: selectedCarrier.value,
         city: values.city.trim(),
         branchNumber: values.branchNumber.trim(),
       });
@@ -87,18 +97,13 @@ export default function ShipmentAddressForm({
 
       <div className="flex flex-col gap-1.5">
         <Label>Перевізник</Label>
-        <select
-          value={carrier}
-          onChange={(e) => setCarrier(e.target.value as ShipmentCarrier)}
-          disabled={isSubmitting}
-          className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
-        >
-          {CARRIERS.map((c) => (
-            <option key={c.value} value={c.value}>
-              {c.label}
-            </option>
-          ))}
-        </select>
+        <SingleSelectList
+          options={CARRIERS.map((c) => c.label)}
+          placeholder="Вибрати перевізника"
+          selected={carrierLabel}
+          onChange={setCarrierLabel}
+          search={false}
+        />
       </div>
 
       <div className="flex flex-col gap-1.5">

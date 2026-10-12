@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as exchangesApi from "@/api/exchanges";
-import type { CreateShipmentPayload, ExchangeResponse } from "../types";
+import type {
+  CreateShipmentPayload,
+  ExchangeResponse,
+  OpenDisputePayload,
+} from "../types";
 
 export function useExchangeActions(exchangeId: string) {
   const queryClient = useQueryClient();
@@ -45,6 +49,12 @@ export function useExchangeActions(exchangeId: string) {
     });
   }
 
+  function openDisputeRequest(
+    payload: OpenDisputePayload,
+  ): Promise<ExchangeResponse> {
+    return exchangesApi.openDispute(exchangeId, payload);
+  }
+
   const submitHandoverPhotos = useMutation({
     mutationFn: submitHandoverPhotosRequest,
     onSuccess,
@@ -75,6 +85,11 @@ export function useExchangeActions(exchangeId: string) {
     onSuccess,
   });
 
+  const openDispute = useMutation({
+    mutationFn: openDisputeRequest,
+    onSuccess,
+  });
+
   return {
     submitHandoverPhotos,
     confirmReceived,
@@ -82,6 +97,7 @@ export function useExchangeActions(exchangeId: string) {
     confirmReturn,
     createShipment,
     shipWaybill,
+    openDispute,
   };
 }
 

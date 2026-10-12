@@ -1,6 +1,7 @@
 import type {
   CreateShipmentPayload,
   ExchangeResponse,
+  OpenDisputePayload,
   ShipWaybillPayload,
   SubmitPhotosPayload,
 } from "@/features/exchanges/types";
@@ -82,6 +83,17 @@ export async function shipWaybill(
 ): Promise<ExchangeResponse> {
   const response = await apiClient.patch<ExchangeResponse>(
     `/api/exchanges/${exchangeId}/shipment/${shipmentId}/ship`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function openDispute(
+  exchangeId: string,
+  payload: OpenDisputePayload,
+): Promise<ExchangeResponse> {
+  const response = await apiClient.post<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/dispute`,
     payload,
   );
   return response.data;

@@ -9,6 +9,7 @@ import { getErrorMessage } from "../utils/getErrorMessage";
 import { Button } from "@/components/ui/button";
 import WaybillForm from "./WaybillForm";
 import ShipmentAddressForm from "./ShipmentAddressForm";
+import OpenDisputeDialog from "./OpenDisputeDialog";
 
 interface StepActionPanelProps {
   exchange: ExchangeResponse;
@@ -24,9 +25,10 @@ export default function StepActionPanel({
   actions,
 }: StepActionPanelProps) {
   const [returnDialogOpen, setReturnDialogOpen] = useState(false);
+  const [disputeOpen, setDisputeOpen] = useState(false);
   const action = getStepAction(exchange, step, currentUserId);
 
-  if (!action) return;
+  if (!action) return null;
 
   switch (action.kind) {
     case "photos":
@@ -68,12 +70,21 @@ export default function StepActionPanel({
       return (
         <>
           <div>
-            <Button
-              className="cursor-pointer mt-2"
-              onClick={() => setReturnDialogOpen(true)}
-            >
-              Підтвердити повернення
-            </Button>
+            <div className="mt-3 flex flex-col gap-2 md:flex-row">
+              <Button
+                className="cursor-pointer w-full md:w-fit"
+                onClick={() => setReturnDialogOpen(true)}
+              >
+                Підтвердити повернення
+              </Button>
+              <Button
+                variant="outline"
+                className="cursor-pointer w-full md:w-fit text-destructive"
+                onClick={() => setDisputeOpen(true)}
+              >
+                Відкрити спір
+              </Button>
+            </div>
 
             <ConfirmActionDialog
               open={returnDialogOpen}
@@ -97,6 +108,11 @@ export default function StepActionPanel({
               }
             />
           </div>
+          <OpenDisputeDialog
+            open={disputeOpen}
+            onOpenChange={setDisputeOpen}
+            onSubmit={(payload) => actions.openDispute.mutateAsync(payload)}
+          />
         </>
       );
 
