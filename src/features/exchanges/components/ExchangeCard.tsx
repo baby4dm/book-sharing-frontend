@@ -29,13 +29,7 @@ export default function ExchangeCard({
   );
   return (
     <div
-      className={`w-full flex flex-col gap-3 border ${
-        deadline.urgent && exchange.status !== "COMPLETED"
-          ? "border-destructive border-2 bg-destructive/5"
-          : deadline.soon && exchange.status !== "COMPLETED"
-            ? "border-warning border-2 bg-warning/5"
-            : "border-border"
-      } rounded-md shadow-md p-4 max-w-160 md:max-w-200 lg:max-w-220`}
+      className={`w-full flex flex-col gap-3 border border-border rounded-md shadow-md p-4 max-w-160 md:max-w-200 lg:max-w-220 bg-card`}
     >
       <div className="w-full flex justify-between">
         <div className="flex flex-col gap-4">

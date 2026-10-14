@@ -17,6 +17,7 @@ import { ArrowLeft } from "lucide-react";
 import { useResolveBook } from "../hooks/useResolveBook";
 import PhotoUploadGrid from "../../../components/layout/PhotoUploadGrid";
 import { useCreateListing } from "../hooks/useCreateListing";
+import { Link } from "react-router-dom";
 
 interface DetailsStepProps {
   book: BookSearchResult;
@@ -158,18 +159,25 @@ export default function DetailsStep({
 
   return (
     <div className="w-full flex flex-col gap-5 max-w-160 md:max-w-200 lg:max-w-220">
-      <h1 className="text-2xl font-extrabold">Деталі оголошення</h1>
-      <Button
-        variant="ghost"
-        className="w-30 text-muted-foreground cursor-pointer"
-        onClick={onCancel}
-      >
-        <ArrowLeft />
-        <span>Крок 2 з 2</span>
-      </Button>
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          className="px-2 cursor-pointer font-bold text-sm text-muted-foreground"
+          onClick={onCancel}
+        >
+          <ArrowLeft />
+          <span>Назад до пошуку</span>
+        </Button>
+        <p className="font-bold text-sm">Крок 2 з 2</p>
+      </div>
+      <div className="w-full flex gap-1.5">
+        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
+        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
+      </div>
+      <h1 className="text-4xl font-medium">Деталі оголошення</h1>
       <div
-        className="w-full flex gap-4 items-center bg-muted
-      rounded-md p-3 shadow-sm"
+        className="w-full flex gap-4 items-center bg-card
+      rounded-xl border border-border p-5 shadow-md"
       >
         <div className="relative h-30 w-24 rounded-md overflow-hidden">
           {!imageIsLoaded && !imageIsFailed && (
@@ -193,31 +201,38 @@ export default function DetailsStep({
           )}
         </div>
         <div className="w-full flex flex-col items-start text-start gap-1">
-          <h2 className="text-sm font-bold">{book.title}</h2>
+          <h2 className="text-xl font-bold">{book.title}</h2>
           <p className="text-sm text-muted-foreground">{book.author}</p>
         </div>
       </div>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <PhotoUploadGrid
+          className="rounded-xl border border-border bg-card p-5"
           photos={photos}
           onChange={setPhotos}
-          label="Фото примірника (необов'язоково, до 4 фото)"
+          label="Фото примірника"
+          description="Необов'язково, до 4 фото. З фото заявок приходить більше."
         />
-        <div className="flex flex-col gap-1.5">
-          <Label>Стан примірника</Label>
+        <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+          <Label className="text-base font-bold">Стан примірника</Label>
           <Textarea
             placeholder="Легкі потертості на обкладинці, всередині чисто"
             value={conditionDescription}
             onChange={(e) => setConditionDescription(e.target.value)}
           />
+          <p className="text-sm self-end">{conditionDescription.length}/2000</p>
         </div>
-        <div className="flex flex-col gap-1.5">
-          <Label className="">Спосіб доставки</Label>
+        <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+          <div className="flex flex-col">
+            <Label className="text-base font-bold">Як можна отримати</Label>
+            <p className="text-sm text-muted-foreground">Можна обрати обидва</p>
+          </div>
+
           <div className="flex gap-2">
             <Button
               variant="outline"
               type="button"
-              className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+              className={`flex-1 h-9 text-sm font-medium cursor-pointer bg-card ${
                 deliveryMethods.includes("PICKUP")
                   ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                   : "text-muted-foreground"
@@ -229,7 +244,7 @@ export default function DetailsStep({
             <Button
               variant="outline"
               type="button"
-              className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+              className={`flex-1 h-9 text-sm font-medium cursor-pointer bg-card ${
                 deliveryMethods.includes("MAIL")
                   ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                   : "text-muted-foreground"
@@ -240,21 +255,67 @@ export default function DetailsStep({
             </Button>
           </div>
         </div>
-        <Label className="flex items-center cursor-pointer my-2">
-          <input
-            type="checkbox"
-            checked={useProfileLocation}
-            onChange={handleToggleProfileLocation}
-            className="cursor-pointer w-4 h-4"
-          />
-          <span>
-            Використати населений пункт із профілю ({profileLocationLabel})
-          </span>
-        </Label>
+        <div className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-5">
+          <h2 className="text-[17px] font-bold">Де знаходиться книга</h2>
+
+          <label
+            className={`flex items-center gap-3.5 rounded-xl bg-background p-3.5 transition-colors ${
+              hasProfileLocation
+                ? "cursor-pointer hover:bg-muted"
+                : "cursor-not-allowed opacity-60"
+            }`}
+          >
+            <span className="flex-1">
+              <span className="block text-[15px] font-semibold">
+                Як у профілі
+              </span>
+              <span className="block text-sm text-muted-foreground">
+                {hasProfileLocation
+                  ? `${profileLocationLabel}, ${profile?.region}`
+                  : "У профілі не вказано населений пункт"}
+              </span>
+            </span>
+
+            <input
+              type="checkbox"
+              role="switch"
+              checked={useProfileLocation}
+              onChange={handleToggleProfileLocation}
+              disabled={!hasProfileLocation}
+              aria-label="Використати населений пункт із профілю"
+              className="peer sr-only"
+            />
+            <span
+              aria-hidden="true"
+              className="relative h-7 w-11.5 shrink-0 rounded-full bg-input transition-colors
+                 after:absolute after:left-0.75 after:top-0.75 after:size-5.5 after:rounded-full
+                 after:bg-white after:shadow-sm after:transition-transform
+                 peer-checked:bg-primary peer-checked:after:translate-x-4.5
+                 peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50"
+            />
+          </label>
+
+          <p className="text-[13px] text-muted-foreground">
+            {hasProfileLocation ? (
+              "Вимкніть, щоб вказати інший населений пункт: тип, область і назву."
+            ) : (
+              <>
+                Вкажіть його в{" "}
+                <Link
+                  to="/profile"
+                  className="font-semibold text-accent-vivid hover:underline"
+                >
+                  профілі
+                </Link>{" "}
+                або заповніть поля нижче.
+              </>
+            )}
+          </p>
+        </div>
         {!useProfileLocation && (
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-sm text-foreground">
+            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+              <Label className="text-base font-bold">
                 Тип населеного пункту
               </Label>
               <div className="flex gap-2">
@@ -264,7 +325,7 @@ export default function DetailsStep({
                   className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
                     settlementType === "VILLAGE"
                       ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground bg-card"
                   }`}
                   onClick={() => setSettlementType("VILLAGE")}
                 >
@@ -277,7 +338,7 @@ export default function DetailsStep({
                   className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
                     settlementType === "SETTLEMENT"
                       ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground bg-card"
                   }`}
                   onClick={() => setSettlementType("SETTLEMENT")}
                 >
@@ -289,7 +350,7 @@ export default function DetailsStep({
                   className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
                     settlementType === "CITY"
                       ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground"
+                      : "text-muted-foreground bg-card"
                   }`}
                   onClick={() => setSettlementType("CITY")}
                 >
@@ -297,8 +358,8 @@ export default function DetailsStep({
                 </Button>
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label>Область</Label>
+            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+              <Label className="text-base font-bold">Область</Label>
               <SingleSelectList
                 options={REGIONS}
                 placeholder="Вибрати область"
@@ -306,8 +367,10 @@ export default function DetailsStep({
                 onChange={setRegion}
               />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="settlement">Населений пункт</Label>
+            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+              <Label className="text-base font-bold" htmlFor="settlement">
+                Населений пункт
+              </Label>
               <Input
                 id="settlement"
                 type="text"
@@ -326,7 +389,7 @@ export default function DetailsStep({
         )}
         <Button
           type="submit"
-          className="cursor-pointer mt-2"
+          className="cursor-pointer mt-2 font-bold py-5"
           disabled={isResolving || isCreating}
         >
           {isResolving && "Надсилання даних"}

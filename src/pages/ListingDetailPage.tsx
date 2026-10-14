@@ -12,7 +12,6 @@ import {
   IconArrowRight,
   IconBox,
   IconClock,
-  IconExchange,
   IconMapPin,
   IconStarFilled,
 } from "@tabler/icons-react";
@@ -92,7 +91,7 @@ export default function ListingDetailPage() {
   return (
     <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 lg:max-w-350 lg:mx-auto md:py-8">
       <Button
-        variant="outline"
+        variant="ghost"
         className="max-w-40 cursor-pointer"
         nativeButton={false}
         render={
@@ -105,29 +104,32 @@ export default function ListingDetailPage() {
         <IconArrowLeft />
         Назад до каталогу
       </Button>
-      <div className="w-full flex flex-col gap-2 md:flex-row md:gap-6 md:justify-between lg:gap-10 lg:items-center">
+      <div className="w-full flex flex-col mt-2 gap-2 md:flex-row md:gap-6 md:justify-between lg:gap-10 lg:items-center">
         {listing.photoUrls && listing.photoUrls.length > 0 && (
           <div className="w-full flex flex-col items-center gap-2">
-            <div className="relative w-full flex flex-col bg-muted h-90 lg:h-100">
+            <div className="relative w-full flex flex-col h-90 lg:h-110 bg-card border border-border rounded-xl">
               <Button
                 variant="outline"
-                className="absolute left-2 top-0 bottom-0 my-auto shadow-sm cursor-pointer"
+                className="absolute left-4 top-0 bottom-0 my-auto shadow-sm cursor-pointer rounded-full bg-card"
                 onClick={goPrevPhoto}
               >
                 <IconArrowLeft />
               </Button>
               <img
-                className="absolute inset-0 z-10 h-80 w-auto m-auto lg:h-90"
+                className="absolute inset-0 z-10 h-80 w-auto m-auto lg:h-90 rounded-md shadow-md"
                 src={listing.photoUrls[currentPhoto]}
                 alt="Listing Photo"
               />
               <Button
                 variant="outline"
-                className="absolute right-2 top-0 bottom-0 my-auto shadow-sm cursor-pointer"
+                className="absolute right-4 top-0 bottom-0 my-auto shadow-sm cursor-pointer rounded-full bg-card"
                 onClick={goNextPhoto}
               >
                 <IconArrowRight />
               </Button>
+              <p className="text-sm text-card bg-muted-foreground px-2 w-fit rounded-md absolute bottom-3 right-3">
+                {currentPhoto + 1}/{listing.photoUrls.length}
+              </p>
             </div>
             <div className="flex items-center w-full h-20 gap-2 justify-center">
               {listing.photoUrls.map((el, i) => (
@@ -143,10 +145,25 @@ export default function ListingDetailPage() {
         )}
         <div className="w-full flex flex-col gap-4 px-2">
           <div className="flex flex-col gap-1">
-            <p className="bg-muted text-foreground py-1 px-5 rounded-md w-fit text-sm font-bold lg:text-base">
-              {listing.bookGenre ?? "Жанр невідомий"}
-            </p>
-            <h1 className="text-foreground font-bold text-2xl leading-none mt-4 lg:text-3xl">
+            <div className="flex gap-2">
+              <p className="bg-muted text-foreground py-1 px-4 rounded-xl w-fit text-sm font-bold lg:text-base">
+                {listing.bookGenre ?? "Жанр невідомий"}
+              </p>
+              <div
+                className={`flex items-center gap-1.5 py-1 px-4 ${status.bg} rounded-xl`}
+              >
+                <status.icon
+                  className={`${status.color} stroke-3 w-5 h-5 lg:w-6 lg:h-6`}
+                />
+                <span
+                  className={`text-sm text-muted-foreground font-bold lg:text-base ${status.color}`}
+                >
+                  {status.label}
+                </span>
+              </div>
+            </div>
+
+            <h1 className="text-foreground font-bold text-2xl leading-none mt-4 lg:text-4xl">
               {listing.bookTitle}
             </h1>
             <p className="text-foreground font-light text-sm lg:text-base">
@@ -155,29 +172,21 @@ export default function ListingDetailPage() {
           </div>
           <div className="flex flex-col gap-0.5 lg:gap-1">
             <div className="flex items-center gap-1.5">
-              <status.icon
-                className={`${status.color} stroke-3 w-5 h-5 lg:w-6 lg:h-6`}
-              />
-              <span className="text-sm text-muted-foreground lg:text-base">
-                {status.label}
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <IconClock className=" w-5 h-5 text-muted-foreground lg:w-6 lg:h-6" />
-              <span className="text-sm text-muted-foreground lg:text-base">{`Опубліковано: ${formatDaysAgo(listing.createdAt)}`}</span>
+              <IconClock className=" w-5 h-5 text-muted-foreground lg:w-5.5 lg:h-5.5" />
+              <span className="text-sm text-muted-foreground">{`Опубліковано: ${formatDaysAgo(listing.createdAt)}`}</span>
             </div>
           </div>
           <div className="flex flex-col gap-4 lg:gap-6">
-            <div>
-              <p className="flex text-muted-foreground font-bold text-xs lg:text-base">
+            <div className="bg-card p-5 rounded-xl shadow-sm flex flex-col gap-2">
+              <p className="text-muted-foreground font-bold text-sm">
                 СТАН ПРИМІРНИКА
               </p>
               <p className="text-foreground font-light text-sm lg:text-base">
                 {listing.conditionDescription}
               </p>
             </div>
-            <div className="flex flex-col gap-3 lg:flex-row lg:gap-10 lg:items-center">
-              <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-3 lg:flex-row lg:gap-5 lg:items-center w-full">
+              <div className="flex flex-col gap-2 bg-card p-5 rounded-xl shadow-sm w-full">
                 <p className="flex gap-1 items-center">
                   <IconMapPin className="w-5 h-5 text-accent-vivid" />
                   <span className="flex text-muted-foreground font-bold text-xs lg:text-sm">
@@ -191,7 +200,7 @@ export default function ListingDetailPage() {
                     : `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}.${listing.settlementName}, ${listing.region}`}
                 </p>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-2 bg-card p-5 rounded-xl shadow-sm w-full">
                 <p className="flex items-center gap-1">
                   <IconBox className="w-5 h-5 text-accent-vivid" />
                   <span className="text-muted-foreground font-bold text-xs lg:text-sm">
@@ -206,8 +215,8 @@ export default function ListingDetailPage() {
               </div>
             </div>
           </div>
-          <div className="w-full flex flex-col gap-5 border-t border-border py-4 lg:flex-row lg:items-center">
-            <div className="w-full flex items-center gap-2 lg:flex-1 lg:gap-4">
+          <div className="w-full flex flex-col gap-5 border-t border-border py-4">
+            <div className="w-full flex items-center gap-2 lg:flex-1 lg:gap-4 bg-card p-5 rounded-xl shadow-sm">
               <div className="relative w-11 h-11 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
                 {listing.ownerAvatarUrl && !avatarFailed ? (
                   <img
@@ -226,32 +235,31 @@ export default function ListingDetailPage() {
                 <p className="text-sm text-foreground font-bold lg:text-base">
                   {listing.ownerName}
                 </p>
+                <p className="text-sm font-light text-foreground">
+                  на сервісі з вересня 2026
+                </p>
                 <div className="flex items-center gap-2.5 lg:gap-2">
                   <p className="flex items-center gap-0.5 h-6">
                     <IconStarFilled className="w-4 h-4 text-yellow-500 lg:w-5 lg:h-5" />
-                    <span className="text-sm font-medium text-foreground lg:text-base">
+                    <span className="text-sm font-medium text-foreground">
                       {listing.ownerRatingAvg}
                     </span>
                   </p>
-                  <p className="flex items-center gap-0.5">
-                    <IconExchange className="w-4 h-4 stroke-2 text-accent-vivid  lg:w-5 lg:h-5" />
-                    <span className="text-sm font-light text-foreground lg:text-base">
-                      8 обмінів
-                    </span>
+
+                  <p className="text-sm font-light text-foreground">
+                    8 обмінів
                   </p>
                 </div>
               </div>
             </div>
-
             {user?.id !== listing.ownerId && (
               <Button
-                className="cursor-pointer w-full h-10 lg:flex-1 lg:max-w-50"
+                className="cursor-pointer w-full h-10"
                 onClick={(e) => handleClick(e)}
               >
                 Подати заявку
               </Button>
             )}
-
             {requestDialogIsOpen && (
               <RequestFormDialog
                 listing={listing}

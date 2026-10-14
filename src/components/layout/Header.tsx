@@ -20,12 +20,30 @@ import { useAuth } from "@/context/AuthContext";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 
 const navItems = [
-  { path: "/feed", label: "Спільнота", icon: IconHome },
-  { path: "/", label: "Каталог", icon: IconBook },
-  { path: "/requests", label: "Заявки", icon: IconFileText },
-  { path: "/exchanges", label: "Обміни", icon: IconArrowsExchange },
-  { path: "/chat", label: "Чат", icon: IconMessageCircle },
+  { path: "/feed", label: "Спільнота", icon: IconHome, match: ["/feed"] },
+  { path: "/", label: "Каталог", icon: IconBook, match: ["/", "/listings"] },
+  {
+    path: "/requests",
+    label: "Заявки",
+    icon: IconFileText,
+    match: ["/requests"],
+  },
+  {
+    path: "/exchanges",
+    label: "Обміни",
+    icon: IconArrowsExchange,
+    match: ["/exchanges"],
+  },
+  { path: "/chat", label: "Чат", icon: IconMessageCircle, match: ["/chat"] },
 ];
+
+function isNavItemActive(match: string[], pathname: string) {
+  return match.some((base) =>
+    base === "/"
+      ? pathname === "/"
+      : pathname === base || pathname.startsWith(base + "/"),
+  );
+}
 export default function Header() {
   const [navIsOpen, setNavIsOpen] = useState(false);
   const location = useLocation();
@@ -52,7 +70,7 @@ export default function Header() {
 
         <nav className="hidden w-full lg:flex gap-2 py-4 px-2 h-full ml-6">
           {navItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = isNavItemActive(item.match, location.pathname);
 
             return (
               <Link
@@ -75,7 +93,7 @@ export default function Header() {
         {navIsOpen && (
           <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-999 bg-popover overflow-y-auto">
             {navItems.map((item) => {
-              const isActive = location.pathname == item.path;
+              const isActive = isNavItemActive(item.match, location.pathname);
 
               return (
                 <Link

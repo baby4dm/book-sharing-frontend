@@ -9,7 +9,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { IconBook, IconCheck } from "@tabler/icons-react";
+import {
+  IconBook,
+  IconBox,
+  IconCheck,
+  IconHeartHandshake,
+} from "@tabler/icons-react";
 import { Input } from "@/components/ui/input";
 import { useCreateRequest } from "@/features/requests/hooks/useCreateRequest";
 
@@ -150,28 +155,30 @@ export default function RequestFormDialog({
                   {listing.deliveryMethods.includes("PICKUP") && (
                     <Button
                       variant="outline"
-                      className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                      className={`flex items-center gap-2 bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                         deliveryMethod === "PICKUP"
                           ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                           : "text-muted-foreground"
                       }`}
                       onClick={() => setDeliveryMethod("PICKUP")}
                     >
-                      Особисто
+                      <IconHeartHandshake />
+                      <span> Особисто</span>
                     </Button>
                   )}
 
                   {listing.deliveryMethods.includes("MAIL") && (
                     <Button
                       variant="outline"
-                      className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                      className={`flex items-center gap-2 bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                         deliveryMethod === "MAIL"
                           ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                           : "text-muted-foreground"
                       }`}
                       onClick={() => setDeliveryMethod("MAIL")}
                     >
-                      Пошта
+                      <IconBox />
+                      <span>Пошта</span>
                     </Button>
                   )}
                 </div>

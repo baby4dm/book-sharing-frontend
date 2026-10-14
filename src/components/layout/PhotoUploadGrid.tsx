@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
-import { IconPlus, IconX } from "@tabler/icons-react";
+import { IconCamera, IconX } from "@tabler/icons-react";
 import { useUploadFile } from "@/features/createListing/hooks/useUploadFile";
 
 const MAX_PHOTOS = 4;
@@ -10,8 +10,10 @@ interface PhotoUploadGridProps {
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
   onBusyChange?: (busy: boolean) => void;
   label: string;
+  description?: string;
   disabled?: boolean;
   maxPhotos?: number;
+  className?: string;
 }
 
 export default function PhotoUploadGrid({
@@ -19,8 +21,10 @@ export default function PhotoUploadGrid({
   onChange,
   onBusyChange,
   label,
+  description,
   disabled = false,
   maxPhotos = MAX_PHOTOS,
+  className,
 }: PhotoUploadGridProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
@@ -63,8 +67,12 @@ export default function PhotoUploadGrid({
     onChange((prev) => prev.filter((_, i) => i !== index));
   }
   return (
-    <div className="flex flex-col gap-3 my-4">
-      <Label>{label}</Label>
+    <div className={`flex flex-col gap-3 my-4 ${className}`}>
+      <div>
+        <Label className="font-bold text-base">{label}</Label>
+        <p className="text-sm text-muted-foreground">{description}</p>
+      </div>
+
       <div className="flex gap-4 flex-wrap w-full justify-center">
         {photos.map((url, index) => (
           <div
@@ -104,10 +112,10 @@ export default function PhotoUploadGrid({
             type="button"
             disabled={disabled}
             onClick={() => fileInputRef.current?.click()}
-            className="cursor-pointer outline-2 outline-border rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-muted-foreground hover:text-accent-vivid"
+            className="bg-accent-vivid/10 cursor-pointer outline outline-accent-vivid rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-accent-vivid hover:text-foreground"
           >
-            <IconPlus size={25} className="stroke-3" />
-            <span className="text-xs">Додати</span>
+            <IconCamera size={25} className="stroke-2" />
+            <span className="text-xs font-extrabold">Додати</span>
           </button>
         ))}
       </div>

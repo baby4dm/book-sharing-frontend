@@ -12,7 +12,7 @@ export default function BookCard({ book, onSelect }: BookCardProps) {
   const [imageIsFailed, setImageIsFailed] = useState(false);
   return (
     <button
-      className="w-full flex gap-4 items-center border border-border rounded-md p-3 shadow-sm cursor-pointer hover:border-accent-vivid hover:outline-2 transition-all duration-100 hover:scale-[101%]"
+      className="bg-card w-full flex gap-4 items-center border border-border rounded-md p-3 shadow-sm cursor-pointer hover:border-accent-vivid hover:outline-2 transition-all duration-100 hover:scale-[101%]"
       onClick={() => onSelect(book)}
     >
       <div className="relative h-30 w-25 rounded-md overflow-hidden">

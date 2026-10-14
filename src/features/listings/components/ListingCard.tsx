@@ -62,16 +62,16 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
         </div>
 
         <p
-          className="absolute top-0 right-0 text-xs bg-muted-foreground py-0.5 
-        px-1.5 rounded-md flex items-center justify-center text-muted font-light shadow-md"
+          className="absolute top-2 right-2 text-xs bg-muted-foreground py-1 
+        px-2 rounded-md flex items-center justify-center text-muted font-bold shadow-sm"
         >
           {formatDaysAgo(listing.createdAt)}
         </p>
-        <p className="bg-accent-vivid text-muted py-1 px-4 rounded-md w-fit text-xs font-bold">
+        <p className="absolute top-2 left-2 bg-card text-foreground py-1 px-2 rounded-md w-fit text-xs font-bold shadow-sm">
           {listing.bookGenre ?? "Жанр невідомий"}
         </p>
       </div>
-      <div>
+      <div className="flex flex-col gap-1">
         <h2 className="text-foreground font-bold text-lg leading-none">
           {listing.bookTitle}
         </h2>
@@ -80,7 +80,7 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
         </p>
       </div>
       <div className="flex flex-col gap-4 h-full">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <div className="flex gap-1 items-center">
             <status.icon className={`${status.color} w-5 h-5`} />
             <span className="text-xs text-muted-foreground">

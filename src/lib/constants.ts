@@ -35,30 +35,35 @@ export const STATUS_CONFIG: Record<
     buttonLabel: string;
     color: string;
     icon: ComponentType<{ size?: number; className?: string }>;
+    bg: string;
   }
 > = {
   AVAILABLE: {
     label: "Доступна",
     buttonLabel: "Подати заявку",
     color: "text-success",
+    bg: "bg-success/15",
     icon: IconCheck,
   },
   RESERVED: {
     label: "Зарезервована",
     buttonLabel: "Уже зарезервована",
     color: "text-warning",
+    bg: "bg-warning/15",
     icon: IconClock,
   },
   IN_EXCHANGE: {
     label: "У читанні",
     buttonLabel: "Зараз у читача",
     color: "text-info",
+    bg: "bg-info/15",
     icon: IconBooks,
   },
   ARCHIVED: {
     label: "Архівовано",
     buttonLabel: "Знято з публікації",
     color: "text-muted-foreground",
+    bg: "bg-muted-foreground/15",
     icon: IconArchive,
   },
 };

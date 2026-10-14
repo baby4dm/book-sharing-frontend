@@ -71,7 +71,7 @@ export default function ListingFilterPanel({
 
         <Button
           variant="outline"
-          className="cursor-pointer h-10 shrink-0 gap-1.5 text-sm text-muted-foreground"
+          className="cursor-pointer h-10 shrink-0 gap-1.5 text-sm text-muted-foreground bg-card"
           onClick={() =>
             onUpdateFilters(
               filters.sort === "createdAt,desc"
@@ -95,10 +95,11 @@ export default function ListingFilterPanel({
 
         <Button
           variant="outline"
-          className="cursor-pointer h-10 w-10 shrink-0"
+          className="cursor-pointer h-10 shrink-0 bg-card"
           onClick={() => setFilterIsOpen((prev) => !prev)}
         >
           <IconFilter size={16} className="text-muted-foreground" />
+          <p className="hidden md:flex">Фільтри</p>
         </Button>
 
         <Button
@@ -145,7 +146,7 @@ export default function ListingFilterPanel({
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                    className={`bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                       tempFilters.deliveryMethod === "PICKUP"
                         ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                         : "text-muted-foreground"
@@ -158,7 +159,7 @@ export default function ListingFilterPanel({
                   </Button>
                   <Button
                     variant="outline"
-                    className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                    className={`bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                       tempFilters.deliveryMethod === "MAIL"
                         ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                         : "text-muted-foreground"
@@ -179,7 +180,7 @@ export default function ListingFilterPanel({
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
-                    className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                    className={`bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                       tempFilters.status === "AVAILABLE"
                         ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                         : "text-muted-foreground"
@@ -192,7 +193,7 @@ export default function ListingFilterPanel({
                   </Button>
                   <Button
                     variant="outline"
-                    className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                    className={`bg-card flex-1 h-9 text-sm font-medium cursor-pointer ${
                       tempFilters.status === "RESERVED"
                         ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
                         : "text-muted-foreground"
@@ -207,7 +208,7 @@ export default function ListingFilterPanel({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 border-b pb-6 border-border">
               <div className="flex flex-col gap-2">
                 <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   Жанр
@@ -233,10 +234,10 @@ export default function ListingFilterPanel({
               </div>
             </div>
 
-            <div className="flex gap-2 pt-1 border-t border-border md:border-t-0">
+            <div className="flex gap-2 lg:w-1/2 lg:self-end">
               <Button
                 variant="outline"
-                className="flex-1 cursor-pointer"
+                className="flex-1 cursor-pointer bg-card"
                 onClick={() => {
                   setFilterIsOpen(false);
                   setTempFilters(defaultFilterValues);

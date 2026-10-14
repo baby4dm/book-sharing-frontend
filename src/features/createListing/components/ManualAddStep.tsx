@@ -5,6 +5,7 @@ import { useState } from "react";
 import SingleSelectList from "@/components/ui/SingleSelectList";
 import { GENRES } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 interface ManualAddStepProps {
   onCancel: () => void;
   onSelectBook: (book: BookSearchResult) => void;
@@ -62,15 +63,30 @@ export default function ManualAddStep({
 
   return (
     <div className="w-full flex flex-col gap-5 max-w-160 md:max-w-200 lg:max-w-220">
-      <div>
-        <h1 className="text-2xl font-extrabold">Додати книгу вручну</h1>
+      <div className="flex items-center justify-between">
+        <Button
+          variant="ghost"
+          className="px-2 cursor-pointer font-bold text-sm text-muted-foreground"
+          onClick={onCancel}
+        >
+          <ArrowLeft />
+          <span>Назад до пошуку</span>
+        </Button>
+        <p className="font-bold text-sm">Крок 1 з 2</p>
+      </div>
+      <div className="w-full flex gap-1.5">
+        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
+        <span className="bg-muted block w-full h-1.5 rounded-md flex-1"></span>
+      </div>
+      <div className="flex flex-col gap-2">
+        <h1 className="text-4xl font-medium">Додати книгу вручну</h1>
         <p className="text-sm text-muted-foreground">
           Заповніть основну інформацію про книгу
         </p>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="title" className="text-sm md:text-base">
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-5">
+          <Label htmlFor="title" className="text-base font-bold">
             Назва книги
           </Label>
           <Input
@@ -78,12 +94,12 @@ export default function ManualAddStep({
             type="text"
             placeholder="Наприклад: Затьмарення"
             value={title}
-            className="text-sm md:text-base"
+            className="text-sm"
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="author" className="text-sm md:text-base">
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-5">
+          <Label htmlFor="author" className="text-base font-bold">
             Автор
           </Label>
           <Input
@@ -91,12 +107,12 @@ export default function ManualAddStep({
             type="text"
             placeholder="Наприклад: Філіп К. Дік"
             value={author}
-            className="text-sm md:text-base"
+            className="text-sm"
             onChange={(e) => setAuthor(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <Label className="text-sm md:text-base">Жанр</Label>
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-5">
+          <Label className="text-base font-bold">Жанр</Label>
           <SingleSelectList
             options={GENRES}
             placeholder="Вибрати жанр"
@@ -104,16 +120,19 @@ export default function ManualAddStep({
             selected={genre}
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="isbn" className="text-sm md:text-base">
-            ISBN (необов'язково)
+        <div className="flex flex-col gap-1 rounded-xl border border-border bg-card p-5">
+          <Label htmlFor="isbn" className="text-base font-bold">
+            ISBN
+            <span className="text-sm text-muted-foreground">
+              (необов'язково)
+            </span>
           </Label>
           <Input
             id="isbn"
             type="text"
             placeholder="978-..."
             value={isbn}
-            className="text-sm md:text-base"
+            className="text-sm"
             onChange={(e) => setIsbn(e.target.value)}
           />
         </div>
@@ -125,7 +144,7 @@ export default function ManualAddStep({
             variant="outline"
             type="button"
             onClick={onCancel}
-            className="w-full flex-1 cursor-pointer"
+            className="w-full flex-1 cursor-pointer bg-card"
           >
             Скасувати
           </Button>
