@@ -1,116 +1,65 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/inter";
 
-/* Вмикає dark:-класи Tailwind, коли елемент лежить всередині тега з
-   класом .dark (саме цей клас додає/прибирає наш ThemeToggle через
-   document.documentElement.classList). */
+@import "@fontsource-variable/manrope";
+@import "@fontsource-variable/literata";
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* ============================================================
-     СВІТЛА ТЕМА - фактичні значення кольорів (єдине джерело правди)
-     ============================================================ */
+  --background: #f5f4ef;
+  --foreground: #1d1c1a;
 
-  /* Фон сторінки і основний колір тексту. Застосовані глобально
-     нижче, в @layer base -> body. */
-  --background: #ffffff;
-  --foreground: #0f1229;
-
-  /* Фон/текст для "піднятих" поверхонь - картки оголошень, форми,
-     випадаючі меню. Часто той самий колір, що --background, але
-     тримаємо окремо, бо в темній темі вони відрізняються. */
   --card: #ffffff;
-  --card-foreground: #0f1229;
+  --card-foreground: #1d1c1a;
   --popover: #ffffff;
-  --popover-foreground: #0f1229;
+  --popover-foreground: #1d1c1a;
 
-  /* PRIMARY = колір кнопок головної дії ("Увійти", "Подати заявку").
-     Використовуйте <Button> без variant - він і є primary за замовчуванням.
-     -foreground - колір тексту/іконки ВСЕРЕДИНІ такої кнопки, вже
-     підібраний контрастним - берете його, а не думаєте, який текст пасує. */
-  --primary: #0f1229;
+  --primary: #1f6b4a;
   --primary-foreground: #ffffff;
 
-  /* SECONDARY = кнопки другорядної дії ("Скасувати"), не такі
-     привабливі для ока, як primary. <Button variant="secondary"> */
-  --secondary: #f4f4f5;
-  --secondary-foreground: #0f1229;
+  --secondary: #efede7;
+  --secondary-foreground: #1d1c1a;
 
-  /* MUTED = приглушені зони інтерфейсу: підписи під заголовками,
-     плейсхолдери, неактивні елементи. muted-foreground - саме той
-     колір, що й class="text-muted-foreground" на дрібному сірому тексті. */
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --muted: #efede7;
+  --muted-foreground: #5f5b54;
 
-  /* ACCENT (не плутати з accent-vivid нижче!) - технічний колір
-     shadcn для hover/active станів компонентів (пункт меню при наведенні,
-     розкритий dropdown). Це НЕ наш бренд-колір - навмисно ледь
-     помітний, світлий, щоб не "кричав" при кожному ховері. */
-  --accent: #eeecfb;
-  --accent-foreground: #0f1229;
+  --accent: #e6f1eb;
+  --accent-foreground: #164f37;
 
-  /* Помилки, невалідні поля форми, кнопки видалення/відхилення.
-     text-destructive / bg-destructive */
-  --destructive: #ef4444;
+  --destructive: #a8261b;
 
-  /* Бордер за замовчуванням для БУДЬ-ЯКОГО елемента (застосовано
-     глобально нижче через * { @apply border-border }), і бордер
-     інпутів окремо (--input). Однакові зараз, але shadcn розділяє
-     їх навмисно - раптом захочете інпути з іншим бордером, ніж картки. */
-  --border: #e4e4e7;
-  --input: #e4e4e7;
+  --border: #e4e1d9;
+  --input: #d3cfc5;
 
-  /* Обвідка навколо елемента при фокусі клавіатурою (Tab). Свідомо
-     наш яскравий фіолетовий, а не дефолтний сірий - дрібна, але
-     приємна деталь бренду там, де її найменше очікуєш. */
-  --ring: #5b46e5;
+  --ring: #1f6b4a;
 
-  /* Семантичні статусні кольори - для бейджів на кшталт AVAILABLE/
-     OVERDUE. Використовуйте напряму: text-success, bg-warning/10 тощо. */
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --info: #0ea5e9;
+  --success: #2e7d4f;
+  --warning: #b45309;
+  --info: #2563a8;
 
-  /* Кольори для графіків/чартів (якщо колись знадобиться статистика -
-     наприклад, дашборд модератора). Поки що не використовуємо. */
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #1f6b4a;
+  --chart-2: #b45309;
+  --chart-3: #2563a8;
+  --chart-4: #a8261b;
+  --chart-5: #8a8478;
 
-  /* Базовий радіус заокруглення (~10px). Усі rounded-sm/md/lg/xl
-     нижче в @theme рахуються ВІД цього одного значення - зміните
-     тут, і всі заокруглення в застосунку зміняться пропорційно. */
   --radius: 0.625rem;
 
-  /* Кольори для бічної навігаційної панелі (Sidebar-компонент shadcn),
-     якщо колись перейдете з горизонтального Header на sidebar-layout. */
-  --sidebar: #f4f4f5;
-  --sidebar-foreground: #0f1229;
-  --sidebar-primary: #0f1229;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1d1c1a;
+  --sidebar-primary: #1f6b4a;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eeecfb;
-  --sidebar-accent-foreground: #0f1229;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #5b46e5;
+  --sidebar-accent: #e6f1eb;
+  --sidebar-accent-foreground: #164f37;
+  --sidebar-border: #e4e1d9;
+  --sidebar-ring: #1f6b4a;
 
-  /* НАШ бренд-колір для точкових виділень: слово в заголовку
-     ("друге <span className='text-accent-vivid'>життя</span>"),
-     крапка в бейджі, іконка логотипу. На відміну від --accent (вище) -
-     цей яскравий і використовується свідомо, не як hover-ефект. */
-  --accent-vivid: #5b46e5;
+  --accent-vivid: #1f6b4a;
 }
 
 .dark {
-  /* ============================================================
-     ТЕМНА ТЕМА - ті самі імена змінних, інвертовані значення.
-     Жодних нових класів у JSX не з'являється: bg-primary в розмітці
-     завжди залишається bg-primary, просто тут інше значення
-     застосується, коли на <html> є клас .dark.
-     ============================================================ */
   --background: #0f1229;
   --foreground: #f4f4f5;
 
@@ -119,8 +68,6 @@
   --popover: #1a1d3a;
   --popover-foreground: #f4f4f5;
 
-  /* У темній темі primary-кнопка стає світлою (інверсія) - інакше
-     темна кнопка на темному фоні була б непомітною. */
   --primary: #f4f4f5;
   --primary-foreground: #0f1229;
 
@@ -137,9 +84,6 @@
   --border: #2e3154;
   --input: #2e3154;
 
-  /* Світліший фіолетовий для --ring і --accent-vivid у темній темі -
-     насичений #5b46e5 на темному фоні втратив би контраст, тому
-     тут окремі, світліші відтінки того самого кольору. */
   --ring: #8b7cf0;
 
   --chart-1: oklch(0.87 0 0);
@@ -159,18 +103,16 @@
 
   --accent-vivid: #8b7cf0;
 }
+
 @theme inline {
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 160rem;
 }
+
 @theme inline {
-  /* ============================================================
-     "ПЕРЕКЛАД" CSS-змінних вище у реальні Tailwind utility-класи.
-     Без цього блоку --primary існувала б як звичайна CSS-змінна,
-     але класу bg-primary/text-primary просто не існувало б.
-     ============================================================ */
-  --font-sans: "Inter Variable", sans-serif;
-  --font-heading: var(--font-sans);
+  --font-sans: "Manrope Variable", system-ui, sans-serif;
+
+  --font-heading: "Literata Variable", Georgia, serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -204,9 +146,6 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* rounded-sm / rounded-md / rounded-lg / rounded-xl / ... - усі
-     пораховані ВІД --radius пропорційно (0.6x, 0.8x, 1x, 1.4x...).
-     Міняти тут окремо кожен зазвичай не потрібно. */
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -215,25 +154,13 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Наш бренд-акцент окремим класом: bg-accent-vivid / text-accent-vivid.
-     Використовуйте САМЕ це, коли хочете яскравий фіолетовий - не
-     text-accent (той для hover-станів, ледь помітний). */
   --color-accent-vivid: var(--accent-vivid);
 
-  /* Статусні кольори як класи: text-success, bg-warning/10,
-     text-danger, text-info. danger навмисно = той самий колір, що
-     й --destructive (немає сенсу тримати два окремих відтінки червоного). */
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--destructive);
   --color-info: var(--info);
 
-  /* Зручні аліаси під старі назви (bg-bg, text-text-primary тощо) -
-     той самий колір, що background/foreground/card вище, просто
-     інше ім'я. Лишені, щоб не переписувати код, написаний раніше
-     під ці назви. Для нового коду краще одразу брати bg-background/
-     text-foreground - це стандартні shadcn-імена, їх впізнає будь-хто,
-     хто теж працює з shadcn. */
   --color-bg: var(--background);
   --color-surface: var(--card);
   --color-text-primary: var(--foreground);
@@ -241,15 +168,10 @@
 }
 
 @layer base {
-  /* Дефолтний бордер і колір обвідки фокуса - взагалі для ВСІХ
-     елементів на сторінці, щоб не дописувати border-border вручну
-     кожного разу, коли з'являється border звідкись. */
   * {
     @apply border-border outline-ring/50;
   }
 
-  /* Фон і колір тексту всієї сторінки одразу - не потрібно писати
-     className="bg-background text-foreground" на кожному контейнері. */
   body {
     @apply bg-background text-foreground;
   }
@@ -257,7 +179,12 @@
   html {
     @apply font-sans;
   }
+
+  h1 {
+    @apply font-heading;
+  }
 }
+
 @keyframes shimmer-sweep {
   100% {
     transform: translateX(100%);

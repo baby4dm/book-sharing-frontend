@@ -35,6 +35,7 @@ export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
               <h1 className="text-xl font-extrabold md:text-2xl">
                 {userData.name}
               </h1>
+              <p className="text-sm text-accent-vivid">{userData.email}</p>
               <p className="flex items-center gap-1">
                 <IconMapPin className="w-4 h-4 text-accent-vivid" />
                 <span className="text-xs font-light md:text-sm">
