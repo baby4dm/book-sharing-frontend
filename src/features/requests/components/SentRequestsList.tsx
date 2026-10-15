@@ -1,9 +1,19 @@
-import { useSentRequests } from "../hooks/useSentRequests";
+import { useRequestsFilters } from "../hooks/useRequestsFilters";
+import { useRequestsList } from "../hooks/useRequestsList";
 import SentRequestCard from "./SentRequestCard";
 
 export default function SentRequestsList() {
-  const { data, isLoading, isError } = useSentRequests();
-  if (isLoading) {
+  const {
+    filters,
+    searchInput,
+    setSearchInput,
+    updateFilters,
+    reset,
+    hasActiveFilters,
+  } = useRequestsFilters();
+  const { data, isPending, isError, isFetching, isPlaceholderData } =
+    useRequestsList("sent", filters);
+  if (isFetching) {
     return (
       <p className="text-sm text-muted-foreground py-8 text-center">
         Завантаження...
@@ -17,7 +27,7 @@ export default function SentRequestsList() {
       </p>
     );
   }
-  if (!data || data.length === 0) {
+  if (!data || data.totalElements === 0) {
     return (
       <p className="text-sm text-muted-foreground py-8 text-center">
         Поки що немає надісланих заявок
@@ -27,7 +37,7 @@ export default function SentRequestsList() {
 
   return (
     <div className="flex flex-col gap-6 items-center">
-      {data.map((req) => (
+      {data.items.map((req) => (
         <SentRequestCard key={req.id} request={req} />
       ))}
     </div>

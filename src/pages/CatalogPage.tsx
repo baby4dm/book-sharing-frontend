@@ -59,7 +59,7 @@ export default function CatalogPage() {
         defaultValue="catalog"
         className="w-full flex flex-col gap-4 lg:gap-8"
       >
-        <div className="flex justify-between items-center flex-wrap gap-4">
+        <div className="w-full flex justify-between items-center flex-wrap gap-4 max-w-500 3xl:max-w-530 mx-auto">
           <div className="flex flex-col gap-2">
             <h1 className="text-4xl font-medium">Каталог</h1>
             <p className="text-base font-light">

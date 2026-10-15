@@ -112,7 +112,7 @@ export default function PhotoUploadGrid({
             type="button"
             disabled={disabled}
             onClick={() => fileInputRef.current?.click()}
-            className="bg-accent-vivid/10 cursor-pointer outline outline-accent-vivid rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-accent-vivid hover:text-foreground"
+            className="bg-accent-vivid/10 cursor-pointer outline outline-accent-vivid rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-accent-vivid hover:text-foreground transition-all hover:scale-105"
           >
             <IconCamera size={25} className="stroke-2" />
             <span className="text-xs font-extrabold">Додати</span>

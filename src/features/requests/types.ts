@@ -3,6 +3,35 @@ import type { ComponentType } from "react";
 import type { DeliveryMethod } from "../listings/types";
 
 export type RequestStatus = "PENDING" | "ACTIVE" | "REJECTED" | "CANCELLED";
+export type RequestSort = "NEWEST" | "OLDEST" | "DEADLINE" | "RATING";
+export type RequestScope = "received" | "sent";
+
+export interface RequestListResponse {
+  items: RequestResponse[];
+  statusCounts: Record<RequestStatus, number>;
+  total: number;
+  page: number;
+  totalPages: number;
+  totalElements: number;
+}
+
+export interface RequestFilters {
+  q: string;
+  deliveryMethod: DeliveryMethod | null;
+  status: RequestStatus | null;
+  sort: RequestSort;
+  page: number;
+}
+
+export const INITIAL_REQUEST_FILTERS: RequestFilters = {
+  q: "",
+  deliveryMethod: null,
+  status: null,
+  sort: "NEWEST",
+  page: 0,
+};
+
+export type RequestFilterPatch = Partial<Omit<RequestFilters, "q">>;
 
 export interface RequestResponse {
   id: string;

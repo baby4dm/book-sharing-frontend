@@ -13,7 +13,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
   const statusData = REQUEST_STATUS_CONFIG[request.status];
   const { mutate: cancel, isPending } = useCancelRequest();
   return (
-    <div className="bg-card border border-muted shadow-sm rounded-lg p-3 flex flex-col gap-3 max-w-160 w-full md:max-w-200 lg:max-w-220 md:p-4 lg:p-6">
+    <div className="bg-card border border-muted shadow-sm rounded-lg p-3 flex flex-col gap-3 max-w-160 w-full md:max-w-200 lg:max-w-330 md:p-4 lg:p-6">
       <div className="flex items-start justify-between gap-2">
         <h1 className="text-foreground text-base font-bold md:text-xl xl:text-2xl">
           {request.listingBookTitle}
