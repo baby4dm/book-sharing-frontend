@@ -4,8 +4,16 @@ import { useRequestsList } from "../hooks/useRequestsList";
 import ReceivedRequestCard from "./ReceivedRequestCard";
 import { Button } from "@/components/ui/button";
 import Pagination from "./Pagination";
+import RequestsToolbar from "./RequestsToolbar";
+import { cn } from "cn";
 
-export default function ReceivedRequestsList() {
+interface ReceivedRequestsListProps {
+  onCountChange: (count: number | undefined) => void;
+}
+
+export default function ReceivedRequestsList({
+  onCountChange,
+}: ReceivedRequestsListProps) {
   const {
     filters,
     searchInput,
@@ -14,9 +22,14 @@ export default function ReceivedRequestsList() {
     reset,
     hasActiveFilters,
   } = useRequestsFilters();
-  const { data, isPending, isError, isFetching, isPlaceholderData } =
-    useRequestsList("sent", filters);
+  const { data, isPending, isError, isPlaceholderData } = useRequestsList(
+    "received",
+    filters,
+  );
 
+  useEffect(() => {
+    onCountChange(data?.totalElements);
+  }, [data]);
   useEffect(() => {
     if (
       data &&
@@ -28,48 +41,76 @@ export default function ReceivedRequestsList() {
     }
   }, [data, isPlaceholderData, filters.page, updateFilters]);
 
-  if (isPending) {
-    return (
-      <p className="text-sm text-muted-foreground py-8 text-center">
-        Завантаження...
-      </p>
-    );
-  }
-  if (isError) {
-    return (
-      <p className="text-sm text-destructive py-8 text-center">
-        Не вдалось завантажити заявки
-      </p>
-    );
-  }
-  if (data && data.items.length === 0) {
-    return (
-      <div className="py-8 text-center">
-        <p className="text-sm text-muted-foreground">
-          {hasActiveFilters
-            ? "За цими умовами нічого не знайдено"
-            : "Ви ще не надсилали заявок"}
-        </p>
-        {hasActiveFilters && (
-          <Button type="button" onClick={reset}>
-            Скинути фільтри
-          </Button>
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-col gap-6 items-center">
-      {data.items.map((req) => (
-        <ReceivedRequestCard key={req.id} request={req} />
-      ))}
-
-      <Pagination
-        page={data.page}
-        totalPages={data.totalPages}
-        onChange={(page) => updateFilters({ page })}
+    <div className="flex w-full flex-col items-center gap-6">
+      <RequestsToolbar
+        scope="received"
+        filters={filters}
+        searchInput={searchInput}
+        onSearchInputChange={setSearchInput}
+        onFiltersChange={updateFilters}
+        data={data}
       />
+
+      {isPending ? (
+        <p className="py-8 text-center text-sm text-muted-foreground">
+          Завантаження...
+        </p>
+      ) : isError ? (
+        <div className="flex flex-col items-center gap-3 py-8 text-center">
+          <p className="text-sm text-destructive">
+            Не вдалось завантажити заявки
+          </p>
+          {hasActiveFilters && (
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={reset}
+            >
+              Скинути фільтри
+            </Button>
+          )}
+        </div>
+      ) : data.items.length === 0 ? (
+        <div className="flex flex-col items-center gap-4 py-8 text-center">
+          <p className="text-sm text-muted-foreground">
+            {hasActiveFilters
+              ? "За цими умовами нічого не знайдено"
+              : "Вам ще не надсилали заявок"}
+          </p>
+          {hasActiveFilters && (
+            <Button
+              className="w-fit cursor-pointer"
+              type="button"
+              onClick={reset}
+            >
+              Скинути фільтри
+            </Button>
+          )}
+        </div>
+      ) : (
+        <>
+          <div
+            aria-busy={isPlaceholderData}
+            className={cn(
+              "flex w-full flex-col items-center gap-4 transition-opacity",
+              isPlaceholderData && "pointer-events-none opacity-60",
+            )}
+          >
+            {data.items.map((req) => (
+              <ReceivedRequestCard key={req.id} request={req} />
+            ))}
+          </div>
+
+          {data.totalPages > 1 && (
+            <Pagination
+              page={data.page}
+              totalPages={data.totalPages}
+              onChange={(page) => updateFilters({ page })}
+            />
+          )}
+        </>
+      )}
     </div>
   );
 }

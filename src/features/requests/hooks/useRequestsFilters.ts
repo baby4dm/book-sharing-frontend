@@ -4,7 +4,6 @@ import {
   type RequestFilterPatch,
   type RequestFilters,
 } from "../types";
-import { useDebouncedValue } from "./useDebouncedValue";
 
 const INITIAL_OPTIONS = {
   deliveryMethod: INITIAL_REQUEST_FILTERS.deliveryMethod,
@@ -14,11 +13,10 @@ const INITIAL_OPTIONS = {
 
 export function useRequestsFilters() {
   const [searchInput, setSearchInput] = useState("");
-  const debouncedSearch = useDebouncedValue(searchInput, 300);
   const [options, setOptions] = useState(INITIAL_OPTIONS);
   const [pageState, setPageState] = useState({ page: 0, forQuery: "" });
-  const page = pageState.forQuery === debouncedSearch ? pageState.page : 0;
-  const filters: RequestFilters = { q: debouncedSearch, ...options, page };
+  const page = pageState.forQuery === searchInput ? pageState.page : 0;
+  const filters: RequestFilters = { q: searchInput, ...options, page };
 
   const updateFilters = useCallback(
     (patch: RequestFilterPatch) => {
@@ -26,9 +24,9 @@ export function useRequestsFilters() {
       if (Object.keys(rest).length > 0) {
         setOptions((prev) => ({ ...prev, ...rest }));
       }
-      setPageState({ page: nextPage ?? 0, forQuery: debouncedSearch });
+      setPageState({ page: nextPage ?? 0, forQuery: searchInput });
     },
-    [debouncedSearch],
+    [searchInput],
   );
 
   const reset = useCallback(() => {

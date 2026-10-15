@@ -66,7 +66,9 @@ export default function ListingFilterPanel({
     <div className="w-full max-w-500 self-center 3xl:max-w-530">
       <div className="flex gap-2 items-center w-full">
         <SearchInput
+          placeholder="Назва книга або автор"
           handleChange={(value) => onUpdateFilters({ search: value })}
+          className="flex-2 min-w-50"
         />
 
         <Button

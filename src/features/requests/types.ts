@@ -48,6 +48,7 @@ export interface RequestResponse {
   rejectComment: string | null;
   createdAt: string;
   decidedAt: string | null;
+  exchangeId: string | null;
 }
 
 export interface ListingRequestRequest {
