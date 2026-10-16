@@ -1,38 +1,38 @@
-import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
-import ExchangeTimeline from "@/features/exchanges/components/ExchangeTimeline";
-import { useExchange } from "@/features/exchanges/hooks/useExchange";
-import { computeExchangeSteps } from "@/features/exchanges/utils/computeExchangeSteps";
-import { getDeadlineInfo } from "@/features/exchanges/utils/getDeadlineInfo";
-import { useListing } from "@/features/listings/hooks/useListing";
-import { useUser } from "@/features/user/hooks/useUser";
-import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
-import { DELIVERY_METHODS, EXCHANGE_STATUS_CONFIG } from "@/lib/constants";
-import {
-  IconArrowLeft,
-  IconBox,
-  IconCalendar,
-  IconClock,
-} from "@tabler/icons-react";
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { Spinner } from "@/components/ui/Spinner";
+import DisputeNotice from "@/features/exchanges/components/DisputeNotice";
+import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
+import ExchangeHeader from "@/features/exchanges/components/ExchangeHeader";
+import ExchangeOverdueBanner from "@/features/exchanges/components/ExchangeOverdueBanner";
+import ExchangeParticipants from "@/features/exchanges/components/ExchangeParticipants";
+import ExchangeReviewSection from "@/features/exchanges/components/ExchangeReviewSection";
+import ExchangeTimeline from "@/features/exchanges/components/ExchangeTimeline";
+import ExtensionDecisionCard from "@/features/exchanges/components/ExtensionDecisionCard";
+import ExtensionRequestDialog from "@/features/exchanges/components/ExtensionRequestDialog";
+import { useExchange } from "@/features/exchanges/hooks/useExchange";
+import { useExchangeActions } from "@/features/exchanges/hooks/useExchangeActions";
+import { computeExchangeSteps } from "@/features/exchanges/utils/computeExchangeSteps";
+import { getDeadlineProgress } from "@/features/exchanges/utils/exchangeDeadline";
+import {
+  canRequestExtension,
+  getEffectiveDeadline,
+  getPendingExtension,
+} from "@/features/exchanges/utils/extensions";
+import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 
 export default function ExchangeDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const { data: exchange, isLoading, isError } = useExchange(id!);
-  const { data: book } = useListing(exchange?.listingId);
-  const { data: currentUser } = useCurrentUserProfile();
-  const counterpartId =
-    exchange && currentUser
-      ? exchange.ownerId === currentUser.id
-        ? exchange.readerId
-        : exchange.ownerId
-      : undefined;
-  const { data: counterpart } = useUser(counterpartId);
-  const navigate = useNavigate();
+  const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
 
-  if (isLoading) {
+  // Усі хуки — до ранніх return
+  const { data: exchange, isLoading, isError } = useExchange(id!);
+  const { data: currentUser, isLoading: isProfileLoading } =
+    useCurrentUserProfile();
+  const actions = useExchangeActions(id!);
+
+  if (isLoading || isProfileLoading) {
     return (
       <div className="flex justify-center py-16">
         <Spinner size={28} />
@@ -42,90 +42,116 @@ export default function ExchangeDetailPage() {
 
   if (isError || !exchange || !currentUser) {
     return (
-      <p className="text-center py-16 text-sm text-destructive">
-        Не вдалось завантажити обмін
-      </p>
+      <div className="flex flex-col items-center gap-3 py-16 text-center">
+        <p className="text-sm text-destructive">Не вдалось завантажити обмін</p>
+        <Link
+          to="/exchanges"
+          className="text-sm font-semibold text-accent-vivid hover:underline"
+        >
+          Повернутись до обмінів
+        </Link>
+      </div>
     );
   }
 
-  const status = EXCHANGE_STATUS_CONFIG[exchange.status];
-  const steps = computeExchangeSteps(exchange);
-  const deadline = getDeadlineInfo(
-    exchange.deadline,
-    exchange.extendedDeadline,
-  );
-
   const isOwner = exchange.ownerId === currentUser.id;
-  const counterpartRole = isOwner ? "Читач" : "Власник";
-  const canRequestExtension = !isOwner && exchange.status === "IN_READING";
-  return (
-    <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 md:max-w-230 md:mx-auto md:py-8">
-      <Button
-        variant="outline"
-        className="cursor-pointer w-30 text-muted-foreground"
-        onClick={() => navigate("/exchanges")}
-      >
-        <IconArrowLeft />
-        <span>До обмінів</span>
-      </Button>
-      <div className="w-full flex justify-between border-b pb-6">
-        <div className="flex flex-col">
-          <div>
-            <h1 className="text-xl font-extrabold">{exchange.bookTitle}</h1>
-            <p className="text-sm text-muted-foreground">{book?.bookAuthor}</p>
-          </div>
+  const steps = computeExchangeSteps(exchange);
+  const progress = getDeadlineProgress(exchange);
+  const isCompleted = exchange.status === "COMPLETED";
+  const isDisputed = exchange.status === "DISPUTED";
+  const showOverdue = progress.isOverdue && !isCompleted && !isDisputed;
+  const showDeadline = !isCompleted && !isDisputed;
+  const pendingExtension = getPendingExtension(exchange);
+  const readerCanExtend = canRequestExtension(exchange, currentUser.id);
 
-          <div className="flex gap-2 items-center text-sm mt-5">
-            <div className="relative w-5.5 h-5.5 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-8 md:h-8">
-              {counterpart?.avatarUrl && !avatarFailed ? (
-                <img
-                  src={counterpart.avatarUrl}
-                  alt={counterpart.name}
-                  className="w-full h-full object-cover"
-                  onError={() => setAvatarFailed(true)}
-                />
-              ) : (
-                <p className="text-primary-foreground text-xs font-semibold">
-                  {exchange.ownerName.substring(0, 1).toUpperCase()}
-                </p>
-              )}
-            </div>
-            <p className="font-bold">{exchange.ownerName}</p>
-            <p className="bg-accent-vivid/10 text-accent-vivid rounded-lg text-xs py-1.5 px-2 w-fit font-bold">
-              {counterpartRole}
-            </p>
-          </div>
-          <div className="flex gap-3 items-center flex-wrap mt-3">
-            <p className="flex items-center gap-1 bg-muted text-muted-foreground rounded-lg justify-center text-xs py-1.5 px-2 w-fit">
-              <IconCalendar size={18} />
-              <span>До {exchange.deadline}</span>
-            </p>
-            <p className="flex items-center gap-1 bg-muted text-muted-foreground rounded-lg justify-center text-xs py-1.5 px-2 w-fit">
-              <IconClock size={18} />
-              <span>{deadline.label}</span>
-            </p>
-            <p className="flex items-center gap-1 bg-muted text-muted-foreground rounded-lg justify-center text-xs py-1.5 px-2 w-fit">
-              <IconBox size={18} />
-              <span>{DELIVERY_METHODS[exchange.deliveryMethod]}</span>
-            </p>
+  return (
+    <section className="mx-auto flex w-full max-w-295 flex-col gap-6 px-4 pb-16 pt-6 md:px-8 lg:px-12">
+      <Link
+        to="/exchanges"
+        className="inline-flex h-9 w-fit items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <IconArrowLeft size={18} />
+        До обмінів
+      </Link>
+
+      <ExchangeHeader exchange={exchange} isOverdue={showOverdue} />
+
+      {showOverdue && (
+        <ExchangeOverdueBanner
+          isOwner={isOwner}
+          readerName={exchange.reader.name}
+          daysLeft={progress.daysLeft}
+        />
+      )}
+
+      <DisputeNotice exchange={exchange} isOwner={isOwner} />
+
+      <div className="flex flex-wrap items-start gap-6">
+        {/* Бічна колонка: на мобільному — перша, на десктопі — праворуч */}
+        <aside className="flex w-full flex-col gap-4 lg:sticky lg:top-6 lg:order-2 lg:w-auto lg:flex-[1_1_320px]">
+          {isOwner && pendingExtension && !isDisputed && (
+            <ExtensionDecisionCard
+              key={pendingExtension.id}
+              request={pendingExtension}
+              reader={exchange.reader}
+              currentDeadline={getEffectiveDeadline(exchange)}
+              onApprove={() =>
+                actions.approveExtension.mutateAsync(pendingExtension.id)
+              }
+              onReject={(comment) =>
+                actions.rejectExtension.mutateAsync({
+                  extensionId: pendingExtension.id,
+                  comment,
+                })
+              }
+            />
+          )}
+
+          {showDeadline && (
+            <ExchangeDeadlineCard
+              exchange={exchange}
+              progress={progress}
+              isOwner={isOwner}
+              canRequestExtension={readerCanExtend}
+              onRequestExtension={() => setExtensionDialogOpen(true)}
+            />
+          )}
+
+          <ExchangeParticipants
+            owner={exchange.owner}
+            reader={exchange.reader}
+            currentUserId={currentUser.id}
+            layout="column"
+          />
+        </aside>
+
+        {/* Основна колонка */}
+        <div className="flex w-full min-w-0 flex-col gap-6 lg:order-1 lg:w-auto lg:flex-[999_1_560px]">
+          <ExchangeReviewSection
+            exchange={exchange}
+            currentUserId={currentUser.id}
+            onSubmit={(payload) => actions.submitReview.mutateAsync(payload)}
+          />
+
+          <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
+            <h2 className="mb-5 text-lg font-extrabold">Хід обміну</h2>
+            <ExchangeTimeline
+              exchange={exchange}
+              steps={steps}
+              currentUserId={currentUser.id}
+              actions={actions}
+            />
           </div>
         </div>
-        <p
-          className={`${status.bgColor} ${status.color} rounded-lg flex gap-1 items-center justify-center h-fit text-xs py-1.5 px-2 shrink-0 whitespace-nowrap`}
-        >
-          <status.icon size={15} className="stroke-2" />
-          <span className="w-full">{status.label}</span>
-        </p>
       </div>
-      <ExchangeTimeline
-        exchange={exchange}
-        steps={steps}
-        currentUserId={currentUser.id}
-      />
-      {canRequestExtension && (
-        <Button variant="outline" className="...">
-          Запит на продовження дедлайну
-        </Button>
+
+      {extensionDialogOpen && (
+        <ExtensionRequestDialog
+          exchange={exchange}
+          open={extensionDialogOpen}
+          onOpenChange={setExtensionDialogOpen}
+          onSubmit={(payload) => actions.requestExtension.mutateAsync(payload)}
+        />
       )}
     </section>
   );

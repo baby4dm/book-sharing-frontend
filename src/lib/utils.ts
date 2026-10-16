@@ -30,3 +30,28 @@ export const formatRelativeTime = (iso: string): string => {
     month: "long",
   });
 };
+
+const DAY_MS = 86_400_000;
+
+export const daysUntil = (date: string): number => {
+  const target = new Date(`${date}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return Math.round((target.getTime() - today.getTime()) / DAY_MS);
+};
+
+export const pluralizeDays = (count: number): string => {
+  const abs = Math.abs(count);
+  const lastTwo = abs % 100;
+  const last = abs % 10;
+  if (lastTwo >= 11 && lastTwo <= 14) return `${abs} днів`;
+  if (last === 1) return `${abs} день`;
+  if (last >= 2 && last <= 4) return `${abs} дні`;
+  return `${abs} днів`;
+};
+
+export const formatDayMonth = (value: string): string =>
+  new Date(value.length > 10 ? value : `${value}T00:00:00`).toLocaleDateString(
+    "uk-UA",
+    { day: "numeric", month: "long" },
+  );

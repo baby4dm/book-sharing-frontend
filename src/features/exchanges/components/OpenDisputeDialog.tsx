@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IconAlertTriangle } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import PhotoUploadGrid from "@/components/layout/PhotoUploadGrid";
 import type { OpenDisputePayload } from "../types";
 import { getErrorMessage } from "../utils/getErrorMessage";
@@ -19,12 +21,14 @@ const MAX_REASON_LENGTH = 2000;
 interface OpenDisputeDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  readerName: string;
   onSubmit: (payload: OpenDisputePayload) => Promise<unknown>;
 }
 
 export default function OpenDisputeDialog({
   open,
   onOpenChange,
+  readerName,
   onSubmit,
 }: OpenDisputeDialogProps) {
   const [reason, setReason] = useState("");
@@ -32,6 +36,13 @@ export default function OpenDisputeDialog({
   const [isUploading, setIsUploading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const trimmedLength = reason.trim().length;
+  const canSubmit =
+    trimmedLength >= MIN_REASON_LENGTH &&
+    photos.length > 0 &&
+    !isUploading &&
+    !isSubmitting;
 
   function reset() {
     setReason("");
@@ -46,17 +57,20 @@ export default function OpenDisputeDialog({
   }
 
   async function handleSubmit() {
-    const trimmed = reason.trim();
-    if (trimmed.length < MIN_REASON_LENGTH) {
+    if (trimmedLength < MIN_REASON_LENGTH) {
       setError(
         `Опишіть проблему детальніше (мінімум ${MIN_REASON_LENGTH} символів)`,
       );
       return;
     }
+    if (photos.length === 0) {
+      setError("Додайте хоча б одне фото-доказ");
+      return;
+    }
     setIsSubmitting(true);
     setError(null);
     try {
-      await onSubmit({ reason: trimmed, urls: photos });
+      await onSubmit({ reason: reason.trim(), urls: photos });
       reset();
       onOpenChange(false);
     } catch (err) {
@@ -66,35 +80,67 @@ export default function OpenDisputeDialog({
     }
   }
 
-  const canSubmit = photos.length > 0 && !isUploading && !isSubmitting;
-
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[90vh] flex-col gap-4 overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Відкрити спір</DialogTitle>
-          <DialogDescription>
-            Опишіть, що не так із поверненою книгою, і додайте фото-докази.
-            Обмін буде передано на розгляд модератора.
-          </DialogDescription>
+      <DialogContent className="flex max-h-[90dvh] flex-col gap-5 overflow-hidden rounded-2xl p-6 sm:max-w-xl sm:p-7">
+        <DialogHeader className="flex-row items-start gap-3.5 text-left">
+          <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-destructive/10">
+            <IconAlertTriangle size={22} className="text-destructive" />
+          </div>
+          <div className="flex flex-col gap-1">
+            <DialogTitle className="font-heading text-2xl font-semibold">
+              Відкрити спір
+            </DialogTitle>
+            <DialogDescription className="text-[15px] leading-relaxed">
+              Опишіть, що не так із поверненою книгою, і додайте фото-докази.
+            </DialogDescription>
+          </div>
         </DialogHeader>
 
-        {/* Скролиться тільки цей блок */}
-        <div className="-mx-1 flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1">
-          <div className="flex flex-col gap-1.5">
-            <Label>Причина спору</Label>
-            <textarea
+        <div className="-mx-1 flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-1">
+          <ol className="flex flex-col gap-2 rounded-xl bg-background px-4 py-3.5 text-sm text-muted-foreground">
+            <li className="flex gap-2.5">
+              <span className="font-extrabold text-foreground">1</span>
+              Обмін переходить у статус «Спір», повернення не підтверджується.
+            </li>
+            <li className="flex gap-2.5">
+              <span className="font-extrabold text-foreground">2</span>
+              {readerName} отримає сповіщення й побачить причину та фото.
+            </li>
+            <li className="flex gap-2.5">
+              <span className="font-extrabold text-foreground">3</span>
+              Модератор порівняє фото до і після та ухвалить рішення.
+            </li>
+          </ol>
+
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="dispute-reason" className="text-sm font-bold">
+              Причина спору
+            </Label>
+            <Textarea
+              id="dispute-reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               maxLength={MAX_REASON_LENGTH}
               rows={4}
               disabled={isSubmitting}
-              placeholder="Наприклад: на сторінках 40-60 плями, обкладинка пошкоджена"
-              className="w-full resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-accent"
+              placeholder="Наприклад: на сторінках 40–60 плями, обкладинка пошкоджена"
+              className="resize-none rounded-lg border-input px-3.5 py-3 text-[15px] leading-relaxed"
             />
-            <p className="text-xs text-muted-foreground self-end">
-              {reason.length} / {MAX_REASON_LENGTH}
-            </p>
+            <div className="flex justify-between text-xs text-muted-foreground">
+              <span
+                className={
+                  trimmedLength > 0 && trimmedLength < MIN_REASON_LENGTH
+                    ? "text-destructive"
+                    : undefined
+                }
+              >
+                Мінімум {MIN_REASON_LENGTH} символів
+              </span>
+              <span>
+                {reason.length} / {MAX_REASON_LENGTH}
+              </span>
+            </div>
           </div>
 
           <PhotoUploadGrid
@@ -105,21 +151,27 @@ export default function OpenDisputeDialog({
             disabled={isSubmitting}
           />
 
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && (
+            <p
+              role="alert"
+              className="rounded-lg bg-destructive/10 px-3.5 py-2.5 text-sm font-medium text-destructive"
+            >
+              {error}
+            </p>
+          )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className="flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row">
           <Button
             variant="outline"
-            className="cursor-pointer"
+            className="h-12 cursor-pointer rounded-lg px-5 font-semibold"
             disabled={isSubmitting}
             onClick={() => handleOpenChange(false)}
           >
             Скасувати
           </Button>
           <Button
-            variant="destructive"
-            className="cursor-pointer"
+            className="h-12 cursor-pointer rounded-lg bg-destructive px-6 font-bold text-white hover:bg-destructive/90"
             disabled={!canSubmit}
             onClick={handleSubmit}
           >

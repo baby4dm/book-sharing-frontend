@@ -76,7 +76,7 @@ export function getStepAction(
         : waiting("Очікуємо підтвердження отримання від читача");
 
     case "return-prep":
-      if (status !== "IN_READING") return null;
+      if (status !== "IN_READING" && status !== "OVERDUE") return null;
       return isReader
         ? { kind: "photos", mode: "RETURN" }
         : waiting("Очікуємо, поки читач сфотографує та поверне книгу");

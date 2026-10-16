@@ -1,4 +1,3 @@
-import type { SortOption } from "@/lib/types";
 import type { DeliveryMethod } from "../listings/types";
 
 export type ExchangeStatus =
@@ -8,6 +7,19 @@ export type ExchangeStatus =
   | "COMPLETED"
   | "OVERDUE"
   | "DISPUTED";
+
+export type ExchangeRole = "ALL" | "OWNER" | "READER";
+export type ExchangeSort = "DEADLINE" | "NEWEST" | "OLDEST";
+
+export interface ExchangeParticipant {
+  id: string;
+  name: string;
+  avatarUrl: string | null;
+  ratingAvg: number;
+  booksGiven: number;
+  booksTaken: number;
+  booksOverdue: number;
+}
 
 export interface ExchangePhotoResponse {
   id: string;
@@ -45,6 +57,7 @@ export interface DeadlineExtensionResponse {
   createdAt: string;
   decidedAt: string | null;
 }
+
 export interface ExchangeResponse {
   id: string;
   listingId: string;
@@ -65,11 +78,53 @@ export interface ExchangeResponse {
   createdAt: string;
   completedAt: string | null;
   disputeReason: string | null;
+  bookAuthor: string | null;
+  bookCoverUrl: string | null;
+  owner: ExchangeParticipant;
+  reader: ExchangeParticipant;
+  /** Відгуки учасників після COMPLETED. Опційне, поки бекенд не віддає поле. */
+  reviews?: ExchangeReviewResponse[];
+}
+
+export interface ExchangeReviewResponse {
+  id: string;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  targetId: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
+export interface ExchangeListResponse {
+  items: ExchangeResponse[];
+  statusCounts: Record<ExchangeStatus, number>;
+  total: number;
+  page: number;
+  totalPages: number;
+  totalElements: number;
 }
 
 export interface ExchangeFilters {
-  sort?: SortOption;
+  q: string;
+  role: ExchangeRole;
+  deliveryMethod: DeliveryMethod | null;
+  status: ExchangeStatus | null;
+  sort: ExchangeSort;
+  page: number;
 }
+
+export const INITIAL_EXCHANGE_FILTERS: ExchangeFilters = {
+  q: "",
+  role: "ALL",
+  deliveryMethod: null,
+  status: null,
+  sort: "DEADLINE",
+  page: 0,
+};
+
+export type ExchangeFilterPatch = Partial<Omit<ExchangeFilters, "q">>;
 
 export interface SubmitPhotosPayload {
   urls: string[];
@@ -91,4 +146,19 @@ export interface ShipWaybillPayload {
 export interface OpenDisputePayload {
   reason: string;
   urls: string[];
+}
+
+export interface RequestExtensionPayload {
+  /** YYYY-MM-DD */
+  newDeadline: string;
+  comment: string | null;
+}
+
+export interface RejectExtensionPayload {
+  comment: string | null;
+}
+
+export interface CreateReviewPayload {
+  rating: number;
+  comment: string | null;
 }

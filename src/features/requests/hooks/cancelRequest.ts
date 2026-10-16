@@ -6,7 +6,7 @@ export function useCancelRequest() {
   return useMutation({
     mutationFn: (id: string) => cancelRequest(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["myRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
     },
   });
 }

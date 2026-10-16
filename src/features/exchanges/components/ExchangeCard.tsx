@@ -1,93 +1,125 @@
-import { IconClock, IconCalendar, IconBox } from "@tabler/icons-react";
 import { useState } from "react";
-import type { ExchangeResponse } from "../types";
-import { Button } from "@/components/ui/button";
-import { useUser } from "@/features/user/hooks/useUser";
+import { Link } from "react-router-dom";
+import {
+  IconAlertTriangle,
+  IconArrowRight,
+  IconBook,
+  IconClock,
+  IconStarFilled,
+} from "@tabler/icons-react";
 import { DELIVERY_METHODS, EXCHANGE_STATUS_CONFIG } from "@/lib/constants";
-import { useNavigate } from "react-router-dom";
-import { getDeadlineInfo } from "../utils/getDeadlineInfo";
+import { cn } from "@/lib/utils";
+import type { ExchangeResponse } from "../types";
+import {
+  getActionHint,
+  getMetaLine,
+  getPendingAction,
+} from "../utils/exchangeListItem";
 
 interface ExchangeCardProps {
   exchange: ExchangeResponse;
   currentUserId: string;
 }
 
+const TONE_CLASSES = {
+  default: "text-muted-foreground",
+  warning: "text-warning",
+  danger: "text-destructive",
+} as const;
+
 export default function ExchangeCard({
   exchange,
   currentUserId,
 }: ExchangeCardProps) {
-  const navigate = useNavigate();
-  const isOwner = exchange.ownerId === currentUserId;
-  const counterpartId = isOwner ? exchange.readerId : exchange.ownerId;
-  const counterpartName = isOwner ? exchange.readerName : exchange.ownerName;
-  const { data: counterpartProfile } = useUser(counterpartId);
+  const [coverFailed, setCoverFailed] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
+
+  const isOwner = exchange.ownerId === currentUserId;
+  const partner = isOwner ? exchange.reader : exchange.owner;
   const status = EXCHANGE_STATUS_CONFIG[exchange.status];
-  const deadline = getDeadlineInfo(
-    exchange.deadline,
-    exchange.extendedDeadline,
-  );
+  const meta = getMetaLine(exchange, isOwner);
+  const action = getPendingAction(exchange, currentUserId);
+  const MetaIcon = meta.tone === "danger" ? IconAlertTriangle : IconClock;
+
   return (
-    <div
-      className={`w-full flex flex-col gap-3 border border-border rounded-md shadow-md p-4 max-w-160 md:max-w-200 lg:max-w-220 bg-card`}
+    <Link
+      to={`/exchanges/${exchange.id}`}
+      className="flex w-full max-w-220 gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 md:gap-5 md:p-5"
     >
-      <div className="w-full flex justify-between">
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-3">
-            <h1 className="text-base md:text-lg lg:text-xl font-bold">
-              {exchange.bookTitle}
-            </h1>
-            <div className="flex gap-1 items-center text-sm">
-              <div className="relative w-5.5 h-5.5 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-8 md:h-8">
-                {counterpartProfile?.avatarUrl && !avatarFailed ? (
-                  <img
-                    src={counterpartProfile.avatarUrl}
-                    alt={counterpartName}
-                    className="w-full h-full object-cover"
-                    onError={() => setAvatarFailed(true)}
-                  />
-                ) : (
-                  <p className="text-primary-foreground text-xs font-semibold">
-                    {counterpartName.substring(0, 1).toUpperCase()}
-                  </p>
-                )}
-              </div>
-              <div className="flex items-center gap-3">
-                <p>{counterpartName}</p>
-              </div>
-            </div>
-          </div>
+      <div className="flex h-[104px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary">
+        {exchange.bookCoverUrl && !coverFailed ? (
+          <img
+            src={exchange.bookCoverUrl}
+            alt=""
+            className="size-full object-cover"
+            onError={() => setCoverFailed(true)}
+          />
+        ) : (
+          <IconBook size={24} className="text-muted-foreground" />
+        )}
+      </div>
+
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="font-heading text-lg font-semibold leading-tight text-foreground md:text-xl">
+            {exchange.bookTitle}
+          </h3>
+          <span
+            className={cn(
+              "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-bold md:text-[13px]",
+              status.color,
+              status.bgColor,
+            )}
+          >
+            {status.label}
+          </span>
         </div>
+
+        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
+          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
+            {partner.avatarUrl && !avatarFailed ? (
+              <img
+                src={partner.avatarUrl}
+                alt=""
+                className="size-full object-cover"
+                onError={() => setAvatarFailed(true)}
+              />
+            ) : (
+              partner.name.substring(0, 1).toUpperCase()
+            )}
+          </div>
+          <span className="text-[15px] font-semibold text-foreground">
+            {partner.name}
+          </span>
+          <span className="flex items-center gap-1 text-muted-foreground">
+            <IconStarFilled size={13} className="text-[#D99A1E]" />
+            {Number(partner.ratingAvg).toFixed(1)}
+          </span>
+          <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-foreground">
+            {isOwner ? "Ви — власник" : "Ви — читач"}
+          </span>
+          <span className="text-[13px] text-muted-foreground">
+            · {DELIVERY_METHODS[exchange.deliveryMethod]}
+          </span>
+        </div>
+
         <p
-          className={`${status.bgColor} ${status.color} rounded-lg flex gap-1 items-center justify-center h-fit text-xs py-1.5 px-2`}
+          className={cn(
+            "flex items-center gap-1.5 text-sm font-medium",
+            TONE_CLASSES[meta.tone],
+          )}
         >
-          <status.icon size={15} className="stroke-2" />
-          <span className="w-full">{status.label}</span>
+          <MetaIcon size={15} />
+          {meta.text}
         </p>
+
+        {action && (
+          <div className="flex items-center justify-between gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-sm font-semibold text-accent-vivid">
+            {getActionHint(action, exchange)}
+            <IconArrowRight size={16} className="shrink-0" />
+          </div>
+        )}
       </div>
-      <p className="flex items-center gap-1 bg-accent-vivid/10 text-accent-vivid font-bold rounded-lg justify-center text-xs py-1.5 px-3 w-fit">
-        <IconBox size={18} />
-        <span>{DELIVERY_METHODS[exchange.deliveryMethod]}</span>
-      </p>
-      <div className="flex items-center gap-3 flex-wrap">
-        <p className="flex items-center gap-1 bg-muted text-muted-foreground rounded-lg justify-center text-xs py-1.5 px-2 w-fit">
-          <IconCalendar size={18} />
-          <span>До {exchange.deadline}</span>
-        </p>
-        <p
-          className={`${deadline.urgent ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"} flex items-center gap-1 rounded-lg justify-center text-xs py-1.5 px-2 w-fit shrink-0 whitespace-nowrap`}
-        >
-          <IconClock size={18} />
-          <span>{deadline.label}</span>
-        </p>
-      </div>
-      <Button
-        variant="outline"
-        className="cursor-pointer mt-2"
-        onClick={() => navigate("/exchanges/" + exchange.id)}
-      >
-        Переглянути деталі
-      </Button>
-    </div>
+    </Link>
   );
 }

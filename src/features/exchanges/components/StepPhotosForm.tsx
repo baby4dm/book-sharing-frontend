@@ -1,6 +1,6 @@
+import { useState } from "react";
 import PhotoUploadGrid from "@/components/layout/PhotoUploadGrid";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import { ConfirmActionDialog } from "./ConfirmActionDialog";
 import { getErrorMessage } from "../utils/getErrorMessage";
 
@@ -11,6 +11,7 @@ interface StepPhotosFormProps {
   confirm?: { title: string; description: string };
   submitLabel: string;
 }
+
 export default function StepPhotosForm({
   hint,
   label,
@@ -20,33 +21,35 @@ export default function StepPhotosForm({
 }: StepPhotosFormProps) {
   const [photos, setPhotos] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [isSubmitting, setIsSubmiting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
 
   async function submit() {
-    setIsSubmiting(true);
+    setIsSubmitting(true);
     setError(null);
-
     try {
       await onSubmit(photos);
       setDialogOpen(false);
     } catch (err) {
       setError(getErrorMessage(err));
     } finally {
-      setIsSubmiting(false);
+      setIsSubmitting(false);
     }
   }
 
   function handleDialogChange(open: boolean) {
+    if (isSubmitting) return;
     setDialogOpen(open);
     if (!open) setError(null);
   }
 
   const canSubmit = photos.length > 0 && !isSubmitting && !isUploading;
+
   return (
-    <div className="flex flex-col">
-      <p>{hint}</p>
+    <div className="flex flex-col gap-1">
+      <p className="text-sm leading-relaxed text-muted-foreground">{hint}</p>
+
       <PhotoUploadGrid
         photos={photos}
         onChange={setPhotos}
@@ -54,14 +57,28 @@ export default function StepPhotosForm({
         label={label}
         disabled={isSubmitting}
       />
-      {!confirm && error && <p className="text-xs text-destructive">{error}</p>}
+
+      {!confirm && error && (
+        <p
+          role="alert"
+          className="rounded-lg bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive"
+        >
+          {error}
+        </p>
+      )}
+
       <Button
         disabled={!canSubmit}
-        className="cursor-pointer"
+        className="h-11 w-full cursor-pointer rounded-lg px-5 font-bold sm:w-fit"
         onClick={() => (confirm ? setDialogOpen(true) : submit())}
       >
-        {isSubmitting && !confirm ? "Зачекайте..." : submitLabel}
+        {isSubmitting && !confirm
+          ? "Надсилання..."
+          : isUploading
+            ? "Завантаження фото..."
+            : submitLabel}
       </Button>
+
       {confirm && (
         <ConfirmActionDialog
           open={dialogOpen}

@@ -7,7 +7,7 @@ export function useRejectRequest() {
     mutationFn: ({ id, comment }: { id: string; comment: string }) =>
       rejectRequest(id, comment),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["receivedRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
     },
   });
 }

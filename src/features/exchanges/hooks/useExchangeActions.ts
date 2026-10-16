@@ -1,9 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as exchangesApi from "@/api/exchanges";
+import * as exchangeExtrasApi from "@/api/exchanges";
 import type {
+  CreateReviewPayload,
   CreateShipmentPayload,
   ExchangeResponse,
   OpenDisputePayload,
+  RequestExtensionPayload,
 } from "../types";
 
 export function useExchangeActions(exchangeId: string) {
@@ -14,80 +17,78 @@ export function useExchangeActions(exchangeId: string) {
     queryClient.invalidateQueries({ queryKey: ["currentUserExchanges"] });
   }
 
-  function submitHandoverPhotosRequest(
-    urls: string[],
-  ): Promise<ExchangeResponse> {
-    return exchangesApi.submitHandoverPhotos(exchangeId, { urls });
-  }
-
-  function confirmReceivedRequest(urls: string[]): Promise<ExchangeResponse> {
-    return exchangesApi.confirmReceived(exchangeId, { urls });
-  }
-
-  function submitReturnPhotosRequest(
-    urls: string[],
-  ): Promise<ExchangeResponse> {
-    return exchangesApi.submitReturnPhotos(exchangeId, { urls });
-  }
-
-  function confirmReturnRequest(): Promise<ExchangeResponse> {
-    return exchangesApi.confirmReturn(exchangeId);
-  }
-
-  function createShipmentRequest(
-    payload: CreateShipmentPayload,
-  ): Promise<ExchangeResponse> {
-    return exchangesApi.createShipment(exchangeId, payload);
-  }
-
-  function shipWaybillRequest(args: {
-    shipmentId: string;
-    waybillPhotoUrl: string;
-  }): Promise<ExchangeResponse> {
-    return exchangesApi.shipWaybill(exchangeId, args.shipmentId, {
-      waybillPhotoUrl: args.waybillPhotoUrl,
-    });
-  }
-
-  function openDisputeRequest(
-    payload: OpenDisputePayload,
-  ): Promise<ExchangeResponse> {
-    return exchangesApi.openDispute(exchangeId, payload);
-  }
-
   const submitHandoverPhotos = useMutation({
-    mutationFn: submitHandoverPhotosRequest,
+    mutationFn: (urls: string[]) =>
+      exchangesApi.submitHandoverPhotos(exchangeId, { urls }),
     onSuccess,
   });
 
   const confirmReceived = useMutation({
-    mutationFn: confirmReceivedRequest,
+    mutationFn: (urls: string[]) =>
+      exchangesApi.confirmReceived(exchangeId, { urls }),
     onSuccess,
   });
 
   const submitReturnPhotos = useMutation({
-    mutationFn: submitReturnPhotosRequest,
+    mutationFn: (urls: string[]) =>
+      exchangesApi.submitReturnPhotos(exchangeId, { urls }),
     onSuccess,
   });
 
   const confirmReturn = useMutation({
-    mutationFn: confirmReturnRequest,
+    mutationFn: () => exchangesApi.confirmReturn(exchangeId),
     onSuccess,
   });
 
   const createShipment = useMutation({
-    mutationFn: createShipmentRequest,
+    mutationFn: (payload: CreateShipmentPayload) =>
+      exchangesApi.createShipment(exchangeId, payload),
     onSuccess,
   });
 
   const shipWaybill = useMutation({
-    mutationFn: shipWaybillRequest,
+    mutationFn: (args: { shipmentId: string; waybillPhotoUrl: string }) =>
+      exchangesApi.shipWaybill(exchangeId, args.shipmentId, {
+        waybillPhotoUrl: args.waybillPhotoUrl,
+      }),
     onSuccess,
   });
 
   const openDispute = useMutation({
-    mutationFn: openDisputeRequest,
+    mutationFn: (payload: OpenDisputePayload) =>
+      exchangesApi.openDispute(exchangeId, payload),
     onSuccess,
+  });
+
+  const requestExtension = useMutation({
+    mutationFn: (payload: RequestExtensionPayload) =>
+      exchangeExtrasApi.requestExtension(exchangeId, payload),
+    onSuccess,
+  });
+
+  const approveExtension = useMutation({
+    mutationFn: (extensionId: string) =>
+      exchangeExtrasApi.approveExtension(exchangeId, extensionId),
+    onSuccess,
+  });
+
+  const rejectExtension = useMutation({
+    mutationFn: (args: { extensionId: string; comment: string | null }) =>
+      exchangeExtrasApi.rejectExtension(exchangeId, args.extensionId, {
+        comment: args.comment,
+      }),
+    onSuccess,
+  });
+
+  const submitReview = useMutation({
+    mutationFn: (payload: CreateReviewPayload) =>
+      exchangeExtrasApi.submitReview(exchangeId, payload),
+    onSuccess: (data: ExchangeResponse) => {
+      onSuccess(data);
+
+      queryClient.invalidateQueries({ queryKey: ["currentProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
   });
 
   return {
@@ -98,6 +99,10 @@ export function useExchangeActions(exchangeId: string) {
     createShipment,
     shipWaybill,
     openDispute,
+    requestExtension,
+    approveExtension,
+    rejectExtension,
+    submitReview,
   };
 }
 

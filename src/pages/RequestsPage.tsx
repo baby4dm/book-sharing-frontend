@@ -19,7 +19,7 @@ export default function RequestsPage() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-330 justify-center px-4 pb-10 pt-6 md:px-8">
+    <section className="mx-auto flex w-full max-w-236 justify-center px-4 pb-10 pt-6 md:px-8">
       <Tabs
         value={tab}
         onValueChange={(value) => changeTab(value as RequestsTab)}

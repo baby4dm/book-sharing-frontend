@@ -1,7 +1,12 @@
 import type {
+  CreateReviewPayload,
   CreateShipmentPayload,
+  ExchangeFilters,
+  ExchangeListResponse,
   ExchangeResponse,
   OpenDisputePayload,
+  RejectExtensionPayload,
+  RequestExtensionPayload,
   ShipWaybillPayload,
   SubmitPhotosPayload,
 } from "@/features/exchanges/types";
@@ -19,6 +24,25 @@ export async function getExchange(id: string): Promise<ExchangeResponse> {
   return response.data;
 }
 
+export async function getExchanges(
+  filters: ExchangeFilters,
+): Promise<ExchangeListResponse> {
+  const { data } = await apiClient.get<ExchangeListResponse>(
+    "/api/exchanges/my/search",
+    {
+      params: {
+        q: filters.q || undefined,
+        role: filters.role,
+        deliveryMethod: filters.deliveryMethod ?? undefined,
+        status: filters.status ?? undefined,
+        sort: filters.sort,
+        page: filters.page,
+      },
+    },
+  );
+  return data;
+}
+
 export async function submitHandoverPhotos(
   exchangeId: string,
   payload: SubmitPhotosPayload,
@@ -27,7 +51,6 @@ export async function submitHandoverPhotos(
     `/api/exchanges/${exchangeId}/handover-photos`,
     payload,
   );
-
   return response.data;
 }
 
@@ -39,7 +62,6 @@ export async function confirmReceived(
     `/api/exchanges/${exchangeId}/confirm-received`,
     payload,
   );
-
   return response.data;
 }
 
@@ -60,7 +82,6 @@ export async function confirmReturn(
   const response = await apiClient.post<ExchangeResponse>(
     `/api/exchanges/${exchangeId}/confirm-return`,
   );
-
   return response.data;
 }
 
@@ -72,7 +93,6 @@ export async function createShipment(
     `/api/exchanges/${exchangeId}/shipment`,
     payload,
   );
-
   return response.data;
 }
 
@@ -94,6 +114,50 @@ export async function openDispute(
 ): Promise<ExchangeResponse> {
   const response = await apiClient.post<ExchangeResponse>(
     `/api/exchanges/${exchangeId}/dispute`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function requestExtension(
+  exchangeId: string,
+  payload: RequestExtensionPayload,
+): Promise<ExchangeResponse> {
+  const response = await apiClient.post<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/extensions`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function approveExtension(
+  exchangeId: string,
+  extensionId: string,
+): Promise<ExchangeResponse> {
+  const response = await apiClient.post<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/extensions/${extensionId}/approve`,
+  );
+  return response.data;
+}
+
+export async function rejectExtension(
+  exchangeId: string,
+  extensionId: string,
+  payload: RejectExtensionPayload,
+): Promise<ExchangeResponse> {
+  const response = await apiClient.post<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/extensions/${extensionId}/reject`,
+    payload,
+  );
+  return response.data;
+}
+
+export async function submitReview(
+  exchangeId: string,
+  payload: CreateReviewPayload,
+): Promise<ExchangeResponse> {
+  const response = await apiClient.post<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/reviews`,
     payload,
   );
   return response.data;

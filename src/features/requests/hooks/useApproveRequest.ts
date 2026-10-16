@@ -7,7 +7,7 @@ export function useApproveRequest() {
   return useMutation({
     mutationFn: (id: string) => approveReqest(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["receivedRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["requests"] });
     },
   });
 }
