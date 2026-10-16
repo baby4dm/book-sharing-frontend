@@ -149,7 +149,6 @@ export interface OpenDisputePayload {
 }
 
 export interface RequestExtensionPayload {
-  /** YYYY-MM-DD */
   newDeadline: string;
   comment: string | null;
 }
@@ -161,4 +160,16 @@ export interface RejectExtensionPayload {
 export interface CreateReviewPayload {
   rating: number;
   comment: string | null;
+}
+
+export interface ReviewResponse {
+  id: string;
+  exchangeId: string;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  targetId: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
 }

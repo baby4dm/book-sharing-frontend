@@ -83,9 +83,12 @@ export function useExchangeActions(exchangeId: string) {
   const submitReview = useMutation({
     mutationFn: (payload: CreateReviewPayload) =>
       exchangeExtrasApi.submitReview(exchangeId, payload),
-    onSuccess: (data: ExchangeResponse) => {
-      onSuccess(data);
-
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["exchange", exchangeId] });
+      queryClient.invalidateQueries({
+        queryKey: ["exchangeReviews", exchangeId],
+      });
+      queryClient.invalidateQueries({ queryKey: ["currentUserExchanges"] });
       queryClient.invalidateQueries({ queryKey: ["currentProfile"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },

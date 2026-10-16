@@ -1,19 +1,19 @@
-// features/exchanges/components/ExchangeTimeline.tsx
+import type { ComponentType } from "react";
 import {
   IconCamera,
-  IconTruck,
-  IconPackage,
   IconCheck,
+  IconPackage,
+  IconTruck,
 } from "@tabler/icons-react";
-import type { ComponentType } from "react";
-import type { TimelineStep } from "../utils/computeExchangeSteps";
+import { cn } from "@/lib/utils";
+import type { ExchangeActions } from "../hooks/useExchangeActions";
 import type { ExchangeResponse } from "../types";
-import { useExchangeActions } from "../hooks/useExchangeActions";
+import type { TimelineStep } from "../utils/computeExchangeSteps";
 import StepActionPanel from "./StepActionPanel";
 
 const STEP_ICONS: Record<
   string,
-  ComponentType<{ size?: number; className?: string }>
+  ComponentType<{ size?: number; className?: string; stroke?: number }>
 > = {
   preparation: IconCamera,
   "shipping-to-reader": IconTruck,
@@ -41,100 +41,147 @@ interface ExchangeTimelineProps {
   exchange: ExchangeResponse;
   steps: TimelineStep[];
   currentUserId: string;
+  actions: ExchangeActions;
 }
 
 export default function ExchangeTimeline({
   exchange,
   steps,
   currentUserId,
+  actions,
 }: ExchangeTimelineProps) {
-  const actions = useExchangeActions(exchange.id);
+  const isOverdue = exchange.status === "OVERDUE";
+
   return (
-    <div className="flex flex-col">
+    <ol className="flex flex-col">
       {steps.map((step, index) => {
-        const Icon = STEP_ICONS[step.key];
+        const Icon = STEP_ICONS[step.key] ?? IconCheck;
         const isLast = index === steps.length - 1;
         const isActive = step.state === "active";
         const isCompleted = step.state === "completed";
+        const isLocked = step.state === "locked";
+        const activeDanger =
+          isActive && isOverdue && step.key === "return-prep";
 
         return (
-          <div
+          <li
             key={step.key}
-            className={`flex items-start gap-4 ${step.state === "locked" ? "opacity-40" : ""}`}
+            aria-current={isActive ? "step" : undefined}
+            className="flex gap-4"
           >
+            {/* Маркер + лінія */}
             <div className="flex flex-col items-center">
               <div
-                className={`flex items-center justify-center rounded-full shrink-0 ${
-                  isActive
-                    ? "w-10 h-10 bg-accent-vivid ring-[5px] ring-accent"
-                    : isCompleted
-                      ? "w-9 h-9 bg-success/10 border-[1.5px] border-success"
-                      : "w-9 h-9 bg-secondary"
-                }`}
+                className={cn(
+                  "flex shrink-0 items-center justify-center rounded-full",
+                  isActive &&
+                    (activeDanger
+                      ? "size-10 bg-destructive ring-[5px] ring-destructive/15"
+                      : "size-10 bg-primary ring-[5px] ring-accent"),
+                  isCompleted &&
+                    "size-9 border-[1.5px] border-success bg-success/10",
+                  isLocked && "size-9 bg-secondary",
+                )}
               >
-                <Icon
-                  size={isActive ? 18 : 16}
-                  className={
-                    isActive
-                      ? "text-white"
-                      : isCompleted
-                        ? "text-success"
-                        : "text-muted-foreground"
-                  }
-                />
+                {isCompleted ? (
+                  <IconCheck size={16} stroke={2.6} className="text-success" />
+                ) : (
+                  <Icon
+                    size={isActive ? 18 : 16}
+                    className={
+                      isActive ? "text-white" : "text-muted-foreground"
+                    }
+                  />
+                )}
               </div>
               {!isLast && (
                 <div
-                  className={`w-0.5 flex-1 ${isCompleted ? "min-h-23" : "min-h-5"} ${isCompleted ? "bg-success/30" : "bg-border"}`}
+                  className={cn(
+                    "w-0.5 flex-1",
+                    isCompleted ? "min-h-6 bg-success/30" : "min-h-5 bg-border",
+                  )}
                 />
               )}
             </div>
 
-            <div className="pb-6 flex-1 min-w-0 h-full mt-2 flex flex-col">
-              <div className="flex items-baseline justify-between gap-2 h-full">
+            {/* Вміст кроку */}
+            <div
+              className={cn(
+                "min-w-0 flex-1",
+                isLast ? "pb-0" : "pb-6",
+                isActive ? "pt-2" : "pt-1.5",
+              )}
+            >
+              <div className="flex items-baseline justify-between gap-2">
                 <p
-                  className={`text-sm ${
-                    isActive
-                      ? "font-bold"
-                      : isCompleted
-                        ? "font-semibold"
-                        : "font-semibold text-muted-foreground"
-                  }`}
+                  className={cn(
+                    "text-[15px]",
+                    isActive && "font-extrabold",
+                    isCompleted && "font-bold",
+                    isLocked && "font-bold text-muted-foreground",
+                  )}
                 >
                   {step.title}
                 </p>
                 {step.date && (
-                  <span className="text-xs text-muted-foreground shrink-0">
+                  <span className="shrink-0 text-[13px] text-muted-foreground">
                     {formatStepDate(step.date)}
                   </span>
                 )}
               </div>
 
+              {isActive && (
+                <p
+                  className={cn(
+                    "text-[13px]",
+                    activeDanger
+                      ? "font-semibold text-destructive"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  {activeDanger ? "Термін повернення минув" : "Поточний крок"}
+                </p>
+              )}
+
               {step.shipment && (
-                <div className="mt-1.5">
-                  <p className="text-xs font-semibold text-accent-vivid">
+                <div className="mt-1.5 flex flex-col gap-2">
+                  <p className="text-sm font-semibold text-accent-vivid">
                     {CARRIER_LABELS[step.shipment.carrier]} · №
                     {step.shipment.branchNumber}, {step.shipment.city}
                   </p>
                   {step.shipment.waybillPhotoUrl && (
-                    <img
-                      src={step.shipment.waybillPhotoUrl}
-                      alt="Накладна"
-                      className="w-14 h-14 rounded-lg object-cover mt-2"
-                    />
+                    <a
+                      href={step.shipment.waybillPhotoUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="size-13 overflow-hidden rounded-lg ring-1 ring-border"
+                    >
+                      <img
+                        src={step.shipment.waybillPhotoUrl}
+                        alt="Фото накладної"
+                        className="size-full object-cover"
+                      />
+                    </a>
                   )}
                 </div>
               )}
 
               {step.photos.length > 0 && (
-                <div className="flex gap-2 mt-2 flex-wrap">
+                <div className="mt-2 flex flex-wrap gap-2">
                   {step.photos.map((photo) => (
-                    <img
+                    <a
                       key={photo.id}
-                      src={photo.url}
-                      alt={photo.note ?? "Фото"}
-                      className="w-14 h-14 rounded-lg object-cover"
-                    />
+                      href={photo.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="size-13 overflow-hidden rounded-lg ring-1 ring-border"
+                    >
+                      <img
+                        src={photo.url}
+                        alt={photo.note ?? `Фото: ${step.title}`}
+                        className="size-full object-cover"
+                      />
+                    </a>
                   ))}
                 </div>
               )}
@@ -146,9 +193,9 @@ export default function ExchangeTimeline({
                 actions={actions}
               />
             </div>
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }

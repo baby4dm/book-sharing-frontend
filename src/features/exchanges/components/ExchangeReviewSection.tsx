@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IconCheck, IconClock, IconStarFilled } from "@tabler/icons-react";
+import { IconCheck, IconStarFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,9 +38,8 @@ export default function ExchangeReviewSection({
 
   const isOwner = exchange.ownerId === currentUserId;
   const partner = isOwner ? exchange.reader : exchange.owner;
-  const reviews = exchange.reviews ?? [];
-  const myReview = reviews.find((r) => r.authorId === currentUserId) ?? null;
-  const partnerReview = reviews.find((r) => r.authorId === partner.id) ?? null;
+  const myReview =
+    (exchange.reviews ?? []).find((r) => r.authorId === currentUserId) ?? null;
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 md:p-6">
@@ -53,32 +52,17 @@ export default function ExchangeReviewSection({
         </p>
       </div>
 
-      {!myReview && (
+      {myReview ? (
+        <div className="flex flex-col gap-4">
+          <h2 className="text-base font-extrabold">Ваш відгук</h2>
+          <ReviewItem review={myReview} title={`Ви про ${partner.name}`} />
+        </div>
+      ) : (
         <ReviewForm
           partner={partner}
           bookTitle={exchange.bookTitle}
           onSubmit={onSubmit}
         />
-      )}
-
-      {(myReview || partnerReview) && (
-        <div className="flex flex-col gap-4">
-          <h2 className="text-base font-extrabold">Відгуки</h2>
-          {myReview && (
-            <ReviewItem review={myReview} title={`Ви про ${partner.name}`} />
-          )}
-          {partnerReview ? (
-            <ReviewItem
-              review={partnerReview}
-              title={`${partner.name} про вас`}
-            />
-          ) : (
-            <p className="flex items-center gap-2 rounded-xl bg-background px-3.5 py-3 text-sm text-muted-foreground">
-              <IconClock size={16} className="shrink-0" />
-              {partner.name} ще не залишив(ла) відгук
-            </p>
-          )}
-        </div>
       )}
     </section>
   );
@@ -212,7 +196,7 @@ function ReviewItem({
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2 border-t border-border pt-4 first:border-t-0 first:pt-0">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center gap-2.5">
         <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-xs font-bold text-accent-foreground">
           {review.authorAvatarUrl && !avatarFailed ? (

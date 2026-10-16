@@ -30,7 +30,8 @@ export default function ExchangeDeadlineCard({
   canRequestExtension,
   onRequestExtension,
 }: ExchangeDeadlineCardProps) {
-  const { end, daysLeft, percent, isOverdue } = progress;
+  const { end, daysLeft, percent, isOverdue, returnedAt, returnedLateDays } =
+    progress;
   const pending = getPendingExtension(exchange);
   const latestDecided = pending ? null : getLatestDecidedExtension(exchange);
   const wasExtended = exchange.extendedDeadline !== null;
@@ -77,39 +78,61 @@ export default function ExchangeDeadlineCard({
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      {returnedAt && (
         <div
-          role="progressbar"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={isOverdue ? 100 : percent}
-          aria-label="Час на читання"
-          className="h-2 w-full overflow-hidden rounded-full bg-muted"
-        >
-          <div
-            className={cn(
-              "h-full rounded-full transition-all",
-              tone === "danger" && "bg-destructive",
-              tone === "warning" && "bg-warning",
-              tone === "ok" && "bg-primary",
-            )}
-            style={{ width: `${isOverdue ? 100 : percent}%` }}
-          />
-        </div>
-        <span
           className={cn(
-            "flex items-center gap-1.5 text-sm font-semibold",
-            tone === "danger" && "text-destructive",
-            tone === "warning" && "text-warning",
-            tone === "ok" && "text-muted-foreground",
+            "flex items-start gap-2 rounded-xl px-3.5 py-3 text-sm",
+            returnedLateDays > 0
+              ? "bg-destructive/5 text-destructive"
+              : "bg-accent text-accent-foreground",
           )}
         >
-          <IconClock size={15} />
-          {label}
-        </span>
-      </div>
+          <IconCheck size={16} className="mt-0.5 shrink-0" />
+          <span>
+            Книгу{" "}
+            {exchange.deliveryMethod === "MAIL" ? "відправлено" : "повернено"}{" "}
+            {formatDayMonth(returnedAt)}
+            {returnedLateDays > 0
+              ? ` — із запізненням на ${pluralizeDays(returnedLateDays)}`
+              : " — вчасно"}
+          </span>
+        </div>
+      )}
 
-      {/* Запит чекає рішення */}
+      {!returnedAt && (
+        <div className="flex flex-col gap-1.5">
+          <div
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={isOverdue ? 100 : percent}
+            aria-label="Час на читання"
+            className="h-2 w-full overflow-hidden rounded-full bg-muted"
+          >
+            <div
+              className={cn(
+                "h-full rounded-full transition-all",
+                tone === "danger" && "bg-destructive",
+                tone === "warning" && "bg-warning",
+                tone === "ok" && "bg-primary",
+              )}
+              style={{ width: `${isOverdue ? 100 : percent}%` }}
+            />
+          </div>
+          <span
+            className={cn(
+              "flex items-center gap-1.5 text-sm font-semibold",
+              tone === "danger" && "text-destructive",
+              tone === "warning" && "text-warning",
+              tone === "ok" && "text-muted-foreground",
+            )}
+          >
+            <IconClock size={15} />
+            {label}
+          </span>
+        </div>
+      )}
+
       {pending && (
         <div className="flex flex-col gap-1 rounded-xl bg-warning/10 px-3.5 py-3">
           <span className="flex items-center gap-1.5 text-sm font-bold text-warning">
@@ -126,7 +149,6 @@ export default function ExchangeDeadlineCard({
         </div>
       )}
 
-      {/* Останнє рішення по запиту */}
       {latestDecided?.status === "APPROVED" && !isOwner && (
         <div className="flex items-start gap-2 rounded-xl bg-accent px-3.5 py-3 text-sm text-accent-foreground">
           <IconCheck size={16} className="mt-0.5 shrink-0" />

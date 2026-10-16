@@ -2,6 +2,7 @@ import { daysUntil, formatDayMonth, pluralizeDays } from "@/lib/utils";
 import type { ExchangeResponse } from "../types";
 import { computeExchangeSteps } from "./computeExchangeSteps";
 import { getStepAction, type StepAction } from "./getStepAction";
+import { getReturnedAt } from "./exchangeDeadline";
 
 export interface MetaLine {
   text: string;
@@ -42,19 +43,30 @@ export const getMetaLine = (
         tone: "default",
       };
     case "RETURN_PENDING": {
-      if (!isOwner) {
-        return { text: "Очікуємо підтвердження власника", tone: "default" };
+      const returnedAt = getReturnedAt(exchange);
+      const isMail = exchange.deliveryMethod === "MAIL";
+
+      if (returnedAt) {
+        if (!isOwner) {
+          return { text: "Очікуємо підтвердження власника", tone: "default" };
+        }
+        return {
+          text: `Читач ${isMail ? "відправив" : "повернув"} книгу ${formatDayMonth(returnedAt)}`,
+          tone: "default",
+        };
       }
-      const shipment = exchange.shipments.find(
-        (s) => s.direction === "TO_OWNER",
-      );
-      const sentAt = shipment?.shippedAt ?? exchange.returnPhotos[0]?.createdAt;
-      if (!sentAt) {
-        return { text: "Читач готує книгу до повернення", tone: "default" };
+
+      if (days < 0) {
+        return {
+          text: `Прострочено на ${pluralizeDays(days)}`,
+          tone: "danger",
+        };
       }
       return {
-        text: `Читач ${shipment ? "відправив" : "повернув"} книгу ${formatDayMonth(sentAt)}`,
-        tone: "default",
+        text: isOwner
+          ? "Читач готує книгу до повернення"
+          : `${isMail ? "Відправте" : "Поверніть"} книгу до ${formatDayMonth(deadline)}`,
+        tone: days <= 3 ? "warning" : "default",
       };
     }
     default:
