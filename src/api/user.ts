@@ -1,6 +1,7 @@
 import type {
   UpdateProfilePayload,
   UserResponse,
+  UserReviewListResponse,
 } from "@/features/userProfile/types";
 import apiClient from "./client";
 
@@ -18,5 +19,17 @@ export async function updateCurrentUser(
 
 export async function getUser(id: string | undefined): Promise<UserResponse> {
   const response = await apiClient.get<UserResponse>("/api/users/" + id);
+  return response.data;
+}
+
+export async function getUserReviews(
+  userId: string,
+  page = 0,
+  size = 5,
+): Promise<UserReviewListResponse> {
+  const response = await apiClient.get<UserReviewListResponse>(
+    `/api/users/${userId}/reviews`,
+    { params: { page, size } },
+  );
   return response.data;
 }

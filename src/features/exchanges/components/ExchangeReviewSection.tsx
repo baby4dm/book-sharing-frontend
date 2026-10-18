@@ -38,8 +38,9 @@ export default function ExchangeReviewSection({
 
   const isOwner = exchange.ownerId === currentUserId;
   const partner = isOwner ? exchange.reader : exchange.owner;
-  const myReview =
-    (exchange.reviews ?? []).find((r) => r.authorId === currentUserId) ?? null;
+  const reviews = exchange.reviews ?? [];
+  const myReview = reviews.find((r) => r.authorId === currentUserId) ?? null;
+  const reviewAboutMe = reviews.find((r) => r.authorId === partner.id) ?? null;
 
   return (
     <section className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 md:p-6">
@@ -52,17 +53,27 @@ export default function ExchangeReviewSection({
         </p>
       </div>
 
-      {myReview ? (
-        <div className="flex flex-col gap-4">
-          <h2 className="text-base font-extrabold">Ваш відгук</h2>
-          <ReviewItem review={myReview} title={`Ви про ${partner.name}`} />
-        </div>
-      ) : (
+      {!myReview && (
         <ReviewForm
           partner={partner}
           bookTitle={exchange.bookTitle}
           onSubmit={onSubmit}
         />
+      )}
+
+      {(myReview || reviewAboutMe) && (
+        <div className="flex flex-col gap-4">
+          <h2 className="text-base font-extrabold">Відгуки</h2>
+          {myReview && (
+            <ReviewItem review={myReview} title={`Ви про ${partner.name}`} />
+          )}
+          {reviewAboutMe && (
+            <ReviewItem
+              review={reviewAboutMe}
+              title={`${partner.name} про вас`}
+            />
+          )}
+        </div>
       )}
     </section>
   );
@@ -196,7 +207,7 @@ function ReviewItem({
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 border-t border-border pt-4 first:border-t-0 first:pt-0">
       <div className="flex items-center gap-2.5">
         <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-xs font-bold text-accent-foreground">
           {review.authorAvatarUrl && !avatarFailed ? (

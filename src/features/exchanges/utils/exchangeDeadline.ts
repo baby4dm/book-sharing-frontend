@@ -55,8 +55,7 @@ export const getDeadlineProgress = (
     (exchange.status === "IN_READING" ||
       exchange.status === "OVERDUE" ||
       exchange.status === "RETURN_PENDING");
-  const isOverdue =
-    exchange.status === "OVERDUE" || (bookStillWithReader && daysLeft < 0);
+  const isOverdue = bookStillWithReader && daysLeft < 0;
 
   return {
     start,

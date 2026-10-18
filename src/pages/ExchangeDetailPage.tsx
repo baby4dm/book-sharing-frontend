@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Spinner } from "@/components/ui/Spinner";
 import DisputeNotice from "@/features/exchanges/components/DisputeNotice";
+import DisputeResolution from "@/features/exchanges/components/DisputeResolution";
 import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
 import ExchangeHeader from "@/features/exchanges/components/ExchangeHeader";
 import ExchangeOverdueBanner from "@/features/exchanges/components/ExchangeOverdueBanner";
@@ -26,7 +27,6 @@ export default function ExchangeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
 
-  // Усі хуки — до ранніх return
   const { data: exchange, isLoading, isError } = useExchange(id!);
   const { data: currentUser, isLoading: isProfileLoading } =
     useCurrentUserProfile();
@@ -85,9 +85,9 @@ export default function ExchangeDetailPage() {
       )}
 
       <DisputeNotice exchange={exchange} isOwner={isOwner} />
+      <DisputeResolution exchange={exchange} currentUserId={currentUser.id} />
 
       <div className="flex flex-wrap items-start gap-6">
-        {/* Бічна колонка: на мобільному — перша, на десктопі — праворуч */}
         <aside className="flex w-full flex-col gap-4 lg:sticky lg:top-6 lg:order-2 lg:w-auto lg:flex-[1_1_320px]">
           {isOwner && pendingExtension && !isDisputed && (
             <ExtensionDecisionCard
@@ -125,7 +125,6 @@ export default function ExchangeDetailPage() {
           />
         </aside>
 
-        {/* Основна колонка */}
         <div className="flex w-full min-w-0 flex-col gap-6 lg:order-1 lg:w-auto lg:flex-[999_1_560px]">
           <ExchangeReviewSection
             exchange={exchange}

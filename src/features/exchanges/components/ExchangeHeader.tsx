@@ -13,8 +13,12 @@ export default function ExchangeHeader({
   isOverdue,
 }: ExchangeHeaderProps) {
   const [coverFailed, setCoverFailed] = useState(false);
-  const status =
-    EXCHANGE_STATUS_CONFIG[isOverdue ? "OVERDUE" : exchange.status];
+  const displayStatus = isOverdue
+    ? "OVERDUE"
+    : exchange.status === "OVERDUE"
+      ? "IN_READING"
+      : exchange.status;
+  const status = EXCHANGE_STATUS_CONFIG[displayStatus];
 
   return (
     <div className="flex w-full gap-4 md:gap-5">

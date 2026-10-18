@@ -1,8 +1,8 @@
-import { useState } from "react";
-import type { UserResponse } from "../types";
 import { Button } from "@/components/ui/button";
-import { SETTLEMENT_TYPE_LABELS } from "@/features/listings/types";
-import { IconMapPin, IconStarFilled } from "@tabler/icons-react";
+import { IconMapPin, IconPencil } from "@tabler/icons-react";
+import type { UserResponse } from "../types";
+import { formatMemberSince, formatUserLocation } from "../utils/profileFormat";
+import UserAvatar from "./UserAvatar";
 
 interface ProfileViewProps {
   userData: UserResponse;
@@ -10,121 +10,56 @@ interface ProfileViewProps {
 }
 
 export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  const createDate = new Date(userData.createdAt);
+  const location = formatUserLocation(userData);
+
   return (
-    <div className="flex flex-col gap-4 items-center text-center w-full">
-      <div className="flex flex-col gap-4 items-center">
-        <div className="relative w-18 h-18 rounded-full overflow-hidden bg-primary flex items-center justify-center md:w-25 md:h-25">
-          {userData.avatarUrl && !avatarFailed ? (
-            <img
-              src={userData.avatarUrl}
-              alt={userData.name}
-              className="w-full h-full object-cover"
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            <p className="text-primary-foreground text-3xl font-semibold">
-              {userData.name.substring(0, 1).toUpperCase()}
-            </p>
+    <aside className="flex w-full flex-col items-center gap-4 rounded-[20px] border border-border bg-card p-6 text-center md:p-7 lg:sticky lg:top-24 lg:w-[340px] lg:shrink-0">
+      <UserAvatar
+        name={userData.name}
+        src={userData.avatarUrl}
+        className="h-24 w-24 md:h-28 md:w-28"
+        fallbackClassName="text-4xl md:text-5xl"
+      />
+
+      <div className="flex w-full min-w-0 flex-col gap-1">
+        <h1 className="font-heading text-2xl font-semibold break-words md:text-[30px] md:leading-tight">
+          {userData.name}
+        </h1>
+        <p className="truncate text-sm text-muted-foreground">
+          {userData.email}
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-1.5 text-sm text-foreground/80">
+        <p className="flex items-center justify-center gap-1.5">
+          <IconMapPin className="size-4 shrink-0 text-primary" />
+          {location ?? (
+            <span className="text-muted-foreground">Місто не вказано</span>
           )}
-        </div>
-        <div className="flex flex-col gap-3 items-center text-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="flex flex-col items-center gap-1">
-              <h1 className="text-xl font-extrabold md:text-2xl">
-                {userData.name}
-              </h1>
-              <p className="text-sm text-accent-vivid">{userData.email}</p>
-              <p className="flex items-center gap-1">
-                <IconMapPin className="w-4 h-4 text-accent-vivid" />
-                <span className="text-xs font-light md:text-sm">
-                  {!userData.settlementName
-                    ? "Місто не вказано"
-                    : `${SETTLEMENT_TYPE_LABELS[userData.settlementType || ""].substring(0, 1).toLowerCase()}.${userData.settlementName}, ${userData.region}`}
-                </span>
-              </p>
-              <p className="text-xs text-muted-foreground md:text-sm">
-                На сервісі з{" "}
-                {createDate.toLocaleDateString("uk-UA", { month: "long" }) +
-                  " " +
-                  createDate.getFullYear()}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={() => onEditing(true)}
-            >
-              Редагувати профіль
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground md:text-base">
-            {userData.bio}
-          </p>
-        </div>
+        </p>
+        <p className="text-muted-foreground">
+          {formatMemberSince(userData.createdAt)}
+        </p>
       </div>
-      <div className="grid grid-cols-2 gap-3 w-full md:grid-cols-3 max-w-120 md:max-w-160">
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <IconStarFilled className="text-yellow-500 w-4 h-4 md:w-5 md:h-5" />
-            <span className="font-extrabold md:text-lg">
-              {userData.ratingAvg.toFixed(2)}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">Рейтинг</p>
-        </div>
 
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <span className="font-extrabold md:text-lg">
-              {userData.booksGiven}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">Надано</p>
-        </div>
+      {userData.bio?.trim() ? (
+        <p className="text-[15px] leading-relaxed whitespace-pre-line text-foreground/80">
+          {userData.bio}
+        </p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Розкажіть іншим читачам, які книги вам подобаються.
+        </p>
+      )}
 
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <span className="font-extrabold md:text-lg">
-              {userData.booksTaken}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">Взято</p>
-        </div>
-
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <span className="font-extrabold md:text-lg">
-              {userData.booksReturnedOnTime}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">
-            Повернено вчасно
-          </p>
-        </div>
-
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <span className="font-extrabold md:text-lg">
-              {userData.booksDamaged}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">
-            Пошкоджено
-          </p>
-        </div>
-        <div className="border border-border rounded-lg py-4 px-8 flex flex-col gap-1 items-center w-full">
-          <p className="flex items-center gap-1">
-            <span className="font-extrabold md:text-lg">
-              {userData.booksOverdue}
-            </span>
-          </p>
-          <p className="text-sm text-muted-foreground md:text-base">
-            Протерміновано
-          </p>
-        </div>
-      </div>
-    </div>
+      <Button
+        variant="outline"
+        className="h-11 cursor-pointer gap-2 rounded-[10px] px-5 font-bold"
+        onClick={() => onEditing(true)}
+      >
+        <IconPencil className="size-4" />
+        Редагувати профіль
+      </Button>
+    </aside>
   );
 }

@@ -29,3 +29,23 @@ export interface UpdateProfilePayload {
   settlementName?: string;
   bio?: string;
 }
+
+export interface UserReview {
+  id: string;
+  exchangeId: string;
+  bookTitle: string;
+  authorId: string;
+  authorName: string;
+  authorAvatarUrl: string | null;
+  authorRole: "OWNER" | "READER";
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+}
+
+export interface UserReviewListResponse {
+  items: UserReview[];
+  page: number;
+  totalPages: number;
+  totalElements: number;
+}

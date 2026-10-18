@@ -89,6 +89,7 @@ export function useExchangeActions(exchangeId: string) {
         queryKey: ["exchangeReviews", exchangeId],
       });
       queryClient.invalidateQueries({ queryKey: ["currentUserExchanges"] });
+      queryClient.invalidateQueries({ queryKey: ["userReviews"] });
       queryClient.invalidateQueries({ queryKey: ["currentProfile"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
     },

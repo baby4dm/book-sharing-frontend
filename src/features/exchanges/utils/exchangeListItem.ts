@@ -33,8 +33,6 @@ export const getMetaLine = (
         text: `Повернено ${formatDayMonth(exchange.completedAt ?? deadline)}`,
         tone: "default",
       };
-    case "OVERDUE":
-      return { text: `Прострочено на ${pluralizeDays(days)}`, tone: "danger" };
     case "DISPUTED":
       return { text: "Відкрито спір", tone: "danger" };
     case "HANDOVER_PENDING":

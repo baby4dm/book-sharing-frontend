@@ -37,7 +37,7 @@ export default function WaybillForm({ shipment, onSubmit }: WaybillFormProps) {
 
   return (
     <div className="flex flex-col gap-3 mt-2">
-      <div className="rounded-lg bg-secondary p-3 text-xs">
+      <div className="rounded-lg bg-secondary p-3 text-s  m">
         <p className="font-semibold">Куди відправити</p>
         <p className="mt-1">{shipment.recipientName}</p>
         <p className="text-muted-foreground">{shipment.recipientPhone}</p>

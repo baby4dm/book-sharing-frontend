@@ -82,8 +82,8 @@ export interface ExchangeResponse {
   bookCoverUrl: string | null;
   owner: ExchangeParticipant;
   reader: ExchangeParticipant;
-  /** Відгуки учасників після COMPLETED. Опційне, поки бекенд не віддає поле. */
   reviews?: ExchangeReviewResponse[];
+  dispute: ExchangeDisputeResponse | null;
 }
 
 export interface ExchangeReviewResponse {
@@ -172,4 +172,31 @@ export interface ReviewResponse {
   rating: number;
   comment: string | null;
   createdAt: string;
+}
+
+export interface DeadlineExtensionResponse {
+  id: string;
+  requestedNewDeadline: string;
+  status: "PENDING" | "APPROVED" | "REJECTED";
+  comment: string | null;
+  createdAt: string;
+  decidedAt: string | null;
+  decisionComment: string | null;
+}
+
+export type DisputeStatus =
+  | "OPEN"
+  | "RESOLVED_FAVOR_FILER"
+  | "RESOLVED_FAVOR_OTHER"
+  | "DISMISSED";
+
+export interface ExchangeDisputeResponse {
+  id: string;
+  filedByUserId: string;
+  description: string;
+  status: DisputeStatus;
+  resolutionComment: string | null;
+  moderatorName: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
 }
