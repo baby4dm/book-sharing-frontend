@@ -46,7 +46,7 @@ export default function ExchangeCard({
       to={`/exchanges/${exchange.id}`}
       className="flex w-full max-w-220 gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 md:gap-5 md:p-5"
     >
-      <div className="flex h-[104px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary">
+      <div className="flex h-26 w-18 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary">
         {exchange.bookCoverUrl && !coverFailed ? (
           <img
             src={exchange.bookCoverUrl}

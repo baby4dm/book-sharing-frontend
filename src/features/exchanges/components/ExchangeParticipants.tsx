@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { IconStarFilled } from "@tabler/icons-react";
 import type { ExchangeParticipant } from "../types";
+import OpenExchangeChatButton from "@/features/chats/components/OpenExchangeChatButton";
 
 interface ParticipantCardProps {
   participant: ExchangeParticipant;
   role: string;
   isCurrentUser: boolean;
+  exchangeId?: string;
 }
 
 function ParticipantCard({
   participant,
   role,
   isCurrentUser,
+  exchangeId,
 }: ParticipantCardProps) {
   const [avatarFailed, setAvatarFailed] = useState(false);
 
@@ -55,6 +58,13 @@ function ParticipantCard({
           </span>
         )}
       </p>
+
+      {exchangeId && !isCurrentUser && (
+        <OpenExchangeChatButton
+          exchangeId={exchangeId}
+          className="w-full justify-center"
+        />
+      )}
     </div>
   );
 }
@@ -63,7 +73,7 @@ interface ExchangeParticipantsProps {
   owner: ExchangeParticipant;
   reader: ExchangeParticipant;
   currentUserId: string;
-  /** "column" — для бічної колонки сторінки обміну */
+  exchangeId?: string;
   layout?: "row" | "column";
 }
 
@@ -71,6 +81,7 @@ export default function ExchangeParticipants({
   owner,
   reader,
   currentUserId,
+  exchangeId,
   layout = "row",
 }: ExchangeParticipantsProps) {
   return (
@@ -85,11 +96,13 @@ export default function ExchangeParticipants({
         participant={owner}
         role="Власник"
         isCurrentUser={owner.id === currentUserId}
+        exchangeId={exchangeId}
       />
       <ParticipantCard
         participant={reader}
         role="Читач"
         isCurrentUser={reader.id === currentUserId}
+        exchangeId={exchangeId}
       />
     </div>
   );

@@ -14,10 +14,11 @@ import {
   IconMessageCircle,
 } from "@tabler/icons-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ThemeToggle } from "./ThemeToggle";
 import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
+import { useUnreadChatsCount } from "@/features/chats/hooks/useChats";
+import ChatNavBadge from "@/features/chats/components/ChatNavBadge";
 
 const navItems = [
   { path: "/feed", label: "Спільнота", icon: IconHome, match: ["/feed"] },
@@ -50,6 +51,7 @@ export default function Header() {
   const { logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { data: userProfile } = useCurrentUserProfile();
+  const { data: unreadChats = 0 } = useUnreadChatsCount();
   const [avatarFailed, setAvatarFailed] = useState(false);
   useEffect(() => {
     document.body.style.overflow = navIsOpen ? "hidden" : "";
@@ -86,6 +88,7 @@ export default function Header() {
                   className={`stroke-1 ${isActive ? "text-accent-vivid" : ""}`}
                 />
                 {item.label}
+                {item.path === "/chat" && <ChatNavBadge />}
               </Link>
             );
           })}
@@ -110,18 +113,10 @@ export default function Header() {
                     className={`stroke-1 ${isActive ? "text-accent-vivid" : ""}`}
                   />
                   {item.label}
+                  {item.path === "/chat" && <ChatNavBadge />}
                 </Link>
               );
             })}
-            <div className="border-t border-t-border flex w-full justify-between pt-4 px-5 items-center">
-              <p className="text-muted-foreground text-sm font-light">
-                Тема оформлення
-              </p>
-              <ThemeToggle
-                clickFn={() => setNavIsOpen(false)}
-                classNameIcon="stroke-1 text-muted-foreground"
-              />
-            </div>
             {isAuthenticated ? (
               <Button
                 variant="ghost"
@@ -151,10 +146,6 @@ export default function Header() {
           </nav>
         )}
         <div className="flex items-center gap-3 h-full lg:gap-4">
-          <ThemeToggle
-            classNameButton="hidden lg:flex"
-            classNameIcon="stroke-1 text-muted-foreground h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all"
-          />
           <IconBell className="text-muted-foreground stroke-1 h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
           {isAuthenticated && (
             <div className="relative">
@@ -203,13 +194,17 @@ export default function Header() {
           )}
           <button
             onClick={() => setNavIsOpen((prev) => !prev)}
-            className="lg:hidden h-7 cursor-pointer"
+            className="relative lg:hidden h-7 cursor-pointer"
+            aria-label={navIsOpen ? "Закрити меню" : "Відкрити меню"}
           >
             {!navIsOpen && (
               <IconMenu2 className="text-muted-foreground h-7 w-auto" />
             )}
             {navIsOpen && (
               <IconX className="text-muted-foreground h-7 w-auto" />
+            )}
+            {!navIsOpen && unreadChats > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-destructive ring-2 ring-popover" />
             )}
           </button>
         </div>

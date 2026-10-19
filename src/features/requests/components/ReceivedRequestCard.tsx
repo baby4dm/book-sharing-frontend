@@ -62,12 +62,11 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         isCancelled ? "bg-card/60" : "bg-card",
       )}
     >
-      {/* Обкладинка */}
       <Link
         to={`/listings/${request.listingId}`}
         aria-hidden="true"
         tabIndex={-1}
-        className="flex h-[104px] w-[72px] shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary"
+        className="flex h-26 w-18 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary"
       >
         {coverUrl && !coverFailed ? (
           <img
@@ -82,7 +81,6 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
-        {/* Назва + статус */}
         <div className="flex items-start justify-between gap-3">
           <Link
             to={`/listings/${request.listingId}`}
@@ -105,7 +103,6 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           </span>
         </div>
 
-        {/* Читач */}
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
           <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
             {request.requesterAvatarUrl && !avatarFailed ? (
@@ -131,7 +128,6 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           </span>
         </div>
 
-        {/* Чипи */}
         {!isCancelled && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
@@ -145,14 +141,12 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           </div>
         )}
 
-        {/* Повідомлення читача */}
         {request.message?.trim() && (
           <p className="text-[15px] italic leading-relaxed text-muted-foreground">
             «{request.message}»
           </p>
         )}
 
-        {/* Причина відхилення */}
         {request.status === "REJECTED" && request.rejectComment?.trim() && (
           <div className="flex flex-col gap-1 rounded-lg bg-destructive/5 px-3.5 py-3">
             <span className="text-xs font-bold uppercase tracking-wide text-destructive">
@@ -164,7 +158,6 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           </div>
         )}
 
-        {/* Помилка підтвердження */}
         {isApprovingError && (
           <p
             role="alert"
@@ -174,7 +167,6 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           </p>
         )}
 
-        {/* Дії */}
         {isPending && (
           <div className="mt-1 flex flex-wrap gap-2.5">
             <Button

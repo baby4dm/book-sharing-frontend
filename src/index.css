@@ -5,8 +5,6 @@
 @import "@fontsource-variable/manrope";
 @import "@fontsource-variable/literata";
 
-@custom-variant dark (&:is(.dark *));
-
 :root {
   --background: #f5f4ef;
   --foreground: #1d1c1a;
@@ -57,51 +55,6 @@
   --sidebar-ring: #1f6b4a;
 
   --accent-vivid: #1f6b4a;
-}
-
-.dark {
-  --background: #0f1229;
-  --foreground: #f4f4f5;
-
-  --card: #1a1d3a;
-  --card-foreground: #f4f4f5;
-  --popover: #1a1d3a;
-  --popover-foreground: #f4f4f5;
-
-  --primary: #f4f4f5;
-  --primary-foreground: #0f1229;
-
-  --secondary: #1a1d3a;
-  --secondary-foreground: #f4f4f5;
-
-  --muted: #1a1d3a;
-  --muted-foreground: #c8c8cb;
-
-  --accent: #2a2450;
-  --accent-foreground: #f4f4f5;
-
-  --destructive: #ef4444;
-  --border: #2e3154;
-  --input: #2e3154;
-
-  --ring: #8b7cf0;
-
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-
-  --sidebar: #1a1d3a;
-  --sidebar-foreground: #f4f4f5;
-  --sidebar-primary: #f4f4f5;
-  --sidebar-primary-foreground: #0f1229;
-  --sidebar-accent: #2a2450;
-  --sidebar-accent-foreground: #f4f4f5;
-  --sidebar-border: #2e3154;
-  --sidebar-ring: #8b7cf0;
-
-  --accent-vivid: #8b7cf0;
 }
 
 @theme inline {

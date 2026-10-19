@@ -121,6 +121,7 @@ export default function ExchangeDetailPage() {
             owner={exchange.owner}
             reader={exchange.reader}
             currentUserId={currentUser.id}
+            exchangeId={exchange.id}
             layout="column"
           />
         </aside>

@@ -28,6 +28,7 @@ const routes = [
           { path: "requests", element: <RequestsPage /> },
           { path: "exchanges", element: <ExchangesPage /> },
           { path: "chat", element: <ChatPage /> },
+          { path: "chat/:roomId", element: <ChatPage /> },
           { path: "profile", element: <ProfilePage /> },
           { path: "listings/create", element: <CreateListingPage /> },
           { path: "exchanges/:id", element: <ExchangeDetailPage /> },
