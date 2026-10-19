@@ -14,7 +14,7 @@ export default function SuccessStep({
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center gap-4 py-6 text-center">
+    <div className="flex flex-col items-center gap-4 py-6 text-center max-w-150">
       <div className="w-14 h-14 rounded-full bg-success/10 flex items-center justify-center">
         <IconCheck size={28} className="text-success" />
       </div>

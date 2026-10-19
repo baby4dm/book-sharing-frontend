@@ -4,14 +4,14 @@ import { AxiosError } from "axios";
 import {
   IconArrowRight,
   IconBook,
-  IconCalendar,
+  IconClock,
   IconPackage,
   IconStarFilled,
   IconUsers,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { DELIVERY_METHODS } from "@/lib/constants";
-import { formatRelativeTime } from "@/lib/utils";
+import { formatRelativeTime, pluralizeDays } from "@/lib/utils";
 import { useListing } from "@/features/listings/hooks/useListing";
 import { useApproveRequest } from "../hooks/useApproveRequest";
 import { REQUEST_STATUS_CONFIG } from "../types";
@@ -22,12 +22,6 @@ import { cn } from "cn";
 interface RequestCardProps {
   request: RequestResponse;
 }
-
-const formatDeadline = (date: string) =>
-  new Date(`${date}T00:00:00`).toLocaleDateString("uk-UA", {
-    day: "numeric",
-    month: "long",
-  });
 
 export default function ReceivedRequestCard({ request }: RequestCardProps) {
   const [avatarFailed, setAvatarFailed] = useState(false);
@@ -131,8 +125,8 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         {!isCancelled && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <IconCalendar size={15} className="text-accent-vivid" />
-              Поверне до {formatDeadline(request.desiredDeadline)}
+              <IconClock size={15} className="text-accent-vivid" />
+              {pluralizeDays(request.readingDays)} на читання
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
               <DeliveryIcon size={15} className="text-accent-vivid" />

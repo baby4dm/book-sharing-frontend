@@ -8,21 +8,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn, formatDayMonth, pluralizeDays } from "@/lib/utils";
 import type { ExchangeResponse, RequestExtensionPayload } from "../types";
-import {
-  addDays,
-  daysBetween,
-  getEffectiveDeadline,
-  toDateInputValue,
-} from "../utils/extensions";
+import { addDays, getEffectiveDeadline } from "../utils/extensions";
 import { getErrorMessage } from "../utils/getErrorMessage";
 
 const MAX_COMMENT_LENGTH = 300;
-const QUICK_DAYS = [7, 14, 30] as const;
+const QUICK_DAYS = [3, 7, 14, 30] as const;
+const MIN_DAYS = 1;
+const MAX_DAYS = 60;
 
 interface ExtensionRequestDialogProps {
   exchange: ExchangeResponse;
@@ -38,18 +34,18 @@ export default function ExtensionRequestDialog({
   onSubmit,
 }: ExtensionRequestDialogProps) {
   const currentDeadline = getEffectiveDeadline(exchange);
-  const [today] = useState(() => toDateInputValue(new Date()));
-  const minDate = addDays(currentDeadline > today ? currentDeadline : today, 1);
-
-  const [newDeadline, setNewDeadline] = useState(() => {
-    const suggested = addDays(currentDeadline, 14);
-    return suggested >= minDate ? suggested : addDays(minDate, 13);
-  });
+  const [extraDays, setExtraDays] = useState<number>(7);
+  const [customMode, setCustomMode] = useState(false);
+  const [customValue, setCustomValue] = useState("");
   const [comment, setComment] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const extraDays = newDeadline ? daysBetween(currentDeadline, newDeadline) : 0;
+  const days = customMode ? Number(customValue) : extraDays;
+  const daysValid =
+    Number.isInteger(days) && days >= MIN_DAYS && days <= MAX_DAYS;
+  const newDeadline =
+    currentDeadline && daysValid ? addDays(currentDeadline, days) : null;
 
   function handleOpenChange(next: boolean) {
     if (isSubmitting) return;
@@ -60,21 +56,14 @@ export default function ExtensionRequestDialog({
     e.preventDefault();
     setError(null);
 
-    if (!newDeadline) {
-      setError("Оберіть нову дату повернення");
-      return;
-    }
-    if (newDeadline < minDate) {
-      setError(`Нова дата має бути не раніше ${formatDayMonth(minDate)}`);
+    if (!daysValid) {
+      setError(`Вкажіть від ${MIN_DAYS} до ${MAX_DAYS} днів`);
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await onSubmit({
-        newDeadline,
-        comment: comment.trim() || null,
-      });
+      await onSubmit({ extraDays: days, comment: comment.trim() || null });
       onOpenChange(false);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -82,6 +71,14 @@ export default function ExtensionRequestDialog({
       setIsSubmitting(false);
     }
   }
+
+  const chipClass = (active: boolean) =>
+    cn(
+      "h-10 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+      active
+        ? "border-primary bg-accent text-accent-foreground"
+        : "border-input bg-card hover:bg-muted",
+    );
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -95,11 +92,19 @@ export default function ExtensionRequestDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center justify-between rounded-xl bg-background px-4 py-3">
-          <span className="text-sm text-muted-foreground">
-            Поточний дедлайн
-          </span>
-          <span className="font-bold">{formatDayMonth(currentDeadline)}</span>
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="rounded-xl bg-background px-4 py-3">
+            <p className="text-[13px] text-muted-foreground">Зараз до</p>
+            <p className="mt-0.5 font-bold">
+              {currentDeadline ? formatDayMonth(currentDeadline) : "—"}
+            </p>
+          </div>
+          <div className="rounded-xl bg-accent px-4 py-3">
+            <p className="text-[13px] text-accent-foreground">Буде до</p>
+            <p className="mt-0.5 font-bold text-accent-foreground">
+              {newDeadline ? formatDayMonth(newDeadline) : "—"}
+            </p>
+          </div>
         </div>
 
         <form
@@ -107,54 +112,68 @@ export default function ExtensionRequestDialog({
           className="flex flex-col gap-5"
           noValidate
         >
-          <div className="flex flex-col gap-2.5">
-            <Label htmlFor="ext-date" className="text-sm font-semibold">
-              Нова дата повернення
-            </Label>
+          <fieldset className="flex flex-col gap-2.5">
+            <legend className="mb-2.5 text-sm font-semibold">
+              На скільки днів продовжити?
+            </legend>
             <div className="flex flex-wrap gap-2">
-              {QUICK_DAYS.map((days) => {
-                const value = addDays(currentDeadline, days);
-                const disabled = value < minDate;
-                const isActive = newDeadline === value;
+              {QUICK_DAYS.map((value) => {
+                const active = !customMode && extraDays === value;
                 return (
                   <button
-                    key={days}
+                    key={value}
                     type="button"
-                    disabled={disabled}
-                    aria-pressed={isActive}
+                    aria-pressed={active}
                     onClick={() => {
-                      setNewDeadline(value);
+                      setExtraDays(value);
+                      setCustomMode(false);
                       setError(null);
                     }}
-                    className={cn(
-                      "h-10 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                      isActive
-                        ? "border-primary bg-accent text-accent-foreground"
-                        : "border-input bg-card hover:bg-muted",
-                    )}
+                    className={chipClass(active)}
                   >
-                    +{days} днів
+                    +{pluralizeDays(value)}
                   </button>
                 );
               })}
+              <button
+                type="button"
+                aria-pressed={customMode}
+                onClick={() => {
+                  setCustomMode(true);
+                  setCustomValue((v) => v || String(extraDays));
+                  setError(null);
+                }}
+                className={chipClass(customMode)}
+              >
+                Інше
+              </button>
             </div>
-            <Input
-              id="ext-date"
-              type="date"
-              min={minDate}
-              value={newDeadline}
-              onChange={(e) => {
-                setNewDeadline(e.target.value);
-                setError(null);
-              }}
-              className="h-12 rounded-lg border-input px-3.5 text-[15px]"
-            />
-            {extraDays > 0 && (
-              <span className="text-[13px] font-semibold text-accent-vivid">
-                +{pluralizeDays(extraDays)} до поточного терміну
-              </span>
+            {customMode && (
+              <div className="flex items-center gap-2.5">
+                <Label htmlFor="ext-days" className="sr-only">
+                  Кількість днів
+                </Label>
+                <input
+                  id="ext-days"
+                  type="number"
+                  inputMode="numeric"
+                  min={MIN_DAYS}
+                  max={MAX_DAYS}
+                  autoFocus
+                  value={customValue}
+                  aria-invalid={!daysValid || undefined}
+                  onChange={(e) => {
+                    setCustomValue(e.target.value);
+                    setError(null);
+                  }}
+                  className="h-11 w-28 rounded-lg border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20 aria-invalid:border-destructive"
+                />
+                <span className="text-sm text-muted-foreground">
+                  днів (до {MAX_DAYS})
+                </span>
+              </div>
             )}
-          </div>
+          </fieldset>
 
           <div className="flex flex-col gap-2">
             <Label htmlFor="ext-comment" className="text-sm font-semibold">
@@ -180,7 +199,7 @@ export default function ExtensionRequestDialog({
           <p className="flex gap-2 text-sm text-muted-foreground">
             <IconInfoCircle size={18} className="mt-px shrink-0" />
             Поки {exchange.owner.name} не відповів(ла), діє поточний дедлайн.
-            Одночасно може бути лише один запит.
+            Дні додаються до нього в момент підтвердження.
           </p>
 
           {error && (

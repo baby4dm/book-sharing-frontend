@@ -124,7 +124,7 @@ export async function requestExtension(
   payload: RequestExtensionPayload,
 ): Promise<ExchangeResponse> {
   const response = await apiClient.post<ExchangeResponse>(
-    `/api/exchanges/${exchangeId}/extensions`,
+    `/api/exchanges/${exchangeId}/extension-requests`,
     payload,
   );
   return response.data;
@@ -134,8 +134,10 @@ export async function approveExtension(
   exchangeId: string,
   extensionId: string,
 ): Promise<ExchangeResponse> {
-  const response = await apiClient.post<ExchangeResponse>(
-    `/api/exchanges/${exchangeId}/extensions/${extensionId}/approve`,
+  const response = await apiClient.patch<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/extension-requests/${extensionId}`,
+    { comment: null },
+    { params: { approve: true } },
   );
   return response.data;
 }
@@ -145,9 +147,10 @@ export async function rejectExtension(
   extensionId: string,
   payload: RejectExtensionPayload,
 ): Promise<ExchangeResponse> {
-  const response = await apiClient.post<ExchangeResponse>(
-    `/api/exchanges/${exchangeId}/extensions/${extensionId}/reject`,
+  const response = await apiClient.patch<ExchangeResponse>(
+    `/api/exchanges/${exchangeId}/extension-requests/${extensionId}`,
     payload,
+    { params: { approve: false } },
   );
   return response.data;
 }

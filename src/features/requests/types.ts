@@ -41,7 +41,7 @@ export interface RequestResponse {
   requesterName: string;
   requesterAvatarUrl: string | null;
   requesterRatingAvg: number;
-  desiredDeadline: string;
+  readingDays: number;
   preferredDeliveryMethod: DeliveryMethod;
   message: string | null;
   status: RequestStatus;
@@ -52,7 +52,7 @@ export interface RequestResponse {
 }
 
 export interface ListingRequestRequest {
-  desiredDeadline: string;
+  readingDays: number;
   preferredDeliveryMethod: DeliveryMethod;
   message: string;
 }

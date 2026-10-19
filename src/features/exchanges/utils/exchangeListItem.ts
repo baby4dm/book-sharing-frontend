@@ -24,64 +24,74 @@ export const getMetaLine = (
   exchange: ExchangeResponse,
   isOwner: boolean,
 ): MetaLine => {
-  const deadline = exchange.extendedDeadline ?? exchange.deadline;
-  const days = daysUntil(deadline);
+  const deadline =
+    exchange.dueDate ?? exchange.extendedDeadline ?? exchange.deadline;
 
   switch (exchange.status) {
     case "COMPLETED":
       return {
-        text: `Повернено ${formatDayMonth(exchange.completedAt ?? deadline)}`,
+        text: `Повернено ${formatDayMonth(exchange.completedAt ?? deadline ?? exchange.createdAt)}`,
         tone: "default",
       };
     case "DISPUTED":
       return { text: "Відкрито спір", tone: "danger" };
     case "HANDOVER_PENDING":
       return {
-        text: `До ${formatDayMonth(deadline)} · ${pluralizeDays(days)}`,
+        text: `${pluralizeDays(exchange.readingDays)} на читання · відлік після отримання`,
         tone: "default",
       };
-    case "RETURN_PENDING": {
-      const returnedAt = getReturnedAt(exchange);
-      const isMail = exchange.deliveryMethod === "MAIL";
+  }
 
-      if (returnedAt) {
-        if (!isOwner) {
-          return { text: "Очікуємо підтвердження власника", tone: "default" };
-        }
-        return {
-          text: `Читач ${isMail ? "відправив" : "повернув"} книгу ${formatDayMonth(returnedAt)}`,
-          tone: "default",
-        };
-      }
+  if (!deadline) {
+    return {
+      text: `${pluralizeDays(exchange.readingDays)} на читання`,
+      tone: "default",
+    };
+  }
+  const days = daysUntil(deadline);
 
-      if (days < 0) {
-        return {
-          text: `Прострочено на ${pluralizeDays(days)}`,
-          tone: "danger",
-        };
+  if (exchange.status === "RETURN_PENDING") {
+    const returnedAt = getReturnedAt(exchange);
+    const isMail = exchange.deliveryMethod === "MAIL";
+
+    if (returnedAt) {
+      if (!isOwner) {
+        return { text: "Очікуємо підтвердження власника", tone: "default" };
       }
       return {
-        text: isOwner
-          ? "Читач готує книгу до повернення"
-          : `${isMail ? "Відправте" : "Поверніть"} книгу до ${formatDayMonth(deadline)}`,
-        tone: days <= 3 ? "warning" : "default",
+        text: `Читач ${isMail ? "відправив" : "повернув"} книгу ${formatDayMonth(returnedAt)}`,
+        tone: "default",
       };
     }
-    default:
-      if (days < 0) {
-        return {
-          text: `Прострочено на ${pluralizeDays(days)}`,
-          tone: "danger",
-        };
-      }
-      if (days === 0) {
-        return { text: "Сьогодні останній день", tone: "warning" };
-      }
+    if (exchange.readingPaused) {
       return {
-        text: `Залишилось ${pluralizeDays(days)}`,
-        tone: days <= 3 ? "warning" : "default",
+        text: isOwner
+          ? "Вкажіть адресу для повернення · відлік читача на паузі"
+          : "Відлік на паузі · чекаємо адресу від власника",
+        tone: isOwner ? "warning" : "default",
       };
+    }
+    if (days < 0) {
+      return { text: `Прострочено на ${pluralizeDays(days)}`, tone: "danger" };
+    }
+    return {
+      text: isOwner
+        ? "Читач готує книгу до повернення"
+        : `${isMail ? "Відправте" : "Поверніть"} книгу до ${formatDayMonth(deadline)}`,
+      tone: days <= 3 ? "warning" : "default",
+    };
   }
+
+  if (exchange.status === "OVERDUE" || days < 0) {
+    return { text: `Прострочено на ${pluralizeDays(days)}`, tone: "danger" };
+  }
+  if (days === 0) {
+    return { text: "Сьогодні останній день", tone: "warning" };
+  }
+  return {
+    text: `Залишилось ${pluralizeDays(days)}`,
+    tone: days <= 3 ? "warning" : "default",
+  };
 };
 
 export const getActionHint = (

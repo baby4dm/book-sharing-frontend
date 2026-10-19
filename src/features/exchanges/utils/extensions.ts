@@ -23,8 +23,10 @@ export function daysBetween(a: string, b: string): number {
   return Math.round((parseDate(b).getTime() - parseDate(a).getTime()) / DAY_MS);
 }
 
-export function getEffectiveDeadline(exchange: ExchangeResponse): string {
-  return exchange.extendedDeadline ?? exchange.deadline;
+export function getEffectiveDeadline(
+  exchange: ExchangeResponse,
+): string | null {
+  return exchange.dueDate ?? exchange.extendedDeadline ?? exchange.deadline;
 }
 
 export function getPendingExtension(
@@ -52,6 +54,7 @@ export function canRequestExtension(
   return (
     exchange.readerId === currentUserId &&
     (exchange.status === "IN_READING" || exchange.status === "OVERDUE") &&
+    getEffectiveDeadline(exchange) !== null &&
     getPendingExtension(exchange) === null
   );
 }

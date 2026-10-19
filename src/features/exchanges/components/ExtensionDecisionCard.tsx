@@ -4,18 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatDayMonth, formatRelativeTime, pluralizeDays } from "@/lib/utils";
 import type { DeadlineExtensionResponse, ExchangeParticipant } from "../types";
-import { daysBetween } from "../utils/extensions";
+import { addDays } from "../utils/extensions";
 import { getErrorMessage } from "../utils/getErrorMessage";
 
 interface ExtensionDecisionCardProps {
   request: DeadlineExtensionResponse;
   reader: ExchangeParticipant;
-  currentDeadline: string;
+  currentDeadline: string | null;
   onApprove: () => Promise<unknown>;
   onReject: (comment: string | null) => Promise<unknown>;
 }
 
-/** Блок для власника: читач просить продовжити дедлайн. */
 export default function ExtensionDecisionCard({
   request,
   reader,
@@ -31,7 +30,10 @@ export default function ExtensionDecisionCard({
   const [error, setError] = useState<string | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
-  const extraDays = daysBetween(currentDeadline, request.requestedNewDeadline);
+  const extraDays = request.extraDays;
+  const proposedDeadline = currentDeadline
+    ? addDays(currentDeadline, extraDays)
+    : null;
   const isBusy = pendingAction !== null;
 
   async function run(action: "approve" | "reject") {
@@ -76,15 +78,16 @@ export default function ExtensionDecisionCard({
       <div className="grid grid-cols-2 gap-2.5">
         <div className="rounded-xl bg-background p-3">
           <p className="text-[13px] text-muted-foreground">Зараз</p>
-          <p className="mt-0.5 font-bold">{formatDayMonth(currentDeadline)}</p>
+          <p className="mt-0.5 font-bold">
+            {currentDeadline ? formatDayMonth(currentDeadline) : "—"}
+          </p>
         </div>
         <div className="rounded-xl bg-warning/10 p-3">
-          <p className="text-[13px] text-warning">Просить до</p>
+          <p className="text-[13px] text-warning">
+            Просить +{pluralizeDays(extraDays)}
+          </p>
           <p className="mt-0.5 font-bold">
-            {formatDayMonth(request.requestedNewDeadline)}{" "}
-            <span className="text-[13px] font-semibold text-warning">
-              +{pluralizeDays(extraDays)}
-            </span>
+            {proposedDeadline ? `до ${formatDayMonth(proposedDeadline)}` : "—"}
           </p>
         </div>
       </div>

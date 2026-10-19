@@ -13,7 +13,7 @@ import RequestStatusChips from "./RequestsStatusChips";
 const SORT_OPTIONS = [
   { value: "NEWEST", label: "Спочатку нові" },
   { value: "OLDEST", label: "Спочатку старі" },
-  { value: "DEADLINE", label: "Найближча дата повернення" },
+  { value: "DEADLINE", label: "Найкоротший термін читання" },
   { value: "RATING", label: "Найвищий рейтинг читача" },
 ] as const;
 

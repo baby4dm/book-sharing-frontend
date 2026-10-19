@@ -51,9 +51,11 @@ export interface ShipmentInfoResponse {
 
 export interface DeadlineExtensionResponse {
   id: string;
-  requestedNewDeadline: string;
+  extraDays: number;
+  requestedNewDeadline: string | null;
   status: "PENDING" | "APPROVED" | "REJECTED";
   comment: string | null;
+  decisionComment: string | null;
   createdAt: string;
   decidedAt: string | null;
 }
@@ -67,7 +69,7 @@ export interface ExchangeResponse {
   readerId: string;
   readerName: string;
   deliveryMethod: DeliveryMethod;
-  deadline: string;
+  deadline: string | null;
   extendedDeadline: string | null;
   status: ExchangeStatus;
   handoverPhotos: ExchangePhotoResponse[];
@@ -83,7 +85,13 @@ export interface ExchangeResponse {
   owner: ExchangeParticipant;
   reader: ExchangeParticipant;
   reviews?: ExchangeReviewResponse[];
-  dispute: ExchangeDisputeResponse | null;
+  readingDays: number;
+  readingStartedAt: string | null;
+  readingPausedDays: number;
+  dueDate: string | null;
+  returnPreparedAt: string | null;
+  returnedAt: string | null;
+  readingPaused: boolean;
 }
 
 export interface ExchangeReviewResponse {
@@ -149,7 +157,7 @@ export interface OpenDisputePayload {
 }
 
 export interface RequestExtensionPayload {
-  newDeadline: string;
+  extraDays: number;
   comment: string | null;
 }
 
@@ -172,31 +180,4 @@ export interface ReviewResponse {
   rating: number;
   comment: string | null;
   createdAt: string;
-}
-
-export interface DeadlineExtensionResponse {
-  id: string;
-  requestedNewDeadline: string;
-  status: "PENDING" | "APPROVED" | "REJECTED";
-  comment: string | null;
-  createdAt: string;
-  decidedAt: string | null;
-  decisionComment: string | null;
-}
-
-export type DisputeStatus =
-  | "OPEN"
-  | "RESOLVED_FAVOR_FILER"
-  | "RESOLVED_FAVOR_OTHER"
-  | "DISMISSED";
-
-export interface ExchangeDisputeResponse {
-  id: string;
-  filedByUserId: string;
-  description: string;
-  status: DisputeStatus;
-  resolutionComment: string | null;
-  moderatorName: string | null;
-  createdAt: string;
-  resolvedAt: string | null;
 }

@@ -2,7 +2,9 @@ import {
   IconCalendar,
   IconCheck,
   IconClock,
+  IconClockPause,
   IconClockPlus,
+  IconHourglass,
   IconX,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +12,7 @@ import { cn, formatDayMonth, pluralizeDays } from "@/lib/utils";
 import type { ExchangeResponse } from "../types";
 import type { DeadlineProgress } from "../utils/exchangeDeadline";
 import {
-  daysBetween,
+  addDays,
   getLatestDecidedExtension,
   getPendingExtension,
 } from "../utils/extensions";
@@ -30,14 +32,44 @@ export default function ExchangeDeadlineCard({
   canRequestExtension,
   onRequestExtension,
 }: ExchangeDeadlineCardProps) {
-  const { end, daysLeft, percent, isOverdue, returnedAt, returnedLateDays } =
-    progress;
+  const isMail = exchange.deliveryMethod === "MAIL";
+
+  if (!progress.started || !progress.end) {
+    return (
+      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
+        <span className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
+          <IconHourglass size={17} />
+          Термін читання
+        </span>
+        <span className="font-heading text-2xl leading-tight font-semibold md:text-[28px]">
+          {pluralizeDays(exchange.readingDays)}
+        </span>
+        <p className="text-sm leading-snug text-muted-foreground">
+          Відлік почнеться, коли{" "}
+          {isOwner ? `${exchange.reader.name} підтвердить` : "ви підтвердите"}{" "}
+          отримання книги. Час{isMail ? " доставки" : " до зустрічі"} не
+          рахується.
+        </p>
+      </section>
+    );
+  }
+
+  const {
+    end,
+    start,
+    daysLeft,
+    percent,
+    isOverdue,
+    paused,
+    returnedAt,
+    returnedLateDays,
+  } = progress;
   const pending = getPendingExtension(exchange);
   const latestDecided = pending ? null : getLatestDecidedExtension(exchange);
   const wasExtended = exchange.extendedDeadline !== null;
+  const baseDeadline = exchange.deadline;
 
   const tone = isOverdue ? "danger" : daysLeft <= 3 ? "warning" : "ok";
-
   const label = isOverdue
     ? `Прострочено на ${pluralizeDays(daysLeft)}`
     : daysLeft === 0
@@ -60,14 +92,28 @@ export default function ExchangeDeadlineCard({
             )}
           >
             <IconCalendar size={17} />
-            {isOverdue ? "Треба було повернути до" : "Повернути до"}
+            {isOverdue
+              ? "Треба було повернути до"
+              : isMail
+                ? "Відправити назад до"
+                : "Повернути до"}
           </span>
-          <span className="font-heading text-2xl font-semibold leading-tight md:text-[28px]">
+          <span className="font-heading text-2xl leading-tight font-semibold md:text-[28px]">
             {formatDayMonth(end)}
           </span>
-          {wasExtended && (
+          <span className="text-sm text-muted-foreground">
+            {pluralizeDays(exchange.readingDays)} читання
+            {start && ` · з ${formatDayMonth(start)}`}
+          </span>
+          {wasExtended && baseDeadline && (
             <span className="text-sm text-muted-foreground">
-              <s>{formatDayMonth(exchange.deadline)}</s> · початковий термін
+              <s>{formatDayMonth(baseDeadline)}</s> · початковий термін
+            </span>
+          )}
+          {exchange.readingPausedDays > 0 && (
+            <span className="text-sm text-muted-foreground">
+              +{pluralizeDays(exchange.readingPausedDays)} — поки власник
+              вказував адресу
             </span>
           )}
         </div>
@@ -78,7 +124,7 @@ export default function ExchangeDeadlineCard({
         )}
       </div>
 
-      {returnedAt && (
+      {returnedAt ? (
         <div
           className={cn(
             "flex items-start gap-2 rounded-xl px-3.5 py-3 text-sm",
@@ -89,17 +135,23 @@ export default function ExchangeDeadlineCard({
         >
           <IconCheck size={16} className="mt-0.5 shrink-0" />
           <span>
-            Книгу{" "}
-            {exchange.deliveryMethod === "MAIL" ? "відправлено" : "повернено"}{" "}
+            Книгу {isMail ? "відправлено" : "повернено"}{" "}
             {formatDayMonth(returnedAt)}
             {returnedLateDays > 0
               ? ` — із запізненням на ${pluralizeDays(returnedLateDays)}`
               : " — вчасно"}
           </span>
         </div>
-      )}
-
-      {!returnedAt && (
+      ) : paused ? (
+        <div className="flex items-start gap-2 rounded-xl bg-info/10 px-3.5 py-3 text-sm text-info">
+          <IconClockPause size={16} className="mt-0.5 shrink-0" />
+          <span>
+            {isOwner
+              ? "Відлік читача на паузі, доки ви не вкажете адресу для повернення."
+              : `Відлік на паузі: чекаємо, поки ${exchange.owner.name} вкаже адресу для повернення. Ці дні не рахуються.`}
+          </span>
+        </div>
+      ) : (
         <div className="flex flex-col gap-1.5">
           <div
             role="progressbar"
@@ -140,10 +192,10 @@ export default function ExchangeDeadlineCard({
             {isOwner ? "Читач просить більше часу" : "Запит надіслано"}
           </span>
           <span className="text-sm text-foreground/80">
-            До <strong>{formatDayMonth(pending.requestedNewDeadline)}</strong>{" "}
-            (+{pluralizeDays(daysBetween(end, pending.requestedNewDeadline))}).{" "}
+            +<strong>{pluralizeDays(pending.extraDays)}</strong> — орієнтовно до{" "}
+            {formatDayMonth(addDays(end, pending.extraDays))}.{" "}
             {isOwner
-              ? "Рішення — у блоці нижче."
+              ? "Рішення — у блоці вище."
               : `Чекаємо відповіді ${exchange.owner.name}.`}
           </span>
         </div>
@@ -152,7 +204,8 @@ export default function ExchangeDeadlineCard({
       {latestDecided?.status === "APPROVED" && !isOwner && (
         <div className="flex items-start gap-2 rounded-xl bg-accent px-3.5 py-3 text-sm text-accent-foreground">
           <IconCheck size={16} className="mt-0.5 shrink-0" />
-          Продовження схвалено — новий термін уже діє.
+          Продовження на {pluralizeDays(latestDecided.extraDays)} схвалено —
+          новий термін уже діє.
         </div>
       )}
       {latestDecided?.status === "REJECTED" && !isOwner && (
@@ -161,9 +214,9 @@ export default function ExchangeDeadlineCard({
             <IconX size={16} />
             Запит на продовження відхилено
           </span>
-          {latestDecided.comment && (
+          {latestDecided.decisionComment && (
             <span className="text-sm text-foreground/80">
-              «{latestDecided.comment}»
+              «{latestDecided.decisionComment}»
             </span>
           )}
         </div>

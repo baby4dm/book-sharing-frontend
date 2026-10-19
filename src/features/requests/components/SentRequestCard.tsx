@@ -2,7 +2,7 @@ import { useState } from "react";
 import {
   IconArrowRight,
   IconBook,
-  IconCalendar,
+  IconClock,
   IconPackage,
   IconUsers,
 } from "@tabler/icons-react";
@@ -14,13 +14,13 @@ import { Button } from "@/components/ui/button";
 import { useListing } from "@/features/listings/hooks/useListing";
 import { useCancelRequest } from "../hooks/cancelRequest";
 import { cn } from "cn";
+import { pluralizeDays } from "@/lib/utils";
 
 interface RequestCardProps {
   request: RequestResponse;
 }
 
 function formatDate(date: string) {
-  // "2026-10-28" без часу → додаємо T00:00:00, щоб не з'їхати на день через часовий пояс
   const value = date.length === 10 ? `${date}T00:00:00` : date;
   return new Date(value).toLocaleDateString("uk-UA", {
     day: "numeric",
@@ -102,8 +102,8 @@ export default function SentRequestCard({ request }: RequestCardProps) {
         {!isCancelled && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <IconCalendar size={15} className="text-accent-vivid" />
-              До {formatDate(request.desiredDeadline)}
+              <IconClock size={15} className="text-accent-vivid" />
+              {pluralizeDays(request.readingDays)} на читання
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
               <DeliveryIcon size={15} className="text-accent-vivid" />

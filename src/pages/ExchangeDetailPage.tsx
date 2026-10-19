@@ -4,7 +4,6 @@ import { IconArrowLeft } from "@tabler/icons-react";
 import { Spinner } from "@/components/ui/Spinner";
 import DisputeNotice from "@/features/exchanges/components/DisputeNotice";
 import DisputeResolution from "@/features/exchanges/components/DisputeResolution";
-import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
 import ExchangeHeader from "@/features/exchanges/components/ExchangeHeader";
 import ExchangeOverdueBanner from "@/features/exchanges/components/ExchangeOverdueBanner";
 import ExchangeParticipants from "@/features/exchanges/components/ExchangeParticipants";
@@ -22,6 +21,7 @@ import {
   getPendingExtension,
 } from "@/features/exchanges/utils/extensions";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
+import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
 
 export default function ExchangeDetailPage() {
   const { id } = useParams<{ id: string }>();
