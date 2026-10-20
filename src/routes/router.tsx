@@ -14,6 +14,9 @@ import ListingDetailPage from "@/pages/ListingDetailPage";
 import ProfilePage from "@/pages/ProfilePage";
 import CreateListingPage from "@/pages/CreateListingPage";
 import ExchangeDetailPage from "@/pages/ExchangeDetailPage";
+import HelpPage from "@/pages/HelpPage";
+import LegalPage from "@/pages/LegalPage";
+import ModerationFeedbackPage from "@/pages/ModerationFeedbackPage";
 
 const routes = [
   {
@@ -32,9 +35,13 @@ const routes = [
           { path: "profile", element: <ProfilePage /> },
           { path: "listings/create", element: <CreateListingPage /> },
           { path: "exchanges/:id", element: <ExchangeDetailPage /> },
+          { path: "moderation/feedback", element: <ModerationFeedbackPage /> },
         ],
       },
       { path: "feed", element: <FeedPage /> },
+      { path: "help", element: <HelpPage /> },
+      { path: "terms", element: <LegalPage doc="terms" /> },
+      { path: "privacy", element: <LegalPage doc="privacy" /> },
     ],
   },
   {
