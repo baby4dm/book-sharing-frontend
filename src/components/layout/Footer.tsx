@@ -1,10 +1,5 @@
 import { Link } from "react-router-dom";
-import {
-  IconBook2,
-  IconMail,
-  IconMessageCircle,
-  IconPlus,
-} from "@tabler/icons-react";
+import { IconMail, IconMessageCircle, IconPlus } from "@tabler/icons-react";
 import { useAuth } from "@/context/AuthContext";
 import { SUPPORT_EMAIL } from "@/features/feedback/types";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
