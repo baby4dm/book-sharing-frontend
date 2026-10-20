@@ -20,6 +20,15 @@ export async function createRequest(
   return response.data;
 }
 
+export async function getListingRequests(
+  listingId: string,
+): Promise<RequestResponse[]> {
+  const response = await apiClient.get<RequestResponse[]>(
+    `/api/listings/${listingId}/requests`,
+  );
+  return response.data;
+}
+
 export async function getRequests(
   scope: RequestScope,
   filters: RequestFilters,

@@ -1,9 +1,14 @@
+import { findMyActiveRequest } from "@/api/listingQueue";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
 import { useAuth } from "@/context/AuthContext";
+import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
 import { useListing } from "@/features/listings/hooks/useListing";
+import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
 import { SETTLEMENT_TYPE_LABELS } from "@/features/listings/types";
+
 import RequestFormDialog from "@/features/requests/components/RequestFormDialog";
+
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { DELIVERY_METHODS, STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
@@ -11,6 +16,7 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconBox,
+  IconCheck,
   IconClock,
   IconMapPin,
   IconStarFilled,
@@ -27,6 +33,11 @@ export default function ListingDetailPage() {
   const [avatarFailed, setAvatarFailed] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const { data: user } = useCurrentUserProfile();
+  const {
+    data: requests,
+    isLoading: requestsLoading,
+    isError: requestsError,
+  } = useListingRequests(id);
   function goNextPhoto() {
     if (listing?.photoUrls) {
       if (currentPhoto === listing?.photoUrls.length - 1) {
@@ -88,6 +99,9 @@ export default function ListingDetailPage() {
   }
 
   const status = STATUS_CONFIG[listing.status];
+  const isOwner = !!user && user.id === listing.ownerId;
+  const myRequest = findMyActiveRequest(requests, listing.status, user?.id);
+  const isArchived = listing.status === "ARCHIVED";
   return (
     <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 lg:max-w-350 lg:mx-auto md:py-8">
       <Button
@@ -252,14 +266,41 @@ export default function ListingDetailPage() {
                 </div>
               </div>
             </div>
-            {user?.id !== listing.ownerId && (
-              <Button
-                className="cursor-pointer w-full h-10"
-                onClick={(e) => handleClick(e)}
-              >
-                Подати заявку
-              </Button>
-            )}
+            {!isOwner &&
+              (myRequest?.status === "ACTIVE" && myRequest.exchangeId ? (
+                // заявку підтверджено — книга вже в обміні з вами
+                <Button
+                  className="cursor-pointer w-full h-10"
+                  nativeButton={false}
+                  render={<Link to={`/exchanges/${myRequest.exchangeId}`} />}
+                >
+                  Перейти до обміну
+                  <IconArrowRight />
+                </Button>
+              ) : myRequest ? (
+                <div className="flex flex-col gap-1.5">
+                  <Button className="w-full h-10 gap-2" disabled>
+                    <IconCheck />
+                    Заявку вже надіслано
+                  </Button>
+                  <Link
+                    to="/requests?tab=sent"
+                    className="self-center text-sm font-semibold text-accent-vivid hover:underline"
+                  >
+                    Переглянути мої заявки
+                  </Link>
+                </div>
+              ) : (
+                <Button
+                  className="cursor-pointer w-full h-10"
+                  disabled={isArchived || (isAuthenticated && requestsLoading)}
+                  onClick={(e) => handleClick(e)}
+                >
+                  {isArchived
+                    ? "Оголошення знято з публікації"
+                    : "Подати заявку"}
+                </Button>
+              ))}
             {requestDialogIsOpen && (
               <RequestFormDialog
                 listing={listing}
@@ -270,6 +311,15 @@ export default function ListingDetailPage() {
           </div>
         </div>
       </div>
+
+      <ListingRequestQueue
+        requests={requests}
+        isLoading={requestsLoading}
+        isError={requestsError}
+        listingStatus={listing.status}
+        currentUserId={user?.id ?? null}
+        isOwner={isOwner}
+      />
     </section>
   );
 }
