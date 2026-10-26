@@ -104,7 +104,7 @@ export default function FeedPage() {
           </p>
         </div>
       ) : (
-        <>
+        <div className="stagger-in contents">
           {posts.map((post) => (
             <PostCard
               key={post.id}
@@ -142,7 +142,7 @@ export default function FeedPage() {
               Ви переглянули всі пости
             </p>
           )}
-        </>
+        </div>
       )}
     </section>
   );

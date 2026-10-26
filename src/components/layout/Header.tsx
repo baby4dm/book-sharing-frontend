@@ -14,6 +14,7 @@ import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUs
 import NotificationBell from "@/features/notifications/components/NotificationBell";
 import { useUnreadChatsCount } from "@/features/chats/hooks/useChats";
 import ChatNavBadge from "@/features/chats/components/ChatNavBadge";
+import SmartImage from "@/components/ui/SmartImage";
 
 const navItems = [
   { path: "/feed", label: "Спільнота", icon: IconHome, match: ["/feed"] },
@@ -89,7 +90,7 @@ export default function Header() {
           })}
         </nav>
         {navIsOpen && (
-          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-999 bg-popover overflow-y-auto">
+          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-999 bg-popover overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
             {navItems.map((item) => {
               const isActive = isNavItemActive(item.match, location.pathname);
 
@@ -151,7 +152,7 @@ export default function Header() {
               >
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-primary flex items-center justify-center">
                   {userProfile?.avatarUrl && !avatarFailed ? (
-                    <img
+                    <SmartImage
                       src={userProfile.avatarUrl}
                       alt={userProfile.name}
                       className="w-full h-full object-cover"

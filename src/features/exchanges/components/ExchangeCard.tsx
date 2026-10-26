@@ -16,6 +16,7 @@ import {
   getPendingAction,
 } from "../utils/exchangeListItem";
 import BookCardCover from "@/components/layout/BookCardCover";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface ExchangeCardProps {
   exchange: ExchangeResponse;
@@ -73,7 +74,7 @@ export default function ExchangeCard({
           >
             <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
               {partner.avatarUrl && !avatarFailed ? (
-                <img
+                <SmartImage
                   src={partner.avatarUrl}
                   alt=""
                   className="size-full object-cover"

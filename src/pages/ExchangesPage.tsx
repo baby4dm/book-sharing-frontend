@@ -125,7 +125,7 @@ export default function ExchangesPage() {
           >
             {groups ? (
               groups.map((group) => (
-                <section key={group.key} className="flex flex-col gap-3">
+                <section key={group.key} className="stagger-in flex flex-col gap-3">
                   <h2 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
                     {group.title} · {group.items.length}
                   </h2>
@@ -139,7 +139,7 @@ export default function ExchangesPage() {
                 </section>
               ))
             ) : (
-              <div className="flex flex-col gap-3">
+              <div className="stagger-in flex flex-col gap-3">
                 {data.items.map((exchange) => (
                   <ExchangeCard
                     key={exchange.id}

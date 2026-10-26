@@ -19,6 +19,7 @@ import { getErrorMessage } from "@/features/exchanges/utils/getErrorMessage";
 import { useCreateRequest } from "@/features/requests/hooks/useCreateRequest";
 import { cn, pluralizeDays } from "@/lib/utils";
 import type { DeliveryMethod, ListingResponse } from "../../listings/types";
+import SmartImage from "@/components/ui/SmartImage";
 
 const PRESET_DAYS = [7, 14, 21, 30] as const;
 const MIN_DAYS = 1;
@@ -143,7 +144,7 @@ export default function RequestFormDialog({
                     <IconBook size={24} className="text-muted-foreground" />
                   </div>
                 ) : (
-                  <img
+                  <SmartImage
                     className={cn(
                       "h-full w-full object-cover transition-opacity duration-300",
                       imageIsLoaded ? "opacity-100" : "opacity-0",

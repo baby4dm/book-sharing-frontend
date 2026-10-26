@@ -94,7 +94,7 @@ export default function SentRequestsList({
           <div
             aria-busy={isPlaceholderData}
             className={cn(
-              "flex w-full flex-col items-center gap-4 transition-opacity",
+              "stagger-in flex w-full flex-col items-center gap-4 transition-opacity",
               isPlaceholderData && "pointer-events-none opacity-60",
             )}
           >

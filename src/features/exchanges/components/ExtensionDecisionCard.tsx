@@ -6,6 +6,7 @@ import { formatDayMonth, formatRelativeTime, pluralizeDays } from "@/lib/utils";
 import type { DeadlineExtensionResponse, ExchangeParticipant } from "../types";
 import { addDays } from "../utils/extensions";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface ExtensionDecisionCardProps {
   request: DeadlineExtensionResponse;
@@ -57,7 +58,7 @@ export default function ExtensionDecisionCard({
       <div className="flex items-center gap-3">
         <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-sm font-bold text-accent-foreground">
           {reader.avatarUrl && !avatarFailed ? (
-            <img
+            <SmartImage
               src={reader.avatarUrl}
               alt=""
               className="size-full object-cover"

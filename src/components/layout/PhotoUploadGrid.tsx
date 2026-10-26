@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { IconCamera, IconX } from "@tabler/icons-react";
 import { useUploadFile } from "@/features/createListing/hooks/useUploadFile";
+import SmartImage from "@/components/ui/SmartImage";
 
 const MAX_PHOTOS = 4;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -79,7 +80,7 @@ export default function PhotoUploadGrid({
             key={url}
             className="relative outline-2 outline-border rounded-md overflow-hidden h-50 w-full max-w-45 flex items-center justify-center"
           >
-            <img
+            <SmartImage
               src={url}
               alt={"Фото " + index}
               className="h-full object-contain"

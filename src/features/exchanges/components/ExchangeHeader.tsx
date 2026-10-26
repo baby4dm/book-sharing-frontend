@@ -2,6 +2,7 @@ import { useState } from "react";
 import { IconBook, IconBox } from "@tabler/icons-react";
 import { DELIVERY_METHODS, EXCHANGE_STATUS_CONFIG } from "@/lib/constants";
 import type { ExchangeResponse } from "../types";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface ExchangeHeaderProps {
   exchange: ExchangeResponse;
@@ -24,7 +25,7 @@ export default function ExchangeHeader({
     <div className="flex w-full gap-4 md:gap-5">
       <div className="flex h-32 w-22 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary md:h-40 md:w-28">
         {exchange.bookCoverUrl && !coverFailed ? (
-          <img
+          <SmartImage
             src={exchange.bookCoverUrl}
             alt={exchange.bookTitle}
             className="size-full object-cover"

@@ -22,7 +22,7 @@ import {
   getPendingExtension,
 } from "@/features/exchanges/utils/extensions";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
-import ExchangeDeadlineCard from "@/features/exchanges/components/ExchangeDeadlineCard";
+import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
 
 export default function ExchangeDetailPage() {
   const { id } = useParams<{ id: string }>();

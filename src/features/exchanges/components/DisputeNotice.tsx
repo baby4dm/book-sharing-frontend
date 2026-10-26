@@ -1,6 +1,7 @@
 import { IconAlertTriangle, IconInfoCircle } from "@tabler/icons-react";
 import { formatDayMonth } from "@/lib/utils";
 import type { ExchangePhotoResponse, ExchangeResponse } from "../types";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface DisputeNoticeProps {
   exchange: ExchangeResponse;
@@ -115,7 +116,7 @@ function PhotoGroup({
                 : "size-19 overflow-hidden rounded-lg ring-1 ring-border"
             }
           >
-            <img
+            <SmartImage
               src={photo.url}
               alt={photo.note ?? title}
               className="size-full object-cover"

@@ -28,6 +28,13 @@ export default function NotificationBell({
   const [open, setOpen] = useState(false);
   const now = useNow();
   const { data: unread = 0 } = useUnreadNotificationsCount();
+  // дзвіночок «дзеленчить», коли непрочитаних стало більше (нове сповіщення)
+  const [prevUnread, setPrevUnread] = useState(unread);
+  const [ringKey, setRingKey] = useState(0);
+  if (unread !== prevUnread) {
+    setPrevUnread(unread);
+    if (unread > prevUnread) setRingKey((k) => k + 1);
+  }
   const feed = useNotificationsFeed(false, open);
   const markRead = useMarkNotificationRead();
   const markAll = useMarkAllNotificationsRead();
@@ -52,11 +59,15 @@ export default function NotificationBell({
           className,
         )}
       >
-        <IconBell className="size-6 stroke-[1.6]" />
+        <IconBell
+          key={ringKey}
+          className={cn("size-6 stroke-[1.6]", ringKey > 0 && "animate-bell-ring")}
+        />
         {unread > 0 && (
           <span
+            key={badge}
             aria-hidden="true"
-            className="absolute top-1 right-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full border-2 border-popover bg-destructive px-1 text-[10px] leading-none font-extrabold text-white"
+            className="animate-badge-pop absolute top-1 right-0.5 flex h-4.5 min-w-4.5 items-center justify-center rounded-full border-2 border-popover bg-destructive px-1 text-[10px] leading-none font-extrabold text-white"
           >
             {badge}
           </span>

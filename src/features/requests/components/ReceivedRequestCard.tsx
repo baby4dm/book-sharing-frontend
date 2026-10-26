@@ -19,6 +19,7 @@ import RejectReasonDialog from "./RejectReasonDialog";
 import UserLink from "@/features/userProfile/components/UserLink";
 import { cn } from "cn";
 import BookCardCover from "@/components/layout/BookCardCover";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -92,7 +93,7 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           >
             <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
               {request.requesterAvatarUrl && !avatarFailed ? (
-                <img
+                <SmartImage
                   src={request.requesterAvatarUrl}
                   alt=""
                   className="size-full object-cover"

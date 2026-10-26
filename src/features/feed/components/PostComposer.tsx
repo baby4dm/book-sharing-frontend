@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { POST_MAX_LENGTH } from "../types";
 import { POST_PHOTO_TYPES, validatePostPhoto } from "../utils/photo";
 import { useCreatePost } from "../hooks/usePostMutation";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface PostComposerProps {
   currentUser: UserResponse | null;
@@ -116,7 +117,7 @@ function ComposerForm({ currentUser }: { currentUser: UserResponse }) {
       {(photoUrl || upload.isPending) && (
         <div className="relative ml-13.5 overflow-hidden rounded-xl bg-muted">
           {photoUrl ? (
-            <img
+            <SmartImage
               src={photoUrl}
               alt="Вибране фото"
               className="max-h-80 w-full object-cover"

@@ -18,6 +18,7 @@ import { useResolveBook } from "../hooks/useResolveBook";
 import PhotoUploadGrid from "../../../components/layout/PhotoUploadGrid";
 import { useCreateListing } from "../hooks/useCreateListing";
 import { Link } from "react-router-dom";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface DetailsStepProps {
   book: BookSearchResult;
@@ -189,7 +190,7 @@ export default function DetailsStep({
               <IconBook size={32} className="text-muted-foreground" />
             </div>
           ) : (
-            <img
+            <SmartImage
               className={`w-24 h-full transition-opacity duration-300 ${
                 imageIsLoaded ? "opacity-100" : "opacity-0"
               }`}

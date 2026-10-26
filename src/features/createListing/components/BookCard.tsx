@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { BookSearchResult } from "../types";
 import { IconBook } from "@tabler/icons-react";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface BookCardProps {
   book: BookSearchResult;
@@ -25,7 +26,7 @@ export default function BookCard({ book, onSelect }: BookCardProps) {
             <IconBook size={32} className="text-muted-foreground" />
           </div>
         ) : (
-          <img
+          <SmartImage
             className={`w-25 h-full transition-opacity duration-300 ${
               imageIsLoaded ? "opacity-100" : "opacity-0"
             }`}

@@ -29,6 +29,7 @@ import {
   type FeedbackTopic,
 } from "../types";
 import { useCreateFeedback } from "../hooks/useFeeback";
+import SmartImage from "@/components/ui/SmartImage";
 
 const TOPIC_ICONS = {
   QUESTION: IconHelpCircle,
@@ -256,7 +257,7 @@ export default function FeedbackDialog({
                   {isAuthenticated ? (
                     screenshotUrl ? (
                       <div className="relative">
-                        <img
+                        <SmartImage
                           src={screenshotUrl}
                           alt="Скріншот"
                           className="h-16 w-24 rounded-lg border border-border object-cover"

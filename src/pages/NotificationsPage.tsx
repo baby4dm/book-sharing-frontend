@@ -145,7 +145,7 @@ export default function NotificationsPage() {
               <h2 className="px-1 text-[13px] font-extrabold tracking-[0.06em] text-muted-foreground uppercase">
                 {group.label}
               </h2>
-              <ul className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card">
+              <ul className="stagger-in divide-y divide-border/70 overflow-hidden rounded-2xl border border-border bg-card">
                 {group.items.map((n) => (
                   <li key={n.id}>
                     <NotificationItem

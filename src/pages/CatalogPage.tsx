@@ -88,7 +88,7 @@ export default function CatalogPage() {
         <TabsContent value="catalog">
           <div className="w-full flex flex-col gap-4 lg:gap-8">
             <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
+              className="stagger-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
       gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-800 mx-auto"
             >
               {isCatalogLoading &&
@@ -118,7 +118,7 @@ export default function CatalogPage() {
         <TabsContent value="my">
           <div className="w-full flex flex-col gap-4 lg:gap-8">
             <div
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
+              className="stagger-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
       gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-800 mx-auto"
             >
               {isLoading &&

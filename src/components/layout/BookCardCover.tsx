@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IconBook } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface BookCardCoverProps {
   src?: string | null;
@@ -29,7 +30,7 @@ export default function BookCardCover({ src, to, dimmed, className }: BookCardCo
   );
 
   const content = showImage ? (
-    <img
+    <SmartImage
       src={src ?? undefined}
       alt=""
       className="h-full w-auto max-w-full rounded-sm object-cover shadow-[0_6px_16px_rgba(0,0,0,0.18)] sm:size-full sm:rounded-none sm:shadow-none"

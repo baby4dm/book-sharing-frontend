@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { getInitial } from "../utils/profileFormat";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface UserAvatarProps {
   name: string;
@@ -31,7 +32,7 @@ export default function UserAvatar({
       )}
     >
       {showImage ? (
-        <img
+        <SmartImage
           src={src}
           alt={name}
           className="h-full w-full object-cover"

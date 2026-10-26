@@ -21,6 +21,7 @@ import DeletePostDialog from "./DeletePostDialog";
 import PostComments from "./PostComments";
 import UserLink from "@/features/userProfile/components/UserLink";
 import { useTogglePostLike } from "../hooks/usePostMutation";
+import SmartImage from "@/components/ui/SmartImage";
 
 const COLLAPSE_CHARS = 420;
 const COLLAPSE_LINES = 7;
@@ -36,6 +37,7 @@ export default function PostCard({
   currentUser,
   isAuthenticated,
 }: PostCardProps) {
+  const [likePop, setLikePop] = useState(0);
   const navigate = useNavigate();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -60,6 +62,8 @@ export default function PostCard({
       return;
     }
     if (like.isPending) return;
+    // сердечко «підстрибує» лише на щойно поставлений лайк
+    if (!post.likedByMe) setLikePop((n) => n + 1);
     like.mutate(!post.likedByMe);
   }
 
@@ -149,7 +153,7 @@ export default function PostCard({
           className="block bg-muted"
           aria-label="Відкрити фото повністю"
         >
-          <img
+          <SmartImage
             src={post.photoUrl}
             alt={`Фото до поста ${post.authorName}`}
             loading="lazy"
@@ -166,14 +170,17 @@ export default function PostCard({
           aria-label={post.likedByMe ? "Прибрати вподобання" : "Вподобати"}
           onClick={handleLike}
           className={cn(
-            "flex h-10 cursor-pointer items-center gap-1.75 rounded-[10px] px-3 text-sm transition-colors",
+            "flex h-10 cursor-pointer items-center gap-1.75 rounded-[10px] px-3 text-sm transition-[color,background-color,transform] active:scale-95",
             post.likedByMe
               ? "bg-destructive/8 font-bold text-destructive"
               : "font-semibold text-foreground/75 hover:bg-muted",
           )}
         >
           {post.likedByMe ? (
-            <IconHeartFilled className="size-5" />
+            <IconHeartFilled
+              key={likePop}
+              className={cn("size-5", likePop > 0 && "animate-like-pop")}
+            />
           ) : (
             <IconHeart className="size-5" />
           )}

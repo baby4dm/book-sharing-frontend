@@ -11,6 +11,7 @@ import type {
   ExchangeReviewResponse,
 } from "../types";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import SmartImage from "@/components/ui/SmartImage";
 
 const RATING_LABELS = [
   "",
@@ -211,7 +212,7 @@ function ReviewItem({
       <div className="flex items-center gap-2.5">
         <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-xs font-bold text-accent-foreground">
           {review.authorAvatarUrl && !avatarFailed ? (
-            <img
+            <SmartImage
               src={review.authorAvatarUrl}
               alt=""
               className="size-full object-cover"

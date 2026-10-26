@@ -7,6 +7,7 @@ import type { ListingResponse } from "@/features/listings/types";
 import { STATUS_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useUserListings } from "../hooks/useUserProfile";
+import SmartImage from "@/components/ui/SmartImage";
 
 function ShelfBook({ listing }: { listing: ListingResponse }) {
   const [failed, setFailed] = useState(false);
@@ -20,7 +21,7 @@ function ShelfBook({ listing }: { listing: ListingResponse }) {
       >
         <div className="relative flex aspect-2/3 w-full items-center justify-center overflow-hidden rounded-lg bg-secondary shadow-sm transition-transform group-hover:-translate-y-0.5 group-hover:shadow-md">
           {listing.bookCoverUrl && !failed ? (
-            <img
+            <SmartImage
               src={listing.bookCoverUrl}
               alt=""
               loading="lazy"
@@ -139,7 +140,7 @@ export default function UserShelf({ userId, isOwn = false }: UserShelfProps) {
         )
       ) : (
         <>
-          <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4">
+          <ul className="stagger-in grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4">
             {listings.map((listing) => (
               <ShelfBook key={listing.id} listing={listing} />
             ))}

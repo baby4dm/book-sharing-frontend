@@ -136,7 +136,7 @@ export default function ProfileReviews({
         </p>
       ) : (
         <>
-          <ul className="flex flex-col gap-4">
+          <ul className="stagger-in flex flex-col gap-4">
             {reviews.map((review) => (
               <ReviewItem key={review.id} review={review} />
             ))}

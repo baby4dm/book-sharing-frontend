@@ -3,6 +3,7 @@ import { IconStarFilled } from "@tabler/icons-react";
 import type { ExchangeParticipant } from "../types";
 import UserLink from "@/features/userProfile/components/UserLink";
 import OpenExchangeChatButton from "@/features/chats/components/OpenExchangeChatButton";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface ParticipantCardProps {
   participant: ExchangeParticipant;
@@ -32,7 +33,7 @@ function ParticipantCard({
       >
         <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-base font-bold text-accent-foreground">
           {participant.avatarUrl && !avatarFailed ? (
-            <img
+            <SmartImage
               src={participant.avatarUrl}
               alt=""
               className="size-full object-cover"

@@ -29,6 +29,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { findMyActiveRequest } from "@/api/listingQueue";
 import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
 import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
+import SmartImage from "@/components/ui/SmartImage";
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -127,7 +128,7 @@ export default function ListingDetailPage() {
               >
                 <IconArrowLeft />
               </Button>
-              <img
+              <SmartImage
                 className="absolute inset-0 z-10 h-80 w-auto m-auto lg:h-90 rounded-md shadow-md"
                 src={listing.photoUrls[currentPhoto]}
                 alt="Listing Photo"
@@ -145,7 +146,7 @@ export default function ListingDetailPage() {
             </div>
             <div className="flex items-center w-full h-20 gap-2 justify-center">
               {listing.photoUrls.map((el, i) => (
-                <img
+                <SmartImage
                   className={`h-15 w-15 rounded-sm ${currentPhoto === i ? "ring-2 ring-accent-vivid shadow-xl" : ""}`}
                   key={el}
                   src={el}
@@ -234,7 +235,7 @@ export default function ListingDetailPage() {
             >
               <div className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
                 {listing.ownerAvatarUrl && !avatarFailed ? (
-                  <img
+                  <SmartImage
                     src={listing.ownerAvatarUrl}
                     alt=""
                     className="w-full h-full object-cover"

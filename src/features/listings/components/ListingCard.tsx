@@ -7,6 +7,7 @@ import { STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import RequestFormDialog from "../../requests/components/RequestFormDialog";
+import SmartImage from "@/components/ui/SmartImage";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -14,7 +15,6 @@ interface ListingCardProps {
 }
 
 export default function ListingCard({ listing, owner }: ListingCardProps) {
-  const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
@@ -34,28 +34,21 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
   return (
     <Link
       to={`/listings/${listing.id}`}
-      className="bg-card shadow-md rounded-xl cursor-pointer
-      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto 
-      hover:shadow-2xl hover:scale-105 transition-all duration-200"
+      className="group bg-card shadow-md rounded-xl cursor-pointer
+      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto
+      transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl active:translate-y-0 active:scale-[0.99]"
     >
       <div className="w-full relative flex flex-col gap-4">
         <div className="relative h-90 w-full rounded-2xl overflow-hidden">
-          {!imageIsLoaded && !imageIsFailed && (
-            <div className="absolute inset-0 bg-border shimmer rounded-2xl" />
-          )}
-
           {imageIsFailed || !listing.bookCoverUrl ? (
             <div className="absolute inset-0 flex items-center justify-center bg-secondary rounded-2xl">
               <IconBook size={32} className="text-muted-foreground" />
             </div>
           ) : (
-            <img
-              className={`w-full h-full transition-opacity duration-300 ${
-                imageIsLoaded ? "opacity-100" : "opacity-0"
-              }`}
+            <SmartImage
+              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
               src={listing.bookCoverUrl}
               alt={listing.bookTitle}
-              onLoad={() => setImageIsLoaded(true)}
               onError={() => setImageIsFailed(true)}
             />
           )}

@@ -10,6 +10,7 @@ import type { ExchangeActions } from "../hooks/useExchangeActions";
 import type { ExchangeResponse } from "../types";
 import type { TimelineStep } from "../utils/computeExchangeSteps";
 import StepActionPanel from "./StepActionPanel";
+import SmartImage from "@/components/ui/SmartImage";
 
 const STEP_ICONS: Record<
   string,
@@ -156,7 +157,7 @@ export default function ExchangeTimeline({
                       rel="noreferrer"
                       className="size-13 overflow-hidden rounded-lg ring-1 ring-border"
                     >
-                      <img
+                      <SmartImage
                         src={step.shipment.waybillPhotoUrl}
                         alt="Фото накладної"
                         className="size-full object-cover"
@@ -176,7 +177,7 @@ export default function ExchangeTimeline({
                       rel="noreferrer"
                       className="size-13 overflow-hidden rounded-lg ring-1 ring-border"
                     >
-                      <img
+                      <SmartImage
                         src={photo.url}
                         alt={photo.note ?? `Фото: ${step.title}`}
                         className="size-full object-cover"

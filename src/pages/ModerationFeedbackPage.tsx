@@ -25,6 +25,7 @@ import {
   useFeedbackList,
   useUpdateFeedback,
 } from "@/features/feedback/hooks/useFeeback";
+import SmartImage from "@/components/ui/SmartImage";
 
 const STATUSES: FeedbackStatus[] = ["NEW", "IN_PROGRESS", "RESOLVED"];
 const TOPICS: FeedbackTopic[] = ["QUESTION", "BUG", "IDEA", "COMPLAINT"];
@@ -325,7 +326,7 @@ function FeedbackCard({ item }: { item: FeedbackResponse }) {
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded-lg border border-border p-1 pr-3 text-sm font-semibold hover:bg-muted"
             >
-              <img
+              <SmartImage
                 src={item.screenshotUrl}
                 alt="Скріншот до звернення"
                 className="h-10 w-14 rounded object-cover"
