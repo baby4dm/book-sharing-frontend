@@ -5,6 +5,7 @@ import ProfileEditingForm from "@/features/userProfile/components/ProfileEditing
 import ProfileReviews from "@/features/userProfile/components/ProfileReviews";
 import ProfileStats from "@/features/userProfile/components/ProfileStats";
 import ProfileView from "@/features/userProfile/components/ProfileView";
+import UserShelf from "@/features/userProfile/components/UserShelf";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { useUserReviews } from "@/features/userProfile/hooks/useUserReviews";
 
@@ -42,6 +43,7 @@ export default function ProfilePage() {
           userData={data}
           reviewsCount={reviewsData?.pages[0]?.totalElements}
         />
+        <UserShelf userId={data.id} isOwn />
         <ProfileReviews userId={data.id} />
       </div>
     </section>

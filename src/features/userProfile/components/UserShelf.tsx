@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { IconBook } from "@tabler/icons-react";
+import { IconBook, IconChevronRight, IconPlus } from "@tabler/icons-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -57,7 +57,12 @@ function ShelfBook({ listing }: { listing: ListingResponse }) {
   );
 }
 
-export default function UserShelf({ userId }: { userId: string }) {
+interface UserShelfProps {
+  userId: string;
+  isOwn?: boolean;
+}
+
+export default function UserShelf({ userId, isOwn = false }: UserShelfProps) {
   const {
     data,
     isPending,
@@ -77,11 +82,22 @@ export default function UserShelf({ userId }: { userId: string }) {
         <h2 className="font-heading text-xl font-semibold md:text-[22px]">
           Книги на полиці
         </h2>
-        {total > 0 && (
-          <span className="text-sm font-semibold text-muted-foreground">
-            {total}
-          </span>
-        )}
+        <div className="flex items-baseline gap-3">
+          {total > 0 && (
+            <span className="text-sm font-semibold text-muted-foreground">
+              {total}
+            </span>
+          )}
+          {isOwn && total > 0 && (
+            <Link
+              to="/?tab=my"
+              className="inline-flex items-center gap-0.5 text-sm font-bold text-accent-vivid hover:underline"
+            >
+              Керувати
+              <IconChevronRight className="size-4" />
+            </Link>
+          )}
+        </div>
       </div>
 
       {isPending ? (
@@ -102,9 +118,25 @@ export default function UserShelf({ userId }: { userId: string }) {
           </Button>
         </div>
       ) : listings.length === 0 ? (
-        <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
-          Зараз на полиці немає книг.
-        </p>
+        isOwn ? (
+          <div className="flex flex-col items-start gap-3 border-t border-border/70 pt-4">
+            <p className="text-sm text-muted-foreground">
+              Ваша полиця порожня. Додайте книгу — її побачать інші читачі в
+              каталозі й у вашому профілі.
+            </p>
+            <Link
+              to="/listings/create"
+              className="inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+            >
+              <IconPlus className="size-4" />
+              Додати книгу
+            </Link>
+          </div>
+        ) : (
+          <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
+            Зараз на полиці немає книг.
+          </p>
+        )
       ) : (
         <>
           <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4">

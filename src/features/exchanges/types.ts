@@ -92,6 +92,24 @@ export interface ExchangeResponse {
   returnPreparedAt: string | null;
   returnedAt: string | null;
   readingPaused: boolean;
+  dispute: ExchangeDisputeResponse | null;
+}
+
+export type DisputeStatus =
+  | "OPEN"
+  | "RESOLVED_FAVOR_FILER"
+  | "RESOLVED_FAVOR_OTHER"
+  | "DISMISSED";
+
+export interface ExchangeDisputeResponse {
+  id: string;
+  filedByUserId: string;
+  description: string;
+  status: DisputeStatus;
+  resolutionComment: string | null;
+  moderatorName: string | null;
+  createdAt: string;
+  resolvedAt: string | null;
 }
 
 export interface ExchangeReviewResponse {

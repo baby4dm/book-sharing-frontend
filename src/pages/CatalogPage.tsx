@@ -6,6 +6,7 @@ import ListingFilterPanel from "@/features/listings/components/ListingFilterPane
 import { useListings } from "@/features/listings/hooks/useListings";
 import type { ListingFilters } from "@/features/listings/types";
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUserListings } from "@/features/listings/hooks/useCurrentUserListing";
 
@@ -31,6 +32,8 @@ export default function CatalogPage() {
   } = useCurrentUserListings(filters);
   const allListings = catalogData?.pages.flatMap((page) => page.content) ?? [];
   const myListings = data?.pages.flatMap((page) => page.content) ?? [];
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab = searchParams.get("tab") === "my" ? "my" : "catalog";
   function updateFilters(filters: ListingFilters) {
     setFilters((prev) => ({ ...prev, ...filters }));
   }
@@ -56,7 +59,12 @@ export default function CatalogPage() {
   return (
     <section className="w-full px-4 py-6 md:px-4 xl:px-16 2xl:px-20 flex flex-col gap-4 pb-30">
       <Tabs
-        defaultValue="catalog"
+        value={tab}
+        onValueChange={(value) =>
+          setSearchParams(value === "my" ? { tab: "my" } : {}, {
+            replace: true,
+          })
+        }
         className="w-full flex flex-col gap-4 lg:gap-8"
       >
         <div className="w-full flex justify-between items-center flex-wrap gap-4 max-w-500 3xl:max-w-530 mx-auto">
