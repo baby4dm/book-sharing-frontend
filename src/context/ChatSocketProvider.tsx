@@ -11,16 +11,24 @@ import { useQueryClient } from "@tanstack/react-query";
 import { getChatSocketUrl, markChatAsRead } from "@/api/chats";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
-import { ChatSocketContext, type LiveEventListener } from "./ChatSocketContext";
+import type { NotificationEvent } from "@/features/notifications/types";
+import {
+  applyNotificationEvent,
+  NOTIFICATIONS_KEY,
+} from "@/features/notifications/utils/notificationCache";
+import type { ChatEvent } from "@/features/chats/types";
 import {
   appendMessage,
   applyMessageToRooms,
   CHAT_ROOMS_KEY,
   CHAT_UNREAD_KEY,
-  markMyMessagesRead,
   updateRoom,
+  markMyMessagesRead,
 } from "@/features/chats/utils/chatCache";
-import type { ChatEvent } from "@/features/chats/types";
+import {
+  ChatSocketContext,
+  type LiveEventListener,
+} from "@/context/ChatSocketContext";
 
 const TYPING_THROTTLE_MS = 3000;
 
@@ -106,7 +114,18 @@ export default function ChatSocketProvider({
             //
           }
         });
+        client.subscribe("/user/queue/notifications", (frame) => {
+          try {
+            applyNotificationEvent(
+              queryClient,
+              JSON.parse(frame.body) as NotificationEvent,
+            );
+          } catch {
+            //
+          }
+        });
         if (hadConnection) {
+          queryClient.invalidateQueries({ queryKey: NOTIFICATIONS_KEY });
           queryClient.invalidateQueries({ queryKey: CHAT_ROOMS_KEY });
           queryClient.invalidateQueries({ queryKey: CHAT_UNREAD_KEY });
           queryClient.invalidateQueries({ queryKey: ["chatMessages"] });

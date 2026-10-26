@@ -1,10 +1,4 @@
-import {
-  IconBell,
-  IconBook,
-  IconLogout2,
-  IconMenu2,
-  IconX,
-} from "@tabler/icons-react";
+import { IconBook, IconLogout2, IconMenu2, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -17,6 +11,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
+import NotificationBell from "@/features/notifications/components/NotificationBell";
 import { useUnreadChatsCount } from "@/features/chats/hooks/useChats";
 import ChatNavBadge from "@/features/chats/components/ChatNavBadge";
 
@@ -145,8 +140,8 @@ export default function Header() {
             )}
           </nav>
         )}
-        <div className="flex items-center gap-3 h-full lg:gap-4">
-          <IconBell className="text-muted-foreground stroke-1 h-7 w-auto cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
+        <div className="flex items-center gap-2 h-full lg:gap-3">
+          {isAuthenticated && <NotificationBell />}
           {isAuthenticated && (
             <div className="relative">
               <Link

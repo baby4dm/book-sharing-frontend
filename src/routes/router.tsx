@@ -17,6 +17,7 @@ import ExchangeDetailPage from "@/pages/ExchangeDetailPage";
 import HelpPage from "@/pages/HelpPage";
 import LegalPage from "@/pages/LegalPage";
 import ModerationFeedbackPage from "@/pages/ModerationFeedbackPage";
+import NotificationsPage from "@/pages/NotificationsPage";
 
 const routes = [
   {
@@ -36,6 +37,7 @@ const routes = [
           { path: "listings/create", element: <CreateListingPage /> },
           { path: "exchanges/:id", element: <ExchangeDetailPage /> },
           { path: "moderation/feedback", element: <ModerationFeedbackPage /> },
+          { path: "notifications", element: <NotificationsPage /> },
         ],
       },
       { path: "feed", element: <FeedPage /> },
