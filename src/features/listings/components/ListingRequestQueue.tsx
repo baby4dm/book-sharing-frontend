@@ -4,11 +4,12 @@ import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import type { ListingStatus } from "@/features/listings/types";
 import { DELIVERY_METHODS } from "@/lib/constants";
 import { cn, formatRelativeTime, pluralizeDays } from "@/lib/utils";
-import { getActiveRequests } from "@/api/listingQueue";
+import UserLink from "@/features/userProfile/components/UserLink";
 import {
-  type RequestResponse,
   REQUEST_STATUS_CONFIG,
+  type RequestResponse,
 } from "@/features/requests/types";
+import { getActiveRequests } from "@/api/listingQueue";
 
 interface ListingRequestQueueProps {
   requests: RequestResponse[] | undefined;
@@ -109,16 +110,27 @@ export default function ListingRequestQueue({
                 >
                   {queuePosition ?? ""}
                 </span>
-                <UserAvatar
-                  name={request.requesterName}
-                  src={request.requesterAvatarUrl}
-                  className="size-10"
-                  fallbackClassName="font-sans text-sm font-extrabold"
-                />
+                <UserLink
+                  userId={request.requesterId}
+                  aria-label={`Профіль: ${request.requesterName}`}
+                  className="shrink-0 self-start rounded-full"
+                >
+                  <UserAvatar
+                    name={request.requesterName}
+                    src={request.requesterAvatarUrl}
+                    className="size-10"
+                    fallbackClassName="font-sans text-sm font-extrabold"
+                  />
+                </UserLink>
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <span className="truncate text-sm font-bold lg:text-[15px]">
-                      {request.requesterName}
+                      <UserLink
+                        userId={request.requesterId}
+                        className="underline-offset-2 hover:underline"
+                      >
+                        {request.requesterName}
+                      </UserLink>
                       {isMine && (
                         <span className="font-semibold text-accent-vivid">
                           {" "}

@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { DELIVERY_METHODS, EXCHANGE_STATUS_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import UserLink from "@/features/userProfile/components/UserLink";
 import type { ExchangeResponse } from "../types";
 import {
   getActionHint,
@@ -41,16 +42,18 @@ export default function ExchangeCard({
   const MetaIcon = meta.tone === "danger" ? IconAlertTriangle : IconClock;
 
   return (
-    <Link
-      to={`/exchanges/${exchange.id}`}
-      className="flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 sm:flex-row md:gap-5 md:p-5"
-    >
+    <article className="relative flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 sm:flex-row md:gap-5 md:p-5">
       <BookCardCover src={exchange.bookCoverUrl} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <h3 className="font-heading text-lg font-semibold leading-tight text-foreground md:text-xl">
-            {exchange.bookTitle}
+            <Link
+              to={`/exchanges/${exchange.id}`}
+              className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
+            >
+              {exchange.bookTitle}
+            </Link>
           </h3>
           <span
             className={cn(
@@ -64,21 +67,26 @@ export default function ExchangeCard({
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
-          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
-            {partner.avatarUrl && !avatarFailed ? (
-              <img
-                src={partner.avatarUrl}
-                alt=""
-                className="size-full object-cover"
-                onError={() => setAvatarFailed(true)}
-              />
-            ) : (
-              partner.name.substring(0, 1).toUpperCase()
-            )}
-          </div>
-          <span className="text-[15px] font-semibold text-foreground">
-            {partner.name}
-          </span>
+          <UserLink
+            userId={partner.id}
+            className="relative z-10 inline-flex items-center gap-2.5"
+          >
+            <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
+              {partner.avatarUrl && !avatarFailed ? (
+                <img
+                  src={partner.avatarUrl}
+                  alt=""
+                  className="size-full object-cover"
+                  onError={() => setAvatarFailed(true)}
+                />
+              ) : (
+                partner.name.substring(0, 1).toUpperCase()
+              )}
+            </div>
+            <span className="text-[15px] font-semibold text-foreground underline-offset-2 group-hover:underline">
+              {partner.name}
+            </span>
+          </UserLink>
           <span className="flex items-center gap-1 text-muted-foreground">
             <IconStarFilled size={13} className="text-[#D99A1E]" />
             {Number(partner.ratingAvg).toFixed(1)}
@@ -108,6 +116,6 @@ export default function ExchangeCard({
           </div>
         )}
       </div>
-    </Link>
+    </article>
   );
 }

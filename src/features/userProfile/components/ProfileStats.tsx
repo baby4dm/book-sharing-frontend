@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import type { UserResponse } from "../types";
+import type { PublicUserProfile } from "../types";
 import { pluralizeReviews } from "../utils/profileFormat";
 
 interface ProfileStatsProps {
-  userData: UserResponse;
+  userData: PublicUserProfile;
   reviewsCount: number | undefined;
 }
 
@@ -36,7 +36,7 @@ export default function ProfileStats({
       aria-label="Статистика"
       className="grid grid-cols-2 gap-3 sm:grid-cols-3"
     >
-      <div className="rounded-2xl border border-border bg-card p-4 md:p-[18px]">
+      <div className="rounded-2xl border border-border bg-card p-4 md:p-4.5">
         <p className="flex items-center gap-1.5 text-2xl font-extrabold md:text-[28px]">
           <span
             aria-hidden="true"
@@ -58,7 +58,7 @@ export default function ProfileStats({
       {stats.map((stat) => (
         <div
           key={stat.label}
-          className="rounded-2xl border border-border bg-card p-4 md:p-[18px]"
+          className="rounded-2xl border border-border bg-card p-4 md:p-4.5"
         >
           <p
             className={cn(

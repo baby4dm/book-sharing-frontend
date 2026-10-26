@@ -10,6 +10,7 @@ import { formatRelativeTime } from "@/lib/utils";
 import { useCreateComment, usePostComments } from "../hooks/usePostComments";
 import { COMMENT_MAX_LENGTH, type CommentResponse } from "../types";
 import { formatFullDate } from "../utils/format";
+import UserLink from "@/features/userProfile/components/UserLink";
 
 const VISIBLE_BY_DEFAULT = 3;
 
@@ -101,15 +102,28 @@ export default function PostComments({
 function CommentItem({ comment }: { comment: CommentResponse }) {
   return (
     <li className="flex gap-2.5">
-      <UserAvatar
-        name={comment.authorName}
-        src={comment.authorAvatarUrl}
-        className="h-8.5 w-8.5"
-        fallbackClassName="font-sans text-[13px] font-extrabold"
-      />
+      <UserLink
+        userId={comment.authorId}
+        aria-label={`Профіль: ${comment.authorName}`}
+        className="shrink-0 self-start rounded-full"
+      >
+        <UserAvatar
+          name={comment.authorName}
+          src={comment.authorAvatarUrl}
+          className="h-8.5 w-8.5"
+          fallbackClassName="font-sans text-[13px] font-extrabold"
+        />
+      </UserLink>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="self-start rounded-[4px_14px_14px_14px] bg-[#F1EFE9] px-3 py-2">
-          <p className="text-sm font-bold">{comment.authorName}</p>
+          <p className="text-sm font-bold">
+            <UserLink
+              userId={comment.authorId}
+              className="underline-offset-2 hover:underline"
+            >
+              {comment.authorName}
+            </UserLink>
+          </p>
           <p className="text-sm leading-normal wrap-break-word whitespace-pre-line text-foreground/90">
             {comment.content}
           </p>

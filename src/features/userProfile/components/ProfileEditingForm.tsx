@@ -100,7 +100,7 @@ export default function ProfileEditingForm({
   const invalid = (field: FieldError) => error?.field === field || undefined;
 
   return (
-    <div className="flex w-full max-w-[680px] flex-col gap-5 md:gap-[22px]">
+    <div className="flex w-full max-w-170 flex-col gap-5 md:gap-5.5">
       <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
         Редагування профілю
       </h1>

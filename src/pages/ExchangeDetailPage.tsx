@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Spinner } from "@/components/ui/Spinner";
+import QueryErrorState from "@/components/errors/QueryErrorState";
 import DisputeNotice from "@/features/exchanges/components/DisputeNotice";
 import DisputeResolution from "@/features/exchanges/components/DisputeResolution";
 import ExchangeHeader from "@/features/exchanges/components/ExchangeHeader";
@@ -21,13 +22,13 @@ import {
   getPendingExtension,
 } from "@/features/exchanges/utils/extensions";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
-import ExchangeDeadlineCard from "@/features/exchanges/components/exchangeDeadlineCard";
+import ExchangeDeadlineCard from "@/features/exchanges/components/ExchangeDeadlineCard";
 
 export default function ExchangeDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [extensionDialogOpen, setExtensionDialogOpen] = useState(false);
 
-  const { data: exchange, isLoading, isError } = useExchange(id!);
+  const { data: exchange, isLoading, error, refetch } = useExchange(id!);
   const { data: currentUser, isLoading: isProfileLoading } =
     useCurrentUserProfile();
   const actions = useExchangeActions(id!);
@@ -40,7 +41,19 @@ export default function ExchangeDetailPage() {
     );
   }
 
-  if (isError || !exchange || !currentUser) {
+  if (error) {
+    return (
+      <QueryErrorState
+        error={error}
+        onRetry={() => refetch()}
+        notFoundTitle="Обмін не знайдено"
+        notFoundText="Такого обміну немає або посилання застаріло."
+        backTo={{ to: "/exchanges", label: "До моїх обмінів" }}
+      />
+    );
+  }
+
+  if (!exchange || !currentUser) {
     return (
       <div className="flex flex-col items-center gap-3 py-16 text-center">
         <p className="text-sm text-destructive">Не вдалось завантажити обмін</p>

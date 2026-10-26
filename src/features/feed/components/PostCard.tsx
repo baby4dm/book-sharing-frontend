@@ -15,12 +15,12 @@ import {
 import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import type { UserResponse } from "@/features/userProfile/types";
 import { cn, formatRelativeTime } from "@/lib/utils";
-
 import type { PostResponse } from "../types";
 import { formatFullDate, pluralizeComments } from "../utils/format";
-import { useTogglePostLike } from "../hooks/usePostMutation";
 import DeletePostDialog from "./DeletePostDialog";
 import PostComments from "./PostComments";
+import UserLink from "@/features/userProfile/components/UserLink";
+import { useTogglePostLike } from "../hooks/usePostMutation";
 
 const COLLAPSE_CHARS = 420;
 const COLLAPSE_LINES = 7;
@@ -66,14 +66,27 @@ export default function PostCard({
   return (
     <article className="overflow-hidden rounded-2xl border border-border bg-card">
       <header className="flex items-center gap-3 px-4 pt-4 sm:px-5 sm:pt-4.5">
-        <UserAvatar
-          name={post.authorName}
-          src={post.authorAvatarUrl}
-          className="h-10.5 w-10.5"
-          fallbackClassName="font-sans text-base font-extrabold"
-        />
+        <UserLink
+          userId={post.authorId}
+          aria-label={`Профіль: ${post.authorName}`}
+          className="shrink-0 rounded-full"
+        >
+          <UserAvatar
+            name={post.authorName}
+            src={post.authorAvatarUrl}
+            className="h-10.5 w-10.5"
+            fallbackClassName="font-sans text-base font-extrabold"
+          />
+        </UserLink>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-bold">{post.authorName}</p>
+          <p className="truncate text-[15px] font-bold">
+            <UserLink
+              userId={post.authorId}
+              className="underline-offset-2 hover:underline"
+            >
+              {post.authorName}
+            </UserLink>
+          </p>
           <time
             dateTime={post.createdAt}
             title={formatFullDate(post.createdAt)}

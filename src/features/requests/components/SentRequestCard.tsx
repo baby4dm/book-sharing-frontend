@@ -13,6 +13,7 @@ import { useListing } from "@/features/listings/hooks/useListing";
 import { useCancelRequest } from "../hooks/cancelRequest";
 import { cn } from "cn";
 import { pluralizeDays } from "@/lib/utils";
+import UserLink from "@/features/userProfile/components/UserLink";
 import BookCardCover from "@/components/layout/BookCardCover";
 
 interface RequestCardProps {
@@ -65,9 +66,19 @@ export default function SentRequestCard({ request }: RequestCardProps) {
               {request.listingBookTitle}
             </Link>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              {listing?.ownerName
-                ? `Власник · ${listing.ownerName}`
-                : `Надіслано ${formatDate(request.createdAt)}`}
+              {listing?.ownerName ? (
+                <>
+                  Власник ·{" "}
+                  <UserLink
+                    userId={listing.ownerId}
+                    className="font-semibold text-foreground/80 underline-offset-2 hover:underline"
+                  >
+                    {listing.ownerName}
+                  </UserLink>
+                </>
+              ) : (
+                `Надіслано ${formatDate(request.createdAt)}`
+              )}
             </p>
           </div>
           <span

@@ -20,6 +20,7 @@ import {
 import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { cn, formatRelativeTime } from "@/lib/utils";
+import UserLink from "@/features/userProfile/components/UserLink";
 import {
   useFeedbackList,
   useUpdateFeedback,
@@ -263,18 +264,21 @@ function FeedbackCard({ item }: { item: FeedbackResponse }) {
           {FEEDBACK_TOPIC_LABELS[item.topic]}
         </span>
         <div className="flex min-w-0 items-center gap-2">
-          {item.userName ? (
-            <>
+          {item.userName && item.userId ? (
+            <UserLink
+              userId={item.userId}
+              className="flex min-w-0 items-center gap-2"
+            >
               <UserAvatar
                 name={item.userName}
                 src={item.userAvatarUrl}
                 className="size-7"
                 fallbackClassName="font-sans text-xs font-extrabold"
               />
-              <span className="truncate text-sm font-bold">
+              <span className="truncate text-sm font-bold underline-offset-2 group-hover:underline">
                 {item.userName}
               </span>
-            </>
+            </UserLink>
           ) : (
             <span className="text-sm font-bold text-muted-foreground">
               Гість

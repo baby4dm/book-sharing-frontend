@@ -21,6 +21,11 @@ export interface UserResponse {
   createdAt: string;
 }
 
+export type PublicUserProfile = Omit<
+  UserResponse,
+  "email" | "role" | "status" | "restrictedUntil"
+>;
+
 export interface UpdateProfilePayload {
   name?: string;
   avatarUrl?: string;

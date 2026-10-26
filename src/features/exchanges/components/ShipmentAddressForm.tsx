@@ -9,13 +9,13 @@ import type {
 } from "../types";
 import { getErrorMessage } from "../utils/getErrorMessage";
 import SingleSelectList from "@/components/ui/SingleSelectList";
+import PhoneInput from "@/components/ui/PhoneInput";
+import { isValidPhone } from "@/lib/phone";
 
 const CARRIERS: { value: ShipmentCarrier; label: string }[] = [
   { value: "NOVA_POSHTA", label: "Нова Пошта" },
   { value: "UKRPOSHTA", label: "Укрпошта" },
 ];
-
-const PHONE_REGEX = /^\+?380\d{9}$/;
 
 interface ShipmentAddressFormProps {
   direction: ShipmentDirection;
@@ -59,9 +59,10 @@ export default function ShipmentAddressForm({
     const next: Partial<Record<Field, string>> = {};
     if (!carrierLabel) next.carrier = "Оберіть перевізника";
     if (!values.recipientName.trim()) next.recipientName = "Вкажіть ім'я";
-    const phone = values.recipientPhone.replace(/[\s()-]/g, "");
-    if (!PHONE_REGEX.test(phone)) {
-      next.recipientPhone = "Формат: +380XXXXXXXXX";
+    if (!isValidPhone(values.recipientPhone)) {
+      next.recipientPhone = values.recipientPhone
+        ? "Введіть усі 9 цифр після +380"
+        : "Вкажіть телефон";
     }
     if (!values.city.trim()) next.city = "Вкажіть місто";
     if (!values.branchNumber.trim()) next.branchNumber = "Вкажіть відділення";
@@ -79,7 +80,7 @@ export default function ShipmentAddressForm({
       await onSubmit({
         direction,
         recipientName: values.recipientName.trim(),
-        recipientPhone: values.recipientPhone.replace(/[\s()-]/g, ""),
+        recipientPhone: values.recipientPhone,
         carrier: selectedCarrier.value,
         city: values.city.trim(),
         branchNumber: values.branchNumber.trim(),
@@ -119,11 +120,12 @@ export default function ShipmentAddressForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Телефон</Label>
-        <Input
+        <Label htmlFor="shipment-phone">Телефон</Label>
+        <PhoneInput
+          id="shipment-phone"
           value={values.recipientPhone}
-          onChange={(e) => setField("recipientPhone", e.target.value)}
-          placeholder="+380..."
+          onChange={(phone) => setField("recipientPhone", phone)}
+          invalid={Boolean(errors.recipientPhone)}
           disabled={isSubmitting}
         />
         {errors.recipientPhone && (

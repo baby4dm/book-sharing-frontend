@@ -1,15 +1,17 @@
-import { findMyActiveRequest } from "@/api/listingQueue";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
+import QueryErrorState from "@/components/errors/QueryErrorState";
 import { useAuth } from "@/context/AuthContext";
-import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
 import { useListing } from "@/features/listings/hooks/useListing";
-import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
 import { SETTLEMENT_TYPE_LABELS } from "@/features/listings/types";
-
 import RequestFormDialog from "@/features/requests/components/RequestFormDialog";
-
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
+import { useUserProfile } from "@/features/userProfile/hooks/useUserProfile";
+import UserLink from "@/features/userProfile/components/UserLink";
+import {
+  formatMemberSince,
+  pluralizeExchanges,
+} from "@/features/userProfile/utils/profileFormat";
 import { DELIVERY_METHODS, STATUS_CONFIG } from "@/lib/constants";
 import { formatDaysAgo } from "@/lib/utils";
 import {
@@ -19,17 +21,22 @@ import {
   IconCheck,
   IconClock,
   IconMapPin,
+  IconChevronRight,
   IconStarFilled,
 } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { findMyActiveRequest } from "@/api/listingQueue";
+import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
+import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { data: listing, isLoading, error } = useListing(id!);
+  const { data: listing, isLoading, error, refetch } = useListing(id!);
+  const { data: owner } = useUserProfile(listing?.ownerId);
   const [avatarFailed, setAvatarFailed] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const { data: user } = useCurrentUserProfile();
@@ -77,21 +84,12 @@ export default function ListingDetailPage() {
   }
   if (error) {
     return (
-      <section className="w-full px-4 py-16 flex flex-col items-center gap-3 text-center">
-        <p className="text-foreground font-semibold">
-          Не вдалось завантажити оголошення
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Перевірте з'єднання з інтернетом і спробуйте ще раз
-        </p>
-        <Button
-          variant="outline"
-          className="cursor-pointer mt-2"
-          onClick={() => window.location.reload()}
-        >
-          Спробувати ще раз
-        </Button>
-      </section>
+      <QueryErrorState
+        error={error}
+        onRetry={() => refetch()}
+        notFoundTitle="Оголошення не знайдено"
+        notFoundText="Можливо, власник його видалив або посилання застаріло. Подивіться інші книги в каталозі."
+      />
     );
   }
   if (!listing) {
@@ -230,12 +228,15 @@ export default function ListingDetailPage() {
             </div>
           </div>
           <div className="w-full flex flex-col gap-5 border-t border-border py-4">
-            <div className="w-full flex items-center gap-2 lg:flex-1 lg:gap-4 bg-card p-5 rounded-xl shadow-sm">
-              <div className="relative w-11 h-11 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
+            <UserLink
+              userId={listing.ownerId}
+              className="w-full flex items-center gap-3 lg:flex-1 lg:gap-4 bg-card p-5 rounded-xl shadow-sm transition-colors hover:bg-muted/60"
+            >
+              <div className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
                 {listing.ownerAvatarUrl && !avatarFailed ? (
                   <img
                     src={listing.ownerAvatarUrl}
-                    alt={listing.ownerName}
+                    alt=""
                     className="w-full h-full object-cover"
                     onError={() => setAvatarFailed(true)}
                   />
@@ -245,30 +246,33 @@ export default function ListingDetailPage() {
                   </p>
                 )}
               </div>
-              <div className="flex flex-col">
-                <p className="text-sm text-foreground font-bold lg:text-base">
+              <div className="flex min-w-0 flex-1 flex-col">
+                <p className="truncate text-sm text-foreground font-bold underline-offset-2 group-hover:underline lg:text-base">
                   {listing.ownerName}
                 </p>
-                <p className="text-sm font-light text-foreground">
-                  на сервісі з вересня 2026
-                </p>
+                {owner && (
+                  <p className="text-sm font-light text-foreground">
+                    {formatMemberSince(owner.createdAt)}
+                  </p>
+                )}
                 <div className="flex items-center gap-2.5 lg:gap-2">
                   <p className="flex items-center gap-0.5 h-6">
                     <IconStarFilled className="w-4 h-4 text-yellow-500 lg:w-5 lg:h-5" />
                     <span className="text-sm font-medium text-foreground">
-                      {listing.ownerRatingAvg}
+                      {Number(listing.ownerRatingAvg ?? 0).toFixed(1)}
                     </span>
                   </p>
-
-                  <p className="text-sm font-light text-foreground">
-                    8 обмінів
-                  </p>
+                  {owner && (
+                    <p className="text-sm font-light text-foreground">
+                      {pluralizeExchanges(owner.booksGiven + owner.booksTaken)}
+                    </p>
+                  )}
                 </div>
               </div>
-            </div>
+              <IconChevronRight className="size-5 shrink-0 text-muted-foreground" />
+            </UserLink>
             {!isOwner &&
               (myRequest?.status === "ACTIVE" && myRequest.exchangeId ? (
-                // заявку підтверджено — книга вже в обміні з вами
                 <Button
                   className="cursor-pointer w-full h-10"
                   nativeButton={false}

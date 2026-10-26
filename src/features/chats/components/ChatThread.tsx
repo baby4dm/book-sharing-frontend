@@ -13,9 +13,10 @@ import {
 import { useDocumentVisible } from "../hooks/useDocumentVisible";
 import type { ChatRoom, PendingMessage } from "../types";
 import { flattenMessages } from "../utils/chatCache";
-import { useChatSocket } from "@/context/ChatSocketContext";
-import MessageList from "./MessageList";
 import ChatComposer from "./ChatComposer";
+import MessageList from "./MessageList";
+import UserLink from "@/features/userProfile/components/UserLink";
+import { useChatSocket } from "@/context/ChatSocketContext";
 
 const TYPING_VISIBLE_MS = 4000;
 
@@ -114,14 +115,27 @@ export default function ChatThread({ room, myId }: ChatThreadProps) {
         >
           <IconChevronLeft className="size-6" />
         </Link>
-        <UserAvatar
-          name={room.otherUserName}
-          src={room.otherUserAvatarUrl}
-          className="h-11 w-11"
-          fallbackClassName="font-sans text-base font-extrabold"
-        />
+        <UserLink
+          userId={room.otherUserId}
+          aria-label={`Профіль: ${room.otherUserName}`}
+          className="shrink-0 rounded-full"
+        >
+          <UserAvatar
+            name={room.otherUserName}
+            src={room.otherUserAvatarUrl}
+            className="h-11 w-11"
+            fallbackClassName="font-sans text-base font-extrabold"
+          />
+        </UserLink>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-bold">{room.otherUserName}</p>
+          <p className="truncate text-base font-bold">
+            <UserLink
+              userId={room.otherUserId}
+              className="underline-offset-2 hover:underline"
+            >
+              {room.otherUserName}
+            </UserLink>
+          </p>
           <p className="truncate text-[13px] text-muted-foreground">
             {isTyping ? (
               <span className="font-semibold text-primary">друкує…</span>

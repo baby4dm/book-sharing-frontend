@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IconStarFilled } from "@tabler/icons-react";
 import type { ExchangeParticipant } from "../types";
+import UserLink from "@/features/userProfile/components/UserLink";
 import OpenExchangeChatButton from "@/features/chats/components/OpenExchangeChatButton";
 
 interface ParticipantCardProps {
@@ -25,7 +26,10 @@ function ParticipantCard({
         {isCurrentUser && " · це ви"}
       </span>
 
-      <div className="flex items-center gap-3">
+      <UserLink
+        userId={participant.id}
+        className="flex items-center gap-3 self-start"
+      >
         <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-base font-bold text-accent-foreground">
           {participant.avatarUrl && !avatarFailed ? (
             <img
@@ -39,7 +43,7 @@ function ParticipantCard({
           )}
         </div>
         <div className="flex min-w-0 flex-col">
-          <span className="truncate font-semibold text-foreground">
+          <span className="truncate font-semibold text-foreground underline-offset-2 group-hover:underline">
             {participant.name}
           </span>
           <span className="flex items-center gap-1 text-sm text-muted-foreground">
@@ -47,7 +51,7 @@ function ParticipantCard({
             {Number(participant.ratingAvg).toFixed(1)}
           </span>
         </div>
-      </div>
+      </UserLink>
 
       <p className="text-xs text-muted-foreground">
         Віддано {participant.booksGiven} · Взято {participant.booksTaken}

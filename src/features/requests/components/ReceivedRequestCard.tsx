@@ -16,6 +16,7 @@ import { useApproveRequest } from "../hooks/useApproveRequest";
 import { REQUEST_STATUS_CONFIG } from "../types";
 import type { RequestResponse } from "../types";
 import RejectReasonDialog from "./RejectReasonDialog";
+import UserLink from "@/features/userProfile/components/UserLink";
 import { cn } from "cn";
 import BookCardCover from "@/components/layout/BookCardCover";
 
@@ -85,21 +86,26 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-sm">
-          <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
-            {request.requesterAvatarUrl && !avatarFailed ? (
-              <img
-                src={request.requesterAvatarUrl}
-                alt=""
-                className="size-full object-cover"
-                onError={() => setAvatarFailed(true)}
-              />
-            ) : (
-              request.requesterName.substring(0, 1).toUpperCase()
-            )}
-          </div>
-          <span className="text-[15px] font-semibold text-foreground">
-            {request.requesterName}
-          </span>
+          <UserLink
+            userId={request.requesterId}
+            className="inline-flex items-center gap-2.5"
+          >
+            <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
+              {request.requesterAvatarUrl && !avatarFailed ? (
+                <img
+                  src={request.requesterAvatarUrl}
+                  alt=""
+                  className="size-full object-cover"
+                  onError={() => setAvatarFailed(true)}
+                />
+              ) : (
+                request.requesterName.substring(0, 1).toUpperCase()
+              )}
+            </div>
+            <span className="text-[15px] font-semibold text-foreground underline-offset-2 group-hover:underline">
+              {request.requesterName}
+            </span>
+          </UserLink>
           <span className="flex items-center gap-1 text-muted-foreground">
             <IconStarFilled size={13} className="text-[#D99A1E]" />
             {Number(request.requesterRatingAvg).toFixed(1)}

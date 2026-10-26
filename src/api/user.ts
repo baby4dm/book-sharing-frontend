@@ -1,4 +1,7 @@
+import type { ListingResponse } from "@/features/listings/types";
+import type { Page } from "@/lib/types";
 import type {
+  PublicUserProfile,
   UpdateProfilePayload,
   UserResponse,
   UserReviewListResponse,
@@ -30,6 +33,23 @@ export async function getUserReviews(
   const response = await apiClient.get<UserReviewListResponse>(
     `/api/users/${userId}/reviews`,
     { params: { page, size } },
+  );
+  return response.data;
+}
+
+export async function getUserProfile(id: string): Promise<PublicUserProfile> {
+  const response = await apiClient.get<PublicUserProfile>(`/api/users/${id}`);
+  return response.data;
+}
+
+export async function getUserListings(
+  userId: string,
+  page = 0,
+  size = 8,
+): Promise<Page<ListingResponse>> {
+  const response = await apiClient.get<Page<ListingResponse>>(
+    `/api/listings/by-owner/${userId}`,
+    { params: { page, size, sort: "createdAt,desc" } },
   );
   return response.data;
 }

@@ -3,9 +3,11 @@ import { Spinner } from "@/components/ui/Spinner";
 import type { UserReview } from "../types";
 import { useUserReviews } from "../hooks/useUserReviews";
 import UserAvatar from "./UserAvatar";
+import UserLink from "./UserLink";
 
 interface ProfileReviewsProps {
   userId: string;
+  emptyText?: string;
 }
 
 function formatReviewDate(iso: string): string {
@@ -34,16 +36,27 @@ function ReviewStars({ rating }: { rating: number }) {
 function ReviewItem({ review }: { review: UserReview }) {
   return (
     <li className="flex gap-3.5 border-t border-border/70 pt-4">
-      <UserAvatar
-        name={review.authorName}
-        src={review.authorAvatarUrl}
-        className="h-10 w-10 bg-[#F3E4D6]"
-        fallbackClassName="font-sans text-base font-extrabold text-[#8A4B00]"
-      />
+      <UserLink
+        userId={review.authorId}
+        aria-label={`Профіль: ${review.authorName}`}
+        className="shrink-0 self-start rounded-full"
+      >
+        <UserAvatar
+          name={review.authorName}
+          src={review.authorAvatarUrl}
+          className="h-10 w-10 bg-[#F3E4D6]"
+          fallbackClassName="font-sans text-base font-extrabold text-[#8A4B00]"
+        />
+      </UserLink>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap justify-between gap-x-2 gap-y-0.5">
           <p className="min-w-0 font-bold">
-            {review.authorName}{" "}
+            <UserLink
+              userId={review.authorId}
+              className="hover:underline underline-offset-2"
+            >
+              {review.authorName}
+            </UserLink>{" "}
             <span className="font-medium text-muted-foreground">
               · «{review.bookTitle}»
             </span>
@@ -57,7 +70,7 @@ function ReviewItem({ review }: { review: UserReview }) {
         </div>
         <ReviewStars rating={review.rating} />
         {review.comment && (
-          <p className="text-[15px] leading-relaxed break-words whitespace-pre-line text-foreground/80">
+          <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground/80">
             {review.comment}
           </p>
         )}
@@ -69,7 +82,10 @@ function ReviewItem({ review }: { review: UserReview }) {
   );
 }
 
-export default function ProfileReviews({ userId }: ProfileReviewsProps) {
+export default function ProfileReviews({
+  userId,
+  emptyText,
+}: ProfileReviewsProps) {
   const {
     data,
     isPending,
@@ -115,7 +131,8 @@ export default function ProfileReviews({ userId }: ProfileReviewsProps) {
         </div>
       ) : reviews.length === 0 ? (
         <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
-          Поки що відгуків немає. Вони з'являться після завершених обмінів.
+          {emptyText ??
+            "Поки що відгуків немає. Вони з'являться після завершених обмінів."}
         </p>
       ) : (
         <>

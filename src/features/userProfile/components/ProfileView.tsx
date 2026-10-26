@@ -1,19 +1,26 @@
+import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { IconMapPin, IconPencil } from "@tabler/icons-react";
-import type { UserResponse } from "../types";
+import type { PublicUserProfile } from "../types";
 import { formatMemberSince, formatUserLocation } from "../utils/profileFormat";
 import UserAvatar from "./UserAvatar";
 
 interface ProfileViewProps {
-  userData: UserResponse;
-  onEditing: (value: boolean) => void;
+  userData: PublicUserProfile & { email?: string };
+  onEditing?: (value: boolean) => void;
+  actions?: ReactNode;
 }
 
-export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
+export default function ProfileView({
+  userData,
+  onEditing,
+  actions,
+}: ProfileViewProps) {
   const location = formatUserLocation(userData);
+  const isOwn = Boolean(onEditing);
 
   return (
-    <aside className="flex w-full flex-col items-center gap-4 rounded-[20px] border border-border bg-card p-6 text-center md:p-7 lg:sticky lg:top-24 lg:w-[340px] lg:shrink-0">
+    <aside className="flex w-full flex-col items-center gap-4 rounded-[20px] border border-border bg-card p-6 text-center md:p-7 lg:sticky lg:top-24 lg:w-85 lg:shrink-0">
       <UserAvatar
         name={userData.name}
         src={userData.avatarUrl}
@@ -22,12 +29,14 @@ export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
       />
 
       <div className="flex w-full min-w-0 flex-col gap-1">
-        <h1 className="font-heading text-2xl font-semibold break-words md:text-[30px] md:leading-tight">
+        <h1 className="font-heading text-2xl font-semibold wrap-break-word md:text-[30px] md:leading-tight">
           {userData.name}
         </h1>
-        <p className="truncate text-sm text-muted-foreground">
-          {userData.email}
-        </p>
+        {userData.email && (
+          <p className="truncate text-sm text-muted-foreground">
+            {userData.email}
+          </p>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5 text-sm text-foreground/80">
@@ -43,23 +52,29 @@ export default function ProfileView({ userData, onEditing }: ProfileViewProps) {
       </div>
 
       {userData.bio?.trim() ? (
-        <p className="text-[15px] leading-relaxed whitespace-pre-line text-foreground/80">
+        <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground/80">
           {userData.bio}
         </p>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Розкажіть іншим читачам, які книги вам подобаються.
+          {isOwn
+            ? "Розкажіть іншим читачам, які книги вам подобаються."
+            : "Користувач ще нічого не розповів про себе."}
         </p>
       )}
 
-      <Button
-        variant="outline"
-        className="h-11 cursor-pointer gap-2 rounded-[10px] px-5 font-bold"
-        onClick={() => onEditing(true)}
-      >
-        <IconPencil className="size-4" />
-        Редагувати профіль
-      </Button>
+      {onEditing && (
+        <Button
+          variant="outline"
+          className="h-11 cursor-pointer gap-2 rounded-[10px] px-5 font-bold"
+          onClick={() => onEditing(true)}
+        >
+          <IconPencil className="size-4" />
+          Редагувати профіль
+        </Button>
+      )}
+
+      {actions && <div className="flex w-full flex-col gap-2.5">{actions}</div>}
     </aside>
   );
 }
