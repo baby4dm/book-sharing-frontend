@@ -1,7 +1,5 @@
-import { useState } from "react";
 import {
   IconArrowRight,
-  IconBook,
   IconClock,
   IconPackage,
   IconUsers,
@@ -15,6 +13,7 @@ import { useListing } from "@/features/listings/hooks/useListing";
 import { useCancelRequest } from "../hooks/cancelRequest";
 import { cn } from "cn";
 import { pluralizeDays } from "@/lib/utils";
+import BookCardCover from "@/components/layout/BookCardCover";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -29,7 +28,6 @@ function formatDate(date: string) {
 }
 
 export default function SentRequestCard({ request }: RequestCardProps) {
-  const [coverFailed, setCoverFailed] = useState(false);
   const statusData = REQUEST_STATUS_CONFIG[request.status];
   const { mutate: cancel, isPending } = useCancelRequest();
 
@@ -44,30 +42,15 @@ export default function SentRequestCard({ request }: RequestCardProps) {
   return (
     <article
       className={cn(
-        "flex w-full max-w-220 gap-4 rounded-2xl border border-border p-4 md:gap-5 md:p-5",
+        "flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row md:gap-5 md:p-5",
         isCancelled ? "bg-card/60" : "bg-card",
       )}
     >
-      <Link
+      <BookCardCover
+        src={coverUrl}
         to={`/listings/${request.listingId}`}
-        aria-hidden="true"
-        tabIndex={-1}
-        className={cn(
-          "flex h-23 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary",
-          isCancelled && "opacity-60 grayscale",
-        )}
-      >
-        {coverUrl && !coverFailed ? (
-          <img
-            src={coverUrl}
-            alt=""
-            className="size-full object-cover"
-            onError={() => setCoverFailed(true)}
-          />
-        ) : (
-          <IconBook size={24} className="text-muted-foreground" />
-        )}
-      </Link>
+        dimmed={isCancelled}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
@@ -115,7 +98,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
                 variant="outline"
                 onClick={() => cancel(request.id)}
                 disabled={isPending}
-                className="ml-auto h-10 cursor-pointer rounded-lg px-4 font-semibold"
+                className="h-11 w-full cursor-pointer rounded-lg px-4 font-semibold sm:ml-auto sm:h-10 sm:w-auto"
               >
                 {isPending ? "Скасування..." : "Скасувати заявку"}
               </Button>

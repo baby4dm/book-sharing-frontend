@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import {
   IconAlertTriangle,
   IconArrowRight,
-  IconBook,
   IconClock,
   IconStarFilled,
 } from "@tabler/icons-react";
@@ -15,6 +14,7 @@ import {
   getMetaLine,
   getPendingAction,
 } from "../utils/exchangeListItem";
+import BookCardCover from "@/components/layout/BookCardCover";
 
 interface ExchangeCardProps {
   exchange: ExchangeResponse;
@@ -31,7 +31,6 @@ export default function ExchangeCard({
   exchange,
   currentUserId,
 }: ExchangeCardProps) {
-  const [coverFailed, setCoverFailed] = useState(false);
   const [avatarFailed, setAvatarFailed] = useState(false);
 
   const isOwner = exchange.ownerId === currentUserId;
@@ -44,20 +43,9 @@ export default function ExchangeCard({
   return (
     <Link
       to={`/exchanges/${exchange.id}`}
-      className="flex w-full max-w-220 gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 md:gap-5 md:p-5"
+      className="flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 sm:flex-row md:gap-5 md:p-5"
     >
-      <div className="flex h-26 w-18 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary">
-        {exchange.bookCoverUrl && !coverFailed ? (
-          <img
-            src={exchange.bookCoverUrl}
-            alt=""
-            className="size-full object-cover"
-            onError={() => setCoverFailed(true)}
-          />
-        ) : (
-          <IconBook size={24} className="text-muted-foreground" />
-        )}
-      </div>
+      <BookCardCover src={exchange.bookCoverUrl} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
@@ -114,7 +102,7 @@ export default function ExchangeCard({
         </p>
 
         {action && (
-          <div className="flex items-center justify-between gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-sm font-semibold text-accent-vivid">
+          <div className="flex items-center justify-between gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-sm leading-snug font-semibold text-accent-vivid">
             {getActionHint(action, exchange)}
             <IconArrowRight size={16} className="shrink-0" />
           </div>

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
 import {
   IconArrowRight,
-  IconBook,
   IconClock,
   IconPackage,
   IconStarFilled,
@@ -18,6 +17,7 @@ import { REQUEST_STATUS_CONFIG } from "../types";
 import type { RequestResponse } from "../types";
 import RejectReasonDialog from "./RejectReasonDialog";
 import { cn } from "cn";
+import BookCardCover from "@/components/layout/BookCardCover";
 
 interface RequestCardProps {
   request: RequestResponse;
@@ -25,7 +25,6 @@ interface RequestCardProps {
 
 export default function ReceivedRequestCard({ request }: RequestCardProps) {
   const [avatarFailed, setAvatarFailed] = useState(false);
-  const [coverFailed, setCoverFailed] = useState(false);
   const [rejectDialogIsOpen, setRejectDialogIsOpen] = useState(false);
   const {
     mutate: approve,
@@ -52,27 +51,15 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
   return (
     <article
       className={cn(
-        "flex w-full max-w-220 gap-4 rounded-2xl border border-border p-4 md:gap-5 md:p-5",
+        "flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row md:gap-5 md:p-5",
         isCancelled ? "bg-card/60" : "bg-card",
       )}
     >
-      <Link
+      <BookCardCover
+        src={coverUrl}
         to={`/listings/${request.listingId}`}
-        aria-hidden="true"
-        tabIndex={-1}
-        className="flex h-26 w-18 shrink-0 items-center justify-center overflow-hidden rounded-md bg-secondary"
-      >
-        {coverUrl && !coverFailed ? (
-          <img
-            src={coverUrl}
-            alt=""
-            className="size-full object-cover"
-            onError={() => setCoverFailed(true)}
-          />
-        ) : (
-          <IconBook size={24} className="text-muted-foreground" />
-        )}
-      </Link>
+        dimmed={isCancelled}
+      />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
@@ -162,17 +149,17 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         )}
 
         {isPending && (
-          <div className="mt-1 flex flex-wrap gap-2.5">
+          <div className="mt-1 flex gap-2.5">
             <Button
               variant="outline"
-              className="h-11 cursor-pointer rounded-lg px-5 font-semibold"
+              className="h-11 flex-1 cursor-pointer rounded-lg px-5 font-semibold sm:flex-none"
               disabled={isApproving}
               onClick={() => setRejectDialogIsOpen(true)}
             >
               Відхилити
             </Button>
             <Button
-              className="h-11 cursor-pointer rounded-lg px-6 font-bold"
+              className="h-11 flex-1 cursor-pointer rounded-lg px-6 font-bold sm:flex-none"
               disabled={isApproving}
               onClick={() => approve(request.id)}
             >

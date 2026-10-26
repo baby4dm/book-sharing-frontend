@@ -48,9 +48,9 @@ export default function ExchangesToolbar({
         <SearchInput
           placeholder="Назва книги або ім'я"
           handleChange={onSearchInputChange}
-          className="min-w-90 flex-1"
+          className="w-full min-w-0 flex-1 sm:w-auto sm:min-w-90"
         />
-        <div className="flex items-center gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
           <FilterDropdown
             icon={<IconBox size={16} />}
             triggerLabel={`Спосіб: ${deliveryLabel}`}

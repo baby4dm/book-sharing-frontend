@@ -69,21 +69,23 @@ const FilterDropdown = <T extends string>({
   };
 
   return (
-    <div ref={rootRef} className="relative">
+    <div ref={rootRef} className="relative min-w-0">
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={toggle}
         className={cn(
-          "flex h-10 cursor-pointer items-center gap-2 rounded-lg border bg-card px-3 text-sm font-medium transition-colors hover:bg-muted",
+          "flex h-10 w-full cursor-pointer items-center gap-2 rounded-lg border bg-card px-3 text-sm font-medium transition-colors hover:bg-muted [&>svg]:shrink-0",
           isActive || open
             ? "border-accent-vivid/40 text-accent-vivid"
             : "border-input text-foreground",
         )}
       >
         {icon}
-        <span className="whitespace-nowrap">{triggerLabel}</span>
+        <span className="min-w-0 flex-1 truncate text-left whitespace-nowrap">
+          {triggerLabel}
+        </span>
         <IconChevronDown
           size={16}
           className={cn("transition-transform", open && "rotate-180")}
