@@ -1,5 +1,9 @@
 import {
   IconAlertTriangle,
+  IconEye,
+  IconEyeOff,
+  IconShieldCheck,
+  IconShieldX,
   IconBell,
   IconCalendarTime,
   IconCheck,
@@ -44,6 +48,11 @@ const META: Record<NotificationType, { icon: Icon; tone: Tone }> = {
   NEW_COMMENT: { icon: IconMessageCircle, tone: "green" },
   REVIEW_RECEIVED: { icon: IconStar, tone: "gold" },
   FEEDBACK_RECEIVED: { icon: IconMessageCircle, tone: "amber" },
+  LISTING_HIDDEN: { icon: IconEyeOff, tone: "red" },
+  LISTING_RESTORED: { icon: IconEye, tone: "neutral" },
+  CONTENT_REMOVED: { icon: IconShieldX, tone: "red" },
+  ACCOUNT_RESTRICTED: { icon: IconShieldX, tone: "red" },
+  ACCOUNT_RESTORED: { icon: IconShieldCheck, tone: "neutral" },
 };
 
 export function getNotificationMeta(type: NotificationType) {

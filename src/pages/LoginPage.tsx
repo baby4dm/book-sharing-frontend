@@ -8,12 +8,18 @@ import AuthCardLayout from "@/features/auth/components/AuthCardLayout";
 import { IconArrowBigRight } from "@tabler/icons-react";
 import { isAxiosError } from "axios";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  // ?error=blocked — бекенд не видав токен заблокованому після входу через Google
+  const [error, setError] = useState<string | null>(
+    searchParams.get("error") === "blocked"
+      ? "Обліковий запис заблоковано модератором. Якщо це помилка, напишіть нам через форму зворотного зв'язку."
+      : null,
+  );
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -73,11 +79,7 @@ export default function LoginPage() {
         noValidate
       >
         <div className="flex flex-col gap-1.5">
-          <Label
-            className="text-sm font-medium"
-            htmlFor="email"
-            required
-          >
+          <Label className="text-sm font-medium" htmlFor="email" required>
             Email
           </Label>
           <Input
@@ -91,11 +93,7 @@ export default function LoginPage() {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <Label
-            className="text-sm font-medium"
-            htmlFor="password"
-            required
-          >
+          <Label className="text-sm font-medium" htmlFor="password" required>
             Пароль
           </Label>
           <Input
@@ -108,12 +106,15 @@ export default function LoginPage() {
             required
           />
         </div>
-        {error && (<p role="alert" className="rounded-lg border border-destructive/25 bg-tint-red px-3.5 py-2.5 text-sm text-tint-red-ink">{error}</p>)}
-        <Button
-          type="submit"
-          className="h-10 w-full"
-          disabled={isLoading}
-        >
+        {error && (
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/25 bg-tint-red px-3.5 py-2.5 text-sm text-tint-red-ink"
+          >
+            {error}
+          </p>
+        )}
+        <Button type="submit" className="h-10 w-full" disabled={isLoading}>
           {isLoading ? (
             <span>Зачекайте ...</span>
           ) : (

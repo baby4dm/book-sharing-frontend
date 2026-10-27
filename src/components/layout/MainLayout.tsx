@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
 import MobileTabBar from "./MobileTabBar";
+import RestrictedBanner from "@/features/moderation/components/RestrictedBanner";
 import ChatSocketProvider from "@/context/ChatSocketProvider";
 import FeedbackDialogProvider from "@/context/FeedbackDialogProvider";
 
@@ -23,6 +24,7 @@ export default function MainLayout() {
           }
         >
           <Header />
+          <RestrictedBanner />
           <main className="flex-1">
             <div key={pageKey} className="page-enter">
               <Outlet />

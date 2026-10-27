@@ -1,3 +1,6 @@
+import ReasonDialog from "@/features/moderation/components/ReasonDialog";
+import { useModerateDeleteComment } from "@/features/moderation/hooks/useModeration";
+import { isModeratorRole } from "@/features/moderation/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -79,7 +82,15 @@ export default function PostComments({
           ) : (
             <ul className="flex flex-col gap-3.5">
               {visible.map((comment) => (
-                <CommentItem key={comment.id} comment={comment} />
+                <CommentItem
+                  key={comment.id}
+                  comment={comment}
+                  postId={postId}
+                  canModerate={
+                    isModeratorRole(currentUser?.role) &&
+                    currentUser?.id !== comment.authorId
+                  }
+                />
               ))}
             </ul>
           )}
@@ -103,9 +114,19 @@ export default function PostComments({
   );
 }
 
-function CommentItem({ comment }: { comment: CommentResponse }) {
+function CommentItem({
+  comment,
+  postId,
+  canModerate,
+}: {
+  comment: CommentResponse;
+  postId: string;
+  canModerate: boolean;
+}) {
+  const [moderateOpen, setModerateOpen] = useState(false);
+  const moderateDelete = useModerateDeleteComment(postId);
   return (
-    <li className="flex gap-2.5">
+    <li className="group/comment flex gap-2.5">
       <UserLink
         userId={comment.authorId}
         aria-label={`Профіль: ${comment.authorName}`}
@@ -133,14 +154,42 @@ function CommentItem({ comment }: { comment: CommentResponse }) {
             {comment.content}
           </p>
         </div>
-        <time
-          dateTime={comment.createdAt}
-          title={formatFullDate(comment.createdAt)}
-          className="pl-3 text-xs text-muted-foreground"
-        >
-          {formatRelativeTime(comment.createdAt)}
-        </time>
+        <div className="flex items-center gap-3 pl-3">
+          <time
+            dateTime={comment.createdAt}
+            title={formatFullDate(comment.createdAt)}
+            className="text-xs text-muted-foreground"
+          >
+            {formatRelativeTime(comment.createdAt)}
+          </time>
+          {canModerate && (
+            <button
+              type="button"
+              onClick={() => setModerateOpen(true)}
+              className="cursor-pointer rounded-sm text-xs font-medium text-muted-foreground transition-colors outline-none hover:text-destructive focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+            >
+              Видалити
+            </button>
+          )}
+        </div>
       </div>
+      {canModerate && (
+        <ReasonDialog
+          open={moderateOpen}
+          onOpenChange={setModerateOpen}
+          title="Видалити коментар?"
+          description={`Коментар ${comment.authorName} буде видалено. Автор отримає сповіщення з причиною.`}
+          confirmLabel="Видалити"
+          quickReasons={[
+            "Образи або мова ворожнечі",
+            "Спам або реклама",
+            "Не стосується теми",
+          ]}
+          onConfirm={(reason) =>
+            moderateDelete.mutateAsync({ id: comment.id, reason })
+          }
+        />
+      )}
     </li>
   );
 }

@@ -21,6 +21,9 @@ import {
   IconBook,
   IconCheck,
   IconChevronRight,
+  IconEye,
+  IconEyeOff,
+  IconShield,
   IconStarFilled,
 } from "@tabler/icons-react";
 import { useState } from "react";
@@ -29,10 +32,19 @@ import { findMyActiveRequest } from "@/api/listingQueue";
 import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
 import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
 import SmartImage from "@/components/ui/SmartImage";
+import ReasonDialog from "@/features/moderation/components/ReasonDialog";
+import {
+  useHideListing,
+  useRestoreListing,
+} from "@/features/moderation/hooks/useModeration";
+import { isModeratorRole } from "@/features/moderation/types";
 
 export default function ListingDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
+  const [hideOpen, setHideOpen] = useState(false);
+  const hideListing = useHideListing();
+  const restoreListing = useRestoreListing();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -125,6 +137,8 @@ export default function ListingDetailPage() {
   const isOwner = !!user && user.id === listing.ownerId;
   const myRequest = findMyActiveRequest(requests, listing.status, user?.id);
   const isArchived = listing.status === "ARCHIVED";
+  const isHidden = !!listing.hiddenAt;
+  const isModerator = isModeratorRole(user?.role);
   const photos = listing.photoUrls?.length
     ? listing.photoUrls
     : listing.bookCoverUrl
@@ -232,6 +246,42 @@ export default function ListingDetailPage() {
         </div>
 
         <div className="flex flex-col gap-5">
+          {isHidden && (isOwner || isModerator) && (
+            <div
+              role="status"
+              className="flex flex-col gap-2 rounded-xl border border-destructive/20 bg-tint-red p-4 text-tint-red-ink"
+            >
+              <p className="flex items-center gap-2 text-sm font-semibold">
+                <IconEyeOff className="size-4.5" stroke={1.75} />
+                Приховано модератором
+                {listing.hiddenAt && (
+                  <span className="font-normal opacity-80">
+                    · {formatDaysAgo(listing.hiddenAt).toLowerCase()}
+                  </span>
+                )}
+              </p>
+              {listing.hiddenReason && (
+                <p className="text-sm leading-relaxed">
+                  Причина: {listing.hiddenReason}
+                </p>
+              )}
+              <p className="text-[13px] opacity-80">
+                Оголошення не видно в каталозі, нові заявки не приймаються.
+              </p>
+              {isModerator && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mt-1 w-fit"
+                  disabled={restoreListing.isPending}
+                  onClick={() => restoreListing.mutate(listing.id)}
+                >
+                  <IconEye />
+                  Повернути в каталог
+                </Button>
+              )}
+            </div>
+          )}
           <div className="flex flex-col gap-2">
             <div className="flex flex-wrap gap-2">
               {listing.bookGenre && (
@@ -329,12 +379,51 @@ export default function ListingDetailPage() {
             ) : (
               <Button
                 className="h-10 w-full"
-                disabled={isArchived || (isAuthenticated && requestsLoading)}
+                disabled={
+                  isArchived || isHidden || (isAuthenticated && requestsLoading)
+                }
                 onClick={(e) => handleClick(e)}
               >
-                {isArchived ? "Оголошення знято з публікації" : "Подати заявку"}
+                {isArchived
+                  ? "Оголошення знято з публікації"
+                  : isHidden
+                    ? "Оголошення приховано"
+                    : "Подати заявку"}
               </Button>
             ))}
+          {isModerator && !isOwner && !isHidden && (
+            <div className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-border-strong px-4 py-3">
+              <p className="flex items-center gap-2 text-[13px] text-muted-foreground">
+                <IconShield className="size-4" stroke={1.75} />
+                Ви модератор
+              </p>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-destructive hover:bg-tint-red hover:text-destructive"
+                onClick={() => setHideOpen(true)}
+              >
+                <IconEyeOff />
+                Приховати оголошення
+              </Button>
+            </div>
+          )}
+          <ReasonDialog
+            open={hideOpen}
+            onOpenChange={setHideOpen}
+            title="Приховати оголошення?"
+            description="Його не буде видно в каталозі, і на нього не можна буде подати заявку. Власник отримає сповіщення з причиною. Поточні обміни не зачіпаються."
+            confirmLabel="Приховати"
+            quickReasons={[
+              "Неприйнятний зміст фото чи опису",
+              "Це не книга або оголошення-спам",
+              "Продаж замість безкоштовного обміну",
+              "Дублікат іншого оголошення",
+            ]}
+            onConfirm={(reason) =>
+              hideListing.mutateAsync({ id: listing.id, reason })
+            }
+          />
           {requestDialogIsOpen && (
             <RequestFormDialog
               listing={listing}

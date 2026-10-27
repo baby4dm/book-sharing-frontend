@@ -7,6 +7,7 @@ import {
   IconHeart,
   IconHeartFilled,
   IconMessageCircle,
+  IconShieldX,
   IconTrash,
 } from "@tabler/icons-react";
 import {
@@ -20,6 +21,9 @@ import { cn, formatRelativeTime } from "@/lib/utils";
 import type { PostResponse } from "../types";
 import { formatFullDate, pluralizeComments } from "../utils/format";
 import DeletePostDialog from "./DeletePostDialog";
+import ReasonDialog from "@/features/moderation/components/ReasonDialog";
+import { useModerateDeletePost } from "@/features/moderation/hooks/useModeration";
+import { isModeratorRole } from "@/features/moderation/types";
 import PostComments from "./PostComments";
 import UserLink from "@/features/userProfile/components/UserLink";
 import { useTogglePostLike } from "../hooks/usePostMutation";
@@ -49,11 +53,12 @@ export default function PostCard({
   const [photoFailed, setPhotoFailed] = useState(false);
   const like = useTogglePostLike(post);
 
-  const canDelete =
-    !!currentUser &&
-    (currentUser.id === post.authorId ||
-      currentUser.role === "MODERATOR" ||
-      currentUser.role === "ADMIN");
+  const isAuthor = !!currentUser && currentUser.id === post.authorId;
+  // модератор видаляє чужий пост лише з причиною — автор отримає сповіщення
+  const moderatesPost = !isAuthor && isModeratorRole(currentUser?.role);
+  const canDelete = isAuthor || moderatesPost;
+  const [moderateOpen, setModerateOpen] = useState(false);
+  const moderateDelete = useModerateDeletePost();
 
   const isLong =
     post.content.length > COLLAPSE_CHARS ||
@@ -116,12 +121,17 @@ export default function PostCard({
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
-                  setDeleteOpen(true);
+                  if (moderatesPost) setModerateOpen(true);
+                  else setDeleteOpen(true);
                 }}
                 className="flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-destructive transition-colors outline-none hover:bg-tint-red focus-visible:bg-tint-red"
               >
-                <IconTrash className="size-4" />
-                Видалити пост
+                {moderatesPost ? (
+                  <IconShieldX className="size-4" />
+                ) : (
+                  <IconTrash className="size-4" />
+                )}
+                {moderatesPost ? "Видалити як модератор" : "Видалити пост"}
               </button>
             </PopoverContent>
           </Popover>
@@ -227,11 +237,29 @@ export default function PostCard({
         )}
       </AnimatePresence>
 
-      {canDelete && (
+      {isAuthor && (
         <DeletePostDialog
           postId={post.id}
           open={deleteOpen}
           onOpenChange={setDeleteOpen}
+        />
+      )}
+      {moderatesPost && (
+        <ReasonDialog
+          open={moderateOpen}
+          onOpenChange={setModerateOpen}
+          title="Видалити пост?"
+          description={`Пост ${post.authorName} разом із коментарями буде видалено назавжди. Автор отримає сповіщення з причиною.`}
+          confirmLabel="Видалити"
+          quickReasons={[
+            "Образи або мова ворожнечі",
+            "Спам або реклама",
+            "Не стосується книг і читання",
+            "Особисті дані інших людей",
+          ]}
+          onConfirm={(reason) =>
+            moderateDelete.mutateAsync({ id: post.id, reason })
+          }
         />
       )}
     </article>

@@ -34,6 +34,9 @@ export interface ListingResponse {
   settlementType: SettlementType;
   region: string;
   settlementName: string;
+  /** != null — приховано модератором (бачать лише власник і модератори) */
+  hiddenAt: string | null;
+  hiddenReason: string | null;
 }
 
 export interface ListingFilters {

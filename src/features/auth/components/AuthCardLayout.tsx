@@ -15,7 +15,7 @@ export default function AuthCardLayout({
     <main className="relative isolate flex min-h-dvh w-full items-center justify-center overflow-hidden px-3 py-6 md:px-12">
       <div
         aria-hidden="true"
-        className="auth-bg-zoom absolute inset-0 -z-20 bg-[#2A1E14] bg-[url('/auth-bg.jpg')] bg-cover bg-center"
+        className="auth-bg-zoom absolute inset-0 -z-20 bg-[#2A1E14] bg-[url('/auth-bg.svg')] bg-cover bg-center"
       />
       <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/55" />
       <section

@@ -5,10 +5,13 @@ import {
   IconChevronRight,
   IconExternalLink,
   IconMail,
+  IconMailOpened,
   IconPhoto,
 } from "@tabler/icons-react";
+import EmptyState from "@/components/ui/empty-state";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getErrorMessage } from "@/features/exchanges/utils/getErrorMessage";
 import {
   FEEDBACK_STATUS_LABELS,
@@ -47,7 +50,15 @@ function isSafeUrl(value: string): boolean {
   return /^https?:\/\//i.test(value.trim());
 }
 
-export default function ModerationFeedbackPage() {
+/**
+ * Звернення з форми зворотного зв'язку. {@code embedded} — вкладка панелі
+ * модерації (без власного заголовка й перевірки доступу: її робить ModeratorRoute).
+ */
+export default function ModerationFeedbackPage({
+  embedded = false,
+}: {
+  embedded?: boolean;
+}) {
   const { data: me, isPending: isMePending } = useCurrentUserProfile();
   const [status, setStatus] = useState<FeedbackStatus | null>("NEW");
   const [topic, setTopic] = useState<FeedbackTopic | null>(null);
@@ -57,14 +68,14 @@ export default function ModerationFeedbackPage() {
   const { data, isPending, isError, refetch, isPlaceholderData } =
     useFeedbackList({ status, topic, page }, isModerator);
 
-  if (isMePending) {
+  if (isMePending && !embedded) {
     return (
       <div className="flex justify-center py-20">
         <Spinner size={28} />
       </div>
     );
   }
-  if (!isModerator) {
+  if (!isModerator && !embedded) {
     return (
       <div className="flex flex-col items-center gap-3 px-4 py-20 text-center">
         <p className="text-lg font-bold">Немає доступу</p>
@@ -83,21 +94,34 @@ export default function ModerationFeedbackPage() {
 
   const tabClass = (active: boolean) =>
     cn(
-      "flex h-10 cursor-pointer items-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors",
+      "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-md border px-2.5 text-[13px] font-medium transition-[background-color,border-color,color] duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
       active
-        ? "border-foreground bg-foreground text-background"
-        : "border-input bg-card text-muted-foreground hover:bg-muted",
+        ? "border-ring/40 bg-accent font-semibold text-accent-foreground"
+        : "border-input bg-card text-foreground shadow-xs hover:border-border-strong hover:bg-muted",
     );
 
   return (
-    <section className="mx-auto flex w-full max-w-250 flex-col gap-5 px-4 pt-6 pb-16 md:px-8 md:pt-8">
-      <div>
-        <h1 className="page-title">Звернення</h1>
-        <p className="mt-1.5 text-[15px] text-muted-foreground">
+    <section
+      className={
+        embedded
+          ? "flex w-full flex-col gap-4"
+          : "mx-auto flex w-full max-w-250 flex-col gap-5 px-4 pt-6 pb-16 md:px-8 md:pt-8"
+      }
+    >
+      {embedded ? (
+        <p className="text-[13px] text-muted-foreground">
           Повідомлення з форми зворотного зв'язку. Відповідайте на email автора,
           а тут позначайте статус.
         </p>
-      </div>
+      ) : (
+        <div>
+          <h1 className="page-title">Звернення</h1>
+          <p className="mt-1.5 text-[15px] text-muted-foreground">
+            Повідомлення з форми зворотного зв'язку. Відповідайте на email
+            автора, а тут позначайте статус.
+          </p>
+        </div>
+      )}
 
       <div className="flex flex-wrap gap-2" role="tablist" aria-label="Статус">
         {STATUSES.map((s) => (
@@ -114,9 +138,7 @@ export default function ModerationFeedbackPage() {
           >
             {FEEDBACK_STATUS_LABELS[s]}
             {counts && (
-              <span className="rounded-full bg-muted px-1.5 text-xs font-bold text-muted-foreground">
-                {counts[s]}
-              </span>
+              <span className="tabular text-muted-foreground">{counts[s]}</span>
             )}
           </button>
         ))}
@@ -132,15 +154,13 @@ export default function ModerationFeedbackPage() {
         >
           Усі
           {total !== null && (
-            <span className="rounded-full bg-muted px-1.5 text-xs font-bold text-muted-foreground">
-              {total}
-            </span>
+            <span className="tabular text-muted-foreground">{total}</span>
           )}
         </button>
       </div>
 
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-sm font-semibold text-muted-foreground">
+        <span className="text-[13px] font-medium text-muted-foreground">
           Тема:
         </span>
         {[null, ...TOPICS].map((t) => (
@@ -153,10 +173,10 @@ export default function ModerationFeedbackPage() {
               setPage(0);
             }}
             className={cn(
-              "h-8 cursor-pointer rounded-lg border px-3 text-[13px] font-semibold",
+              "h-7 cursor-pointer rounded-md border px-2 text-xs font-medium transition-colors outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
               topic === t
-                ? "border-primary bg-accent text-accent-foreground"
-                : "border-input bg-card text-muted-foreground hover:bg-muted",
+                ? "border-ring/40 bg-accent font-semibold text-accent-foreground"
+                : "border-input bg-card text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {t ? FEEDBACK_TOPIC_LABELS[t] : "Усі"}
@@ -165,8 +185,14 @@ export default function ModerationFeedbackPage() {
       </div>
 
       {isPending ? (
-        <div className="flex justify-center py-16">
-          <Spinner size={28} />
+        <div aria-busy="true" className="flex flex-col gap-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="surface flex flex-col gap-3 p-5">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-3.5 w-4/5" />
+              <Skeleton className="h-3.5 w-2/3" />
+            </div>
+          ))}
         </div>
       ) : isError || !data ? (
         <div className="flex flex-col items-center gap-3 surface p-8 text-center">
@@ -182,9 +208,16 @@ export default function ModerationFeedbackPage() {
           </Button>
         </div>
       ) : data.items.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-input bg-card/60 p-10 text-center text-sm text-muted-foreground">
-          Звернень з такими фільтрами немає.
-        </p>
+        <EmptyState
+          framed
+          icon={IconMailOpened}
+          title={
+            status === "NEW"
+              ? "Нових звернень немає"
+              : "Звернень з такими фільтрами немає"
+          }
+          description="Звернення приходять із форми «Зворотний зв'язок» у футері сайту."
+        />
       ) : (
         <ul
           className={cn(

@@ -4,8 +4,12 @@ import {
   IconBooks,
   IconLogout2,
   IconPlus,
+  IconShield,
   IconUser,
 } from "@tabler/icons-react";
+import ModerationNavBadge from "@/features/moderation/components/ModerationNavBadge";
+import { useIsModerator } from "@/features/moderation/hooks/useModeration";
+import { isModeratorRole } from "@/features/moderation/types";
 import { useState } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -67,6 +71,20 @@ function AccountMenu() {
           <IconBooks className="size-4.5 text-muted-foreground" stroke={1.75} />
           Мої оголошення
         </Link>
+        {isModeratorRole(me?.role) && (
+          <Link
+            to="/moderation"
+            onClick={() => setOpen(false)}
+            className={item}
+          >
+            <IconShield
+              className="size-4.5 text-muted-foreground"
+              stroke={1.75}
+            />
+            Модерація
+            <ModerationNavBadge className="tabular ml-auto flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white" />
+          </Link>
+        )}
         <Link
           to="/listings/create"
           onClick={() => setOpen(false)}
@@ -95,6 +113,7 @@ function AccountMenu() {
 
 export default function Header() {
   const { pathname } = useLocation();
+  const { isModerator } = useIsModerator();
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -145,6 +164,34 @@ export default function Header() {
               </Link>
             );
           })}
+          {isModerator && (
+            <Link
+              to="/moderation"
+              aria-current={
+                pathname.startsWith("/moderation") ? "page" : undefined
+              }
+              className={cn(
+                "relative flex h-8 items-center gap-2 rounded-md px-3 text-[13px] font-semibold transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                pathname.startsWith("/moderation")
+                  ? "text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              )}
+            >
+              {pathname.startsWith("/moderation") && (
+                <motion.span
+                  layoutId="header-nav-active"
+                  transition={springGlide}
+                  className="absolute inset-0 -z-10 rounded-md bg-muted shadow-[inset_0_0_0_1px_var(--border)]"
+                />
+              )}
+              <IconShield
+                className="size-4"
+                stroke={pathname.startsWith("/moderation") ? 2 : 1.75}
+              />
+              Модерація
+              <ModerationNavBadge />
+            </Link>
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-1 lg:gap-2">

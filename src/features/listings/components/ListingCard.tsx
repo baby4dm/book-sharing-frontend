@@ -1,5 +1,5 @@
 import { SETTLEMENT_TYPE_LABELS, type ListingResponse } from "../types";
-import { IconBook } from "@tabler/icons-react";
+import { IconBook, IconEyeOff } from "@tabler/icons-react";
 import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { STATUS_CONFIG } from "@/lib/constants";
@@ -59,16 +59,24 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
             onError={() => setImageIsFailed(true)}
           />
         )}
-        {!isAvailable && (
-          <span
-            className={cn(
-              "absolute top-2 left-2 rounded-full px-2.5 py-1 text-xs font-semibold",
-              status.bg,
-              status.color,
-            )}
-          >
-            {status.label}
+        {listing.hiddenAt ? (
+          // власник бачить свої приховані модератором оголошення у «Моїх»
+          <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-tint-red px-2.5 py-1 text-xs font-semibold text-tint-red-ink">
+            <IconEyeOff className="size-3.5" />
+            Приховано
           </span>
+        ) : (
+          !isAvailable && (
+            <span
+              className={cn(
+                "absolute top-2 left-2 rounded-full px-2.5 py-1 text-xs font-semibold",
+                status.bg,
+                status.color,
+              )}
+            >
+              {status.label}
+            </span>
+          )
         )}
       </div>
 
@@ -91,7 +99,7 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
         )}
       </div>
 
-      {!owner && isAvailable && (
+      {!owner && isAvailable && !listing.hiddenAt && (
         <button
           type="button"
           onClick={handleRequest}

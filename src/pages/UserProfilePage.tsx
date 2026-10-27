@@ -1,6 +1,7 @@
 import { buttonVariants } from "@/components/ui/button";
 import { Link, Navigate, useParams } from "react-router-dom";
-import { IconMessageCircle } from "@tabler/icons-react";
+import { IconMessageCircle, IconShield } from "@tabler/icons-react";
+import { isModeratorRole } from "@/features/moderation/types";
 import ProfileSkeleton from "@/features/userProfile/components/ProfileSkeleton";
 import QueryErrorState from "@/components/errors/QueryErrorState";
 import ProfileReviews from "@/features/userProfile/components/ProfileReviews";
@@ -42,13 +43,24 @@ export default function UserProfilePage() {
         userData={user}
         actions={
           me && (
-            <Link
-              to={`/chat?user=${user.id}`}
-              className={buttonVariants({ className: "w-full" })}
-            >
-              <IconMessageCircle />
-              Написати
-            </Link>
+            <>
+              <Link
+                to={`/chat?user=${user.id}`}
+                className={buttonVariants({ className: "w-full" })}
+              >
+                <IconMessageCircle />
+                Написати
+              </Link>
+              {isModeratorRole(me.role) && (
+                <Link
+                  to={`/moderation/users/${user.id}`}
+                  className={buttonVariants({ variant: "outline", className: "w-full" })}
+                >
+                  <IconShield />
+                  Модерація
+                </Link>
+              )}
+            </>
           )
         }
       />

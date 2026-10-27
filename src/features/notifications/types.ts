@@ -17,7 +17,12 @@ export type NotificationType =
   | "NEW_CHAT_MESSAGE"
   | "NEW_COMMENT"
   | "REVIEW_RECEIVED"
-  | "FEEDBACK_RECEIVED";
+  | "FEEDBACK_RECEIVED"
+  | "LISTING_HIDDEN"
+  | "LISTING_RESTORED"
+  | "CONTENT_REMOVED"
+  | "ACCOUNT_RESTRICTED"
+  | "ACCOUNT_RESTORED";
 
 export interface AppNotification {
   id: string;
