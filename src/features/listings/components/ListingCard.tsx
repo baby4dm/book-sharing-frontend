@@ -1,10 +1,9 @@
-import { Button } from "@/components/ui/button";
 import { SETTLEMENT_TYPE_LABELS, type ListingResponse } from "../types";
-import { IconBook, IconMapPin } from "@tabler/icons-react";
+import { IconBook } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { STATUS_CONFIG } from "@/lib/constants";
-import { formatDaysAgo } from "@/lib/utils";
+import { cn, formatDaysAgo } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import RequestFormDialog from "../../requests/components/RequestFormDialog";
 import SmartImage from "@/components/ui/SmartImage";
@@ -19,94 +18,99 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const status = STATUS_CONFIG[listing.status];
   const isAvailable = listing.status === "AVAILABLE";
-  function handleClick(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
 
+  const place = listing.settlementName
+    ? `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}. ${listing.settlementName}`
+    : null;
+  const meta = [listing.bookGenre, place, formatDaysAgo(listing.createdAt)]
+    .filter(Boolean)
+    .join(" · ");
+
+  function handleRequest() {
     if (!isAuthenticated) {
       navigate("/login", { state: { from: location.pathname } });
       return;
     }
     setRequestDialogIsOpen(true);
   }
+
   return (
-    <Link
-      to={`/listings/${listing.id}`}
-      className="group bg-card shadow-md rounded-xl cursor-pointer
-      p-4 flex flex-col border border-border gap-3 w-74 lg:w-81.25 mx-auto
-      transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-1.5 hover:shadow-2xl active:translate-y-0 active:scale-[0.99]"
+    <article
+      className="group surface surface-interactive relative flex flex-col gap-3 p-2 sm:p-2.5
+        has-[a:active]:scale-[0.99] has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring"
     >
-      <div className="w-full relative flex flex-col gap-4">
-        <div className="relative h-90 w-full rounded-2xl overflow-hidden">
-          {imageIsFailed || !listing.bookCoverUrl ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-secondary rounded-2xl">
-              <IconBook size={32} className="text-muted-foreground" />
-            </div>
-          ) : (
-            <SmartImage
-              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-              src={listing.bookCoverUrl}
-              alt={listing.bookTitle}
-              onError={() => setImageIsFailed(true)}
+      <div className="relative aspect-2/3 w-full overflow-hidden rounded-lg bg-muted shadow-[inset_0_0_0_1px_var(--border)]">
+        {imageIsFailed || !listing.bookCoverUrl ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <IconBook
+              size={32}
+              stroke={1.5}
+              className="text-muted-foreground"
             />
-          )}
-        </div>
-
-        <p
-          className="absolute top-2 right-2 text-xs bg-muted-foreground py-1 
-        px-2 rounded-md flex items-center justify-center text-muted font-bold shadow-sm"
-        >
-          {formatDaysAgo(listing.createdAt)}
-        </p>
-        <p className="absolute top-2 left-2 bg-card text-foreground py-1 px-2 rounded-md w-fit text-xs font-bold shadow-sm">
-          {listing.bookGenre ?? "Жанр невідомий"}
-        </p>
-      </div>
-      <div className="flex flex-col gap-1">
-        <h2 className="text-foreground font-bold text-lg leading-none">
-          {listing.bookTitle}
-        </h2>
-        <p className="text-foreground font-light text-xs">
-          {listing.bookAuthor ?? "Автор невідомий"}
-        </p>
-      </div>
-      <div className="flex flex-col gap-4 h-full">
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-1 items-center">
-            <status.icon className={`${status.color} w-5 h-5`} />
-            <span className="text-xs text-muted-foreground">
-              {status.label}
-            </span>
           </div>
-          <div className="flex gap-1 items-center">
-            <IconMapPin className="w-5 h-5 text-accent-vivid" />
-            <span className="text-xs text-muted-foreground">
-              {!listing.settlementName
-                ? "Місто не вказано"
-                : `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}.${listing.settlementName}, ${listing.region}`}
-            </span>
-          </div>
-        </div>
-        {!owner && (
-          <Button
-            disabled={!isAvailable}
-            onClick={(e) => handleClick(e)}
-            className="text-sm font-normal cursor-pointer mt-auto"
-          >
-            {status.buttonLabel}
-          </Button>
-        )}
-
-        {requestDialogIsOpen && (
-          <RequestFormDialog
-            listing={listing}
-            open={requestDialogIsOpen}
-            onOpenChange={setRequestDialogIsOpen}
+        ) : (
+          <SmartImage
+            className="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+            src={listing.bookCoverUrl}
+            alt=""
+            onError={() => setImageIsFailed(true)}
           />
         )}
+        {!isAvailable && (
+          <span
+            className={cn(
+              "absolute top-2 left-2 rounded-full px-2.5 py-1 text-xs font-semibold",
+              status.bg,
+              status.color,
+            )}
+          >
+            {status.label}
+          </span>
+        )}
       </div>
-    </Link>
+
+      <div className="flex flex-1 flex-col gap-1 px-1">
+        <h2 className="book-title line-clamp-2 text-[15px] leading-snug sm:text-base">
+          <Link
+            to={`/listings/${listing.id}`}
+            className="outline-none after:absolute after:inset-0 after:rounded-xl"
+          >
+            {listing.bookTitle}
+          </Link>
+        </h2>
+        <p className="truncate text-[13px] text-muted-foreground">
+          {listing.bookAuthor ?? "Автор невідомий"}
+        </p>
+        {meta && (
+          <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+            {meta}
+          </p>
+        )}
+      </div>
+
+      {!owner && isAvailable && (
+        <button
+          type="button"
+          onClick={handleRequest}
+          className="relative z-10 mx-0.5 mb-0.5 h-8 cursor-pointer rounded-md border border-input bg-card px-3 text-[13px] font-semibold text-foreground shadow-xs
+            transition-[background-color,border-color,color,scale] duration-150 ease-out
+            hover:border-transparent hover:bg-primary hover:text-primary-foreground active:scale-[0.97]
+            outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        >
+          {status.buttonLabel}
+        </button>
+      )}
+
+      {requestDialogIsOpen && (
+        <RequestFormDialog
+          listing={listing}
+          open={requestDialogIsOpen}
+          onOpenChange={setRequestDialogIsOpen}
+        />
+      )}
+    </article>
   );
 }

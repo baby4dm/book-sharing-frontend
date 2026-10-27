@@ -17,7 +17,7 @@ export default function ExchangeOverdueBanner({
   return (
     <div
       role="alert"
-      className="flex gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-4"
+      className="flex gap-3 rounded-xl border border-destructive/30 bg-destructive/10 p-4"
     >
       <IconAlertTriangle
         size={22}
@@ -29,7 +29,7 @@ export default function ExchangeOverdueBanner({
             ? `${readerName} прострочив(ла) повернення на ${overdue}`
             : `Ви прострочили повернення на ${overdue}`}
         </p>
-        <p className="text-sm leading-relaxed text-foreground/80">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           {isOwner
             ? "Читач усе ще може повернути книгу — ви отримаєте сповіщення, щойно він надішле фото повернення. Прострочення вже враховано в його профілі."
             : "Поверніть книгу якнайшвидше або попросіть власника продовжити термін. Прострочення впливає на ваш рейтинг."}

@@ -1,23 +1,21 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { personTint } from "@/lib/personTint";
 import { getInitial } from "../utils/profileFormat";
 import SmartImage from "@/components/ui/SmartImage";
 
 interface UserAvatarProps {
   name: string;
   src: string | null | undefined;
+  seed?: string | null;
   className?: string;
-  /** Класи для літери-заглушки (розмір шрифту, колір) */
   fallbackClassName?: string;
 }
 
-/**
- * Аватар з фото або першою літерою імені.
- * Якщо фото не завантажилось — показує літеру; для нового src пробує знову.
- */
 export default function UserAvatar({
   name,
   src,
+  seed,
   className,
   fallbackClassName,
 }: UserAvatarProps) {
@@ -27,7 +25,8 @@ export default function UserAvatar({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary",
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+        !showImage && personTint(seed ?? name),
         className,
       )}
     >
@@ -41,10 +40,7 @@ export default function UserAvatar({
       ) : (
         <span
           aria-hidden="true"
-          className={cn(
-            "font-heading font-semibold text-primary-foreground",
-            fallbackClassName,
-          )}
+          className={cn("font-sans font-bold", fallbackClassName)}
         >
           {getInitial(name)}
         </span>

@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
-import { Button } from "@base-ui/react/button";
-import { IconSearch, IconXboxX } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { IconSearch, IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 
 type SearchInputProps = {
@@ -23,22 +23,28 @@ export default function SearchInput({
   }, [value]);
   return (
     <div
-      className={`flex items-center w-full min-w-0 bg-card rounded-md border border-border px-2
-     gap-2 transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30 ${className}`}
+      className={`flex h-10 w-full min-w-0 items-center gap-2 rounded-lg border border-input bg-card pr-1 pl-3 shadow-xs transition-[border-color,box-shadow] duration-150 hover:border-border-strong focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/15 md:h-9 ${className}`}
     >
-      <IconSearch className="stroke-1 h-5.5 w-5.5" />
+      <IconSearch
+        aria-hidden="true"
+        className="size-4 shrink-0 text-muted-foreground"
+        stroke={1.75}
+      />
       <Input
         placeholder={placeholder}
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-full text-sm bg-transparent border-none px-0 shadow-none focus-visible:ring-0 focus-visible:border-0"
+        aria-label={placeholder}
+        className="h-full w-full border-none bg-transparent px-0 text-sm shadow-none hover:border-none focus-visible:border-0 focus-visible:ring-0 md:h-full"
       />
       {value && (
         <Button
+          variant="ghost"
+          size="icon-xs"
+          aria-label="Очистити пошук"
           onClick={() => setValue("")}
-          className="text-muted-foreground cursor-pointer hover:scale-105 transition-all hover:text-foreground"
         >
-          <IconXboxX className="stroke-1 h-5.5 w-5.5" />
+          <IconX />
         </Button>
       )}
     </div>

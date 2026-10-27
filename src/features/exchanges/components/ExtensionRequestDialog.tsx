@@ -14,6 +14,7 @@ import { cn, formatDayMonth, pluralizeDays } from "@/lib/utils";
 import type { ExchangeResponse, RequestExtensionPayload } from "../types";
 import { addDays, getEffectiveDeadline } from "../utils/extensions";
 import { getErrorMessage } from "../utils/getErrorMessage";
+import RequiredMark from "@/components/ui/RequiredMark";
 
 const MAX_COMMENT_LENGTH = 300;
 const QUICK_DAYS = [3, 7, 14, 30] as const;
@@ -74,7 +75,7 @@ export default function ExtensionRequestDialog({
 
   const chipClass = (active: boolean) =>
     cn(
-      "h-10 cursor-pointer rounded-full border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+      "h-10 cursor-pointer rounded-lg border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
       active
         ? "border-primary bg-accent text-accent-foreground"
         : "border-input bg-card hover:bg-muted",
@@ -82,9 +83,9 @@ export default function ExtensionRequestDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[90dvh] flex-col gap-5 overflow-y-auto rounded-2xl p-6 sm:max-w-lg sm:p-7">
+      <DialogContent className="flex max-h-[90dvh] flex-col gap-5 overflow-y-auto p-6 sm:max-w-lg sm:p-7">
         <DialogHeader>
-          <DialogTitle className="font-heading text-2xl font-semibold">
+          <DialogTitle className="text-xl font-bold">
             Попросити більше часу
           </DialogTitle>
           <DialogDescription>
@@ -114,7 +115,7 @@ export default function ExtensionRequestDialog({
         >
           <fieldset className="flex flex-col gap-2.5">
             <legend className="mb-2.5 text-sm font-semibold">
-              На скільки днів продовжити?
+              На скільки днів продовжити? <RequiredMark />
             </legend>
             <div className="flex flex-wrap gap-2">
               {QUICK_DAYS.map((value) => {
@@ -217,14 +218,14 @@ export default function ExtensionRequestDialog({
               variant="outline"
               disabled={isSubmitting}
               onClick={() => handleOpenChange(false)}
-              className="h-12 cursor-pointer rounded-lg px-5 font-semibold"
+              className="h-10 rounded-lg px-5 font-semibold"
             >
               Скасувати
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="h-12 cursor-pointer rounded-lg px-6 font-bold"
+              className="h-10 rounded-lg px-6 font-semibold"
             >
               {isSubmitting ? "Надсилання..." : "Надіслати запит"}
             </Button>

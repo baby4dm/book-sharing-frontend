@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
 import type { UserReview } from "../types";
 import { useUserReviews } from "../hooks/useUserReviews";
 import UserAvatar from "./UserAvatar";
 import UserLink from "./UserLink";
+import { IconAlertTriangle, IconMessageStar, IconStarFilled } from "@tabler/icons-react";
 
 interface ProfileReviewsProps {
   userId: string;
@@ -25,17 +27,22 @@ function ReviewStars({ rating }: { rating: number }) {
     <div
       role="img"
       aria-label={`${rating} з 5`}
-      className="text-[15px] tracking-[1px]"
+      className="flex gap-0.5"
     >
-      <span className="text-[#D99A1E]">{"★".repeat(rating)}</span>
-      <span className="text-[#C9C4BA]">{"★".repeat(5 - rating)}</span>
+      {Array.from({ length: 5 }, (_, i) => (
+        <IconStarFilled
+          key={i}
+          aria-hidden="true"
+          className={i < rating ? "size-4 text-star" : "size-4 text-border"}
+        />
+      ))}
     </div>
   );
 }
 
 function ReviewItem({ review }: { review: UserReview }) {
   return (
-    <li className="flex gap-3.5 border-t border-border/70 pt-4">
+    <li className="flex gap-3.5 border-t border-border pt-4">
       <UserLink
         userId={review.authorId}
         aria-label={`Профіль: ${review.authorName}`}
@@ -44,13 +51,14 @@ function ReviewItem({ review }: { review: UserReview }) {
         <UserAvatar
           name={review.authorName}
           src={review.authorAvatarUrl}
-          className="h-10 w-10 bg-[#F3E4D6]"
-          fallbackClassName="font-sans text-base font-extrabold text-[#8A4B00]"
+          seed={review.authorId}
+          className="size-10"
+          fallbackClassName="text-base"
         />
       </UserLink>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
         <div className="flex flex-wrap justify-between gap-x-2 gap-y-0.5">
-          <p className="min-w-0 font-bold">
+          <p className="min-w-0 text-sm font-semibold">
             <UserLink
               userId={review.authorId}
               className="hover:underline underline-offset-2"
@@ -70,7 +78,7 @@ function ReviewItem({ review }: { review: UserReview }) {
         </div>
         <ReviewStars rating={review.rating} />
         {review.comment && (
-          <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground/80">
+          <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground">
             {review.comment}
           </p>
         )}
@@ -100,43 +108,52 @@ export default function ProfileReviews({
   const total = data?.pages[0]?.totalElements ?? 0;
 
   return (
-    <section className="flex flex-col gap-4 rounded-[20px] border border-border bg-card p-5 md:p-6">
+    <section className="flex flex-col gap-4 surface p-5 md:p-6">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-heading text-xl font-semibold md:text-[22px]">
-          Відгуки
-        </h2>
+        <h2 className="section-title">Відгуки</h2>
         {total > 0 && (
-          <span className="text-sm font-semibold text-muted-foreground">
+          <span className="tabular text-[13px] font-medium text-muted-foreground">
             {total}
           </span>
         )}
       </div>
 
       {isPending ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
+        <div aria-busy="true" className="flex flex-col gap-4">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex gap-3.5 border-t border-border pt-4">
+              <Skeleton className="size-10 rounded-full" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-3.5 w-24" />
+                <Skeleton className="h-3.5 w-4/5" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            Не вдалося завантажити відгуки.
-          </p>
-          <Button
-            variant="outline"
-            className="cursor-pointer"
-            onClick={() => refetch()}
-          >
-            Спробувати ще раз
-          </Button>
-        </div>
+        <EmptyState
+          className="py-6"
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити відгуки"
+          action={
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Спробувати ще раз
+            </Button>
+          }
+        />
       ) : reviews.length === 0 ? (
-        <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
-          {emptyText ??
-            "Поки що відгуків немає. Вони з'являться після завершених обмінів."}
-        </p>
+        <EmptyState
+          className="border-t border-border py-8"
+          icon={IconMessageStar}
+          title="Відгуків поки немає"
+          description={
+            emptyText ?? "Вони з'являються після завершених обмінів."
+          }
+        />
       ) : (
         <>
-          <ul className="stagger-in flex flex-col gap-4">
+          <ul className="flex flex-col gap-4">
             {reviews.map((review) => (
               <ReviewItem key={review.id} review={review} />
             ))}
@@ -144,7 +161,7 @@ export default function ProfileReviews({
           {hasNextPage && (
             <Button
               variant="outline"
-              className="h-10 cursor-pointer self-center rounded-[10px] px-5 font-semibold"
+              className="self-center"
               disabled={isFetchingNextPage}
               onClick={() => fetchNextPage()}
             >

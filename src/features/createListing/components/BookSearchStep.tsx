@@ -1,6 +1,12 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/Spinner";
+import EmptyState from "@/components/ui/empty-state";
+import { IconSearchOff } from "@tabler/icons-react";
+import { motion } from "motion/react";
+import { EASE_OUT } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
 import type { BookSearchResult } from "../types";
-import { ArrowLeft } from "lucide-react";
+import StepHeader from "./StepHeader";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useSearchBook } from "../hooks/useSearchBook";
@@ -28,83 +34,95 @@ export default function BookSearchStep({
     }
   }
   return (
-    <div className="w-full flex flex-col gap-4 max-w-160 md:max-w-200 lg:max-w-220">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          className="px-2 cursor-pointer font-bold text-sm text-muted-foreground"
-          onClick={() => navigate("/")}
-        >
-          <ArrowLeft />
-          <span>До каталогу</span>
-        </Button>
-        <p className="font-bold text-sm">Крок 1 з 2</p>
-      </div>
-      <div className="w-full flex gap-1.5">
-        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
-        <span className="bg-muted block w-full h-1.5 rounded-md flex-1"></span>
-      </div>
+    <div className="flex w-full max-w-180 flex-col gap-6">
+      <StepHeader
+        step={1}
+        backLabel="До каталогу"
+        onBack={() => navigate("/")}
+      />
       <div className="flex flex-col gap-2">
-        <h1 className="text-4xl font-medium">Яку книгу віддаєте?</h1>
+        <h1 className="page-title">Яку книгу віддаєте?</h1>
         <p className="text-sm text-muted-foreground">
           Знайдіть книгу за назвою або автором — обкладинку й опис підтягнемо
           автоматично
         </p>
       </div>
       <form onSubmit={handleSubmit} className="flex gap-2">
-        <div
-          className="flex items-center w-full min-w-0 bg-card rounded-md border border-border px-2
-     gap-2 transition-colors focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/30"
-        >
-          <IconSearch className="stroke-1 h-5.5 w-5.5" />
+        <div className="flex h-10 w-full min-w-0 items-center gap-2 rounded-lg border border-input bg-card pl-3 shadow-xs transition-[border-color,box-shadow] duration-150 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/15 hover:border-border-strong">
+          <IconSearch
+            aria-hidden="true"
+            className="size-4 shrink-0 text-muted-foreground"
+            stroke={1.75}
+          />
           <Input
+            autoFocus
+            aria-label="Назва книги або автор"
             placeholder="Назва книги або автор"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full text-sm bg-transparent border-none px-0 shadow-none focus-visible:ring-0 focus-visible:border-0"
+            className="h-full w-full border-none bg-transparent px-0 text-sm shadow-none hover:border-none focus-visible:border-0 focus-visible:ring-0 md:h-full"
           />
         </div>
-        <Button
-          type="submit"
-          className="text-sm cursor-pointer px-4"
-          disabled={isPending}
-        >
-          {isPending ? "Пошук..." : "Знайти"}
+        <Button type="submit" className="h-10 px-4" disabled={isPending}>
+          {isPending ? <Spinner size={16} label="Шукаємо" /> : "Знайти"}
         </Button>
       </form>
-      {isError && (
-        <p className="text-sm text-destructive">
-          Не вдалось виконати пошук. Спробуйте ще раз.
-        </p>
-      )}
-
-      {results && results.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          Нічого не знайдено за цим запитом.
-        </p>
-      )}
-      {results && results.length > 0 && (
-        <div className="flex flex-col gap-4 w-full mt-2">
-          <p className="text-sm">Знайдено {results.length} результат</p>
-          {results.map((book) => (
-            <BookCard
-              key={book.externalId ?? book.title}
-              book={book}
-              onSelect={() => onSelectBook(book)}
-            />
+      {isPending ? (
+        <div aria-busy="true" className="flex flex-col gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="surface flex items-center gap-4 p-3">
+              <Skeleton className="h-21 w-14 rounded-md" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-3.5 w-1/3" />
+              </div>
+            </div>
           ))}
         </div>
-      )}
-      <div className="flex items-center justify-between border border-border rounded-md p-4 mt-10">
-        <div className="flex flex-col text-sm">
-          <h2 className="font-bold">Не знайшли свою книгу?</h2>
-          <p>Додайте назву, автора й жанр вручну</p>
-        </div>
-        <Button
-          variant="outline"
-          className="self-start text-sm cursor-pointer bg-card"
-          onClick={onManualAdd}
+      ) : isError ? (
+        <p
+          role="alert"
+          className="rounded-lg border border-destructive/25 bg-tint-red px-3.5 py-2.5 text-sm text-tint-red-ink"
         >
+          Не вдалося виконати пошук. Спробуйте ще раз.
+        </p>
+      ) : results && results.length === 0 ? (
+        <EmptyState
+          framed
+          icon={IconSearchOff}
+          title="Нічого не знайдено"
+          description="Спробуйте іншу назву чи прізвище автора або додайте книгу вручну."
+        />
+      ) : results && results.length > 0 ? (
+        <div className="flex w-full flex-col gap-2">
+          <p className="text-[13px] text-muted-foreground">
+            Оберіть свою книгу · знайдено{" "}
+            <span className="tabular">{results.length}</span>
+          </p>
+          {results.map((book, i) => (
+            <motion.div
+              key={book.externalId ?? book.title}
+              initial={{ opacity: 0, transform: "translateY(6px)" }}
+              animate={{ opacity: 1, transform: "translateY(0px)" }}
+              transition={{
+                duration: 0.22,
+                ease: EASE_OUT,
+                delay: Math.min(i, 8) * 0.03,
+              }}
+            >
+              <BookCard book={book} onSelect={() => onSelectBook(book)} />
+            </motion.div>
+          ))}
+        </div>
+      ) : null}
+      <div className="mt-4 flex flex-col gap-3 rounded-xl border border-dashed border-border-strong p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-0.5">
+          <h2 className="text-sm font-semibold">Не знайшли свою книгу?</h2>
+          <p className="text-sm text-muted-foreground">
+            Додайте назву, автора й жанр вручну.
+          </p>
+        </div>
+        <Button variant="outline" className="sm:shrink-0" onClick={onManualAdd}>
           Додати вручну
         </Button>
       </div>

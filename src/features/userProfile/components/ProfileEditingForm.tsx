@@ -10,6 +10,7 @@ import type { SettlementType } from "@/features/listings/types";
 import { useUpdateCurrentUserProfile } from "../hooks/useUpdateCurrentUserProfile";
 import type { UpdateProfilePayload, UserResponse } from "../types";
 import AvatarUploader from "./AvatarUploader";
+import RequiredMark from "@/components/ui/RequiredMark";
 
 const BIO_MAX = 2000;
 const NAME_MAX = 255;
@@ -27,8 +28,7 @@ interface ProfileEditingFormProps {
   onEditing: (value: boolean) => void;
 }
 
-const inputClass =
-  "h-12 rounded-[10px] px-3.5 text-[15px] md:text-[15px] bg-card";
+const inputClass = "h-10 md:h-10";
 
 export default function ProfileEditingForm({
   userData,
@@ -101,14 +101,12 @@ export default function ProfileEditingForm({
 
   return (
     <div className="flex w-full max-w-170 flex-col gap-5 md:gap-5.5">
-      <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
-        Редагування профілю
-      </h1>
+      <h1 className="page-title">Редагування профілю</h1>
 
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="flex flex-col gap-5 rounded-[20px] border border-border bg-card p-5 md:p-7"
+        className="flex flex-col gap-5 surface p-5 md:p-7"
       >
         <AvatarUploader
           name={name || userData.name}
@@ -118,7 +116,7 @@ export default function ProfileEditingForm({
         />
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="profile-name" className="font-semibold">
+          <Label htmlFor="profile-name" required>
             Ім'я
           </Label>
           <Input
@@ -134,13 +132,14 @@ export default function ProfileEditingForm({
         </div>
 
         <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-semibold">
-            Тип населеного пункту
+          <legend className="mb-2 text-sm font-medium">
+            Тип населеного пункту <RequiredMark />
           </legend>
           <div
             className={cn(
-              "flex gap-1 rounded-xl bg-secondary p-1",
-              invalid("settlementType") && "ring-2 ring-destructive/30",
+              "flex h-10 gap-0.5 rounded-lg border border-border bg-muted p-0.5",
+              invalid("settlementType") &&
+                "border-destructive ring-3 ring-destructive/15",
             )}
           >
             {SETTLEMENT_OPTIONS.map((option) => {
@@ -152,10 +151,10 @@ export default function ProfileEditingForm({
                   aria-pressed={active}
                   onClick={() => setSettlementType(option.value)}
                   className={cn(
-                    "h-10 flex-1 cursor-pointer rounded-[9px] text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                    "h-full flex-1 cursor-pointer rounded-md text-[13px] font-semibold transition-[color,background-color,box-shadow] duration-150 outline-none focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-ring",
                     active
-                      ? "bg-card font-bold text-foreground shadow-[0_1px_2px_rgba(29,28,26,0.08)]"
-                      : "font-semibold text-foreground/75 hover:text-foreground",
+                      ? "bg-card text-foreground shadow-[0_0_0_1px_var(--border),var(--shadow-xs)]"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   {option.label}
@@ -167,10 +166,10 @@ export default function ProfileEditingForm({
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-3">
           <div className="flex min-w-0 flex-col gap-2">
-            <Label className="font-semibold">Область</Label>
+            <Label required>Область</Label>
             <div
               className={cn(
-                "rounded-[10px]",
+                "rounded-lg",
                 invalid("region") && "ring-2 ring-destructive/30",
               )}
             >
@@ -183,9 +182,7 @@ export default function ProfileEditingForm({
             </div>
           </div>
           <div className="flex min-w-0 flex-col gap-2">
-            <Label htmlFor="profile-settlement" className="font-semibold">
-              Населений пункт
-            </Label>
+            <Label htmlFor="profile-settlement">Населений пункт</Label>
             <Input
               id="profile-settlement"
               type="text"
@@ -200,9 +197,7 @@ export default function ProfileEditingForm({
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label htmlFor="profile-bio" className="font-semibold">
-            Про себе
-          </Label>
+          <Label htmlFor="profile-bio">Про себе</Label>
           <Textarea
             id="profile-bio"
             rows={4}
@@ -212,7 +207,7 @@ export default function ProfileEditingForm({
             aria-invalid={invalid("bio")}
             aria-describedby="profile-bio-counter"
             onChange={(e) => setBio(e.target.value)}
-            className="min-h-28 rounded-[10px] bg-card px-3.5 py-3 text-[15px] leading-normal md:text-[15px]"
+            className="min-h-28"
           />
           <span
             id="profile-bio-counter"
@@ -228,11 +223,11 @@ export default function ProfileEditingForm({
           </p>
         )}
 
-        <div className="flex flex-col-reverse gap-2.5 border-t border-border/70 pt-5 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-2.5 border-t border-border pt-5 sm:flex-row sm:justify-end">
           <Button
             type="button"
             variant="outline"
-            className="h-12 cursor-pointer rounded-[10px] px-5 text-[15px] font-semibold"
+
             disabled={isPending}
             onClick={() => onEditing(false)}
           >
@@ -240,7 +235,7 @@ export default function ProfileEditingForm({
           </Button>
           <Button
             type="submit"
-            className="h-12 cursor-pointer rounded-[10px] px-6 text-[15px] font-bold"
+
             disabled={isPending || isAvatarUploading}
           >
             {isPending ? "Збереження..." : "Зберегти зміни"}

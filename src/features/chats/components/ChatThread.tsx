@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { IconChevronLeft } from "@tabler/icons-react";
-import { Spinner } from "@/components/ui/Spinner";
-import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button, buttonVariants } from "@/components/ui/button";
 import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { EXCHANGE_STATUS_CONFIG } from "@/lib/constants";
 import {
@@ -107,13 +107,13 @@ export default function ChatThread({ room, myId }: ChatThreadProps) {
       className="flex h-full min-h-0 min-w-0 flex-1 flex-col"
       aria-label={`Розмова з ${room.otherUserName}`}
     >
-      <header className="flex items-center gap-3 border-b border-border/70 px-2 py-3 sm:px-5.5 sm:py-4">
+      <header className="flex items-center gap-3 border-b border-border px-2 py-2.5 sm:px-5 sm:py-3">
         <Link
           to="/chat"
           aria-label="До списку розмов"
-          className="flex size-11 shrink-0 items-center justify-center rounded-full text-foreground hover:bg-muted md:hidden"
+          className="flex size-10 shrink-0 items-center justify-center rounded-lg text-foreground transition-colors outline-none hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:hidden"
         >
-          <IconChevronLeft className="size-6" />
+          <IconChevronLeft className="size-5" />
         </Link>
         <UserLink
           userId={room.otherUserId}
@@ -122,13 +122,14 @@ export default function ChatThread({ room, myId }: ChatThreadProps) {
         >
           <UserAvatar
             name={room.otherUserName}
+          seed={room.otherUserId}
             src={room.otherUserAvatarUrl}
-            className="h-11 w-11"
-            fallbackClassName="font-sans text-base font-extrabold"
+            className="size-10"
+            fallbackClassName="font-sans text-base font-bold"
           />
         </UserLink>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-base font-bold">
+          <p className="truncate text-[15px] font-semibold">
             <UserLink
               userId={room.otherUserId}
               className="underline-offset-2 hover:underline"
@@ -147,7 +148,7 @@ export default function ChatThread({ room, myId }: ChatThreadProps) {
         {room.exchangeId && (
           <Link
             to={`/exchanges/${room.exchangeId}`}
-            className="flex h-10 shrink-0 items-center rounded-[10px] border border-input px-3.5 text-sm font-semibold hover:bg-muted"
+            className={buttonVariants({ variant: "outline", size: "sm" })}
           >
             До обміну
           </Link>
@@ -155,17 +156,19 @@ export default function ChatThread({ room, myId }: ChatThreadProps) {
       </header>
 
       {messagesQuery.isPending ? (
-        <div className="flex flex-1 items-center justify-center bg-[#FAF9F6]">
-          <Spinner size={24} />
+        <div aria-busy="true" className="flex flex-1 flex-col justify-end gap-2 bg-background px-3 py-5 sm:px-5">
+          <Skeleton className="h-10 w-2/5 self-end rounded-xl" />
+          <Skeleton className="h-10 w-1/2 rounded-xl" />
+          <Skeleton className="h-14 w-3/5 rounded-xl" />
+          <Skeleton className="h-10 w-1/3 self-end rounded-xl" />
         </div>
       ) : messagesQuery.isError && !messagesQuery.data ? (
-        <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[#FAF9F6] p-6 text-center">
+        <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-background p-6 text-center">
           <p className="text-sm text-muted-foreground">
             Не вдалося завантажити повідомлення.
           </p>
           <Button
             variant="outline"
-            className="cursor-pointer"
             onClick={() => messagesQuery.refetch()}
           >
             Спробувати ще раз

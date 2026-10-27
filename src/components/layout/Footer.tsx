@@ -8,9 +8,9 @@ import { useFeedbackDialog } from "@/context/FeedbackDialogContext";
 const CURRENT_YEAR = new Date().getFullYear();
 
 const linkClass =
-  "text-[15px] text-[#E3EFE8] transition-colors hover:text-white hover:underline underline-offset-4 w-fit";
+  "text-sm text-[oklch(0.92_0.02_158)] transition-colors hover:text-white hover:underline underline-offset-4 w-fit";
 const headingClass =
-  "mb-1 text-[13px] font-extrabold tracking-[0.06em] text-[#9FC6B0] uppercase";
+  "mb-1 text-sm font-bold text-white";
 
 export default function Footer() {
   const { openFeedback } = useFeedbackDialog();
@@ -20,23 +20,23 @@ export default function Footer() {
     isAuthenticated && (me?.role === "MODERATOR" || me?.role === "ADMIN");
 
   return (
-    <footer className="mt-auto w-full bg-[#164F37] text-white">
+    <footer className="mt-auto w-full bg-[oklch(0.32_0.06_158)] text-white">
       <div className="mx-auto w-full max-w-295 px-5 md:px-8 lg:px-12">
         <div className="flex flex-col items-stretch gap-4 border-b border-white/15 py-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1">
-            <p className="font-heading text-xl font-semibold md:text-[22px]">
+            <p className="text-lg font-bold">
               Маєте ідею чи щось не працює?
             </p>
-            <p className="text-[15px] text-[#CFE3D7]">
+            <p className="text-sm text-[oklch(0.86_0.03_158)]">
               Напишіть нам: питання, пропозиція чи скарга — усе в одній формі.
             </p>
           </div>
           <button
             type="button"
             onClick={() => openFeedback()}
-            className="flex h-12 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-white px-5 text-[15px] font-extrabold text-[#164F37] transition-colors hover:bg-[#E3EFE8] focus-visible:ring-3 focus-visible:ring-white/50 focus-visible:outline-none"
+            className="flex h-10 shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-4 text-sm font-semibold shadow-xs text-[oklch(0.32_0.06_158)] transition-colors hover:bg-[oklch(0.94_0.02_158)] focus-visible:ring-3 focus-visible:ring-white/50 focus-visible:outline-none"
           >
-            <IconMessageCircle className="size-5" />
+            <IconMessageCircle className="size-4" />
             Зворотний зв'язок
           </button>
         </div>
@@ -54,15 +54,15 @@ export default function Footer() {
                 className="h-9 w-auto brightness-0 invert"
               />
             </Link>
-            <p className="max-w-75 text-[15px] leading-relaxed text-[#CFE3D7]">
+            <p className="max-w-75 text-[15px] leading-relaxed text-[oklch(0.86_0.03_158)]">
               Діліться книгами з людьми поруч і по всій Україні. Прочитали —
               передайте далі.
             </p>
             <Link
               to="/listings/create"
-              className="flex h-11 w-fit items-center gap-2 rounded-[10px] border border-white/40 px-4 text-sm font-bold text-white transition-colors hover:bg-white/10"
+              className="flex h-9 w-fit items-center gap-2 rounded-lg border border-white/25 px-3.5 text-sm font-semibold text-white transition-colors outline-none hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
             >
-              <IconPlus className="size-4.5" />
+              <IconPlus className="size-4" />
               Додати книгу
             </Link>
           </div>
@@ -138,7 +138,7 @@ export default function Footer() {
           </nav>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-white/15 pt-5 pb-7 text-sm text-[#CFE3D7] sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col-reverse gap-3 border-t border-white/15 pt-5 pb-7 text-sm text-[oklch(0.86_0.03_158)] sm:flex-row sm:items-center sm:justify-between">
           <span>© {CURRENT_YEAR} bookshare</span>
           <div className="flex flex-wrap gap-x-6 gap-y-2">
             <Link to="/terms" className={linkClass + " text-sm"}>

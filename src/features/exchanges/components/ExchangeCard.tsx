@@ -1,4 +1,4 @@
-import { useState } from "react";
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { Link } from "react-router-dom";
 import {
   IconAlertTriangle,
@@ -16,7 +16,6 @@ import {
   getPendingAction,
 } from "../utils/exchangeListItem";
 import BookCardCover from "@/components/layout/BookCardCover";
-import SmartImage from "@/components/ui/SmartImage";
 
 interface ExchangeCardProps {
   exchange: ExchangeResponse;
@@ -33,7 +32,6 @@ export default function ExchangeCard({
   exchange,
   currentUserId,
 }: ExchangeCardProps) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const isOwner = exchange.ownerId === currentUserId;
   const partner = isOwner ? exchange.reader : exchange.owner;
@@ -43,22 +41,22 @@ export default function ExchangeCard({
   const MetaIcon = meta.tone === "danger" ? IconAlertTriangle : IconClock;
 
   return (
-    <article className="relative flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-accent-vivid/40 sm:flex-row md:gap-5 md:p-5">
+    <article className="relative flex w-full max-w-220 flex-col gap-4 surface surface-interactive p-4 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-ring sm:flex-row md:gap-5 md:p-5">
       <BookCardCover src={exchange.bookCoverUrl} />
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-heading text-lg font-semibold leading-tight text-foreground md:text-xl">
+          <h3 className="book-title text-lg leading-tight text-foreground md:text-xl">
             <Link
               to={`/exchanges/${exchange.id}`}
-              className="outline-none after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:after:ring-3 focus-visible:after:ring-ring/50"
+              className="outline-none after:absolute after:inset-0 after:rounded-xl after:content-['']"
             >
               {exchange.bookTitle}
             </Link>
           </h3>
           <span
             className={cn(
-              "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-bold md:text-[13px]",
+              "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-semibold",
               status.color,
               status.bgColor,
             )}
@@ -72,27 +70,16 @@ export default function ExchangeCard({
             userId={partner.id}
             className="relative z-10 inline-flex items-center gap-2.5"
           >
-            <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
-              {partner.avatarUrl && !avatarFailed ? (
-                <SmartImage
-                  src={partner.avatarUrl}
-                  alt=""
-                  className="size-full object-cover"
-                  onError={() => setAvatarFailed(true)}
-                />
-              ) : (
-                partner.name.substring(0, 1).toUpperCase()
-              )}
-            </div>
+            <UserAvatar name={partner.name} src={partner.avatarUrl} seed={partner.id} className="size-8" fallbackClassName="text-[13px]" />
             <span className="text-[15px] font-semibold text-foreground underline-offset-2 group-hover:underline">
               {partner.name}
             </span>
           </UserLink>
           <span className="flex items-center gap-1 text-muted-foreground">
-            <IconStarFilled size={13} className="text-[#D99A1E]" />
+            <IconStarFilled size={13} className="text-star" />
             {Number(partner.ratingAvg).toFixed(1)}
           </span>
-          <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs text-foreground">
+          <span className="rounded-full bg-tint-neutral px-2 py-0.5 text-xs font-medium text-tint-neutral-ink">
             {isOwner ? "Ви — власник" : "Ви — читач"}
           </span>
           <span className="text-[13px] text-muted-foreground">
@@ -111,7 +98,7 @@ export default function ExchangeCard({
         </p>
 
         {action && (
-          <div className="flex items-center justify-between gap-2 rounded-lg bg-accent px-3.5 py-2.5 text-sm leading-snug font-semibold text-accent-vivid">
+          <div className="flex items-center justify-between gap-2 rounded-xl bg-accent px-3.5 py-2.5 text-sm leading-snug font-semibold text-accent-foreground">
             {getActionHint(action, exchange)}
             <IconArrowRight size={16} className="shrink-0" />
           </div>

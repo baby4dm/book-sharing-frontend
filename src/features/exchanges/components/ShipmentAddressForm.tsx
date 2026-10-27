@@ -97,7 +97,7 @@ export default function ShipmentAddressForm({
       <p className="text-xs text-muted-foreground">{hint}</p>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Перевізник</Label>
+        <Label required>Перевізник</Label>
         <SingleSelectList
           options={CARRIERS.map((c) => c.label)}
           placeholder="Вибрати перевізника"
@@ -108,7 +108,7 @@ export default function ShipmentAddressForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label>Ім'я отримувача</Label>
+        <Label required>Ім'я отримувача</Label>
         <Input
           value={values.recipientName}
           onChange={(e) => setField("recipientName", e.target.value)}
@@ -120,7 +120,7 @@ export default function ShipmentAddressForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="shipment-phone">Телефон</Label>
+        <Label htmlFor="shipment-phone" required>Телефон</Label>
         <PhoneInput
           id="shipment-phone"
           value={values.recipientPhone}
@@ -135,7 +135,7 @@ export default function ShipmentAddressForm({
 
       <div className="flex flex-col gap-1.5 md:flex-row md:gap-3">
         <div className="flex flex-col gap-1.5 md:flex-1">
-          <Label>Місто</Label>
+          <Label required>Місто</Label>
           <Input
             value={values.city}
             onChange={(e) => setField("city", e.target.value)}
@@ -146,7 +146,7 @@ export default function ShipmentAddressForm({
           )}
         </div>
         <div className="flex flex-col gap-1.5 md:w-40">
-          <Label>№ відділення</Label>
+          <Label required>№ відділення</Label>
           <Input
             value={values.branchNumber}
             onChange={(e) => setField("branchNumber", e.target.value)}

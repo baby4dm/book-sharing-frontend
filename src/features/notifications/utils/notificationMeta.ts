@@ -17,11 +17,11 @@ import type { NotificationType } from "../types";
 type Tone = "green" | "red" | "amber" | "gold" | "neutral";
 
 const TONE_CLASS: Record<Tone, string> = {
-  green: "bg-accent text-accent-vivid",
-  red: "bg-destructive/10 text-destructive",
-  amber: "bg-orange-500/12 text-orange-700 dark:text-orange-300",
-  gold: "bg-amber-400/20 text-amber-700 dark:text-amber-300",
-  neutral: "bg-muted text-muted-foreground",
+  green: "text-muted-foreground",
+  red: "text-destructive",
+  amber: "text-muted-foreground",
+  gold: "text-muted-foreground",
+  neutral: "text-muted-foreground",
 };
 
 const META: Record<NotificationType, { icon: Icon; tone: Tone }> = {

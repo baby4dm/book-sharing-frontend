@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { IconStarFilled } from "@tabler/icons-react";
 import type { PublicUserProfile } from "../types";
 import { pluralizeReviews } from "../utils/profileFormat";
 
@@ -34,19 +35,16 @@ export default function ProfileStats({
   return (
     <section
       aria-label="Статистика"
-      className="grid grid-cols-2 gap-3 sm:grid-cols-3"
+      className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border shadow-xs sm:grid-cols-3 [&>div]:bg-card [&>div]:p-4 md:[&>div]:p-5"
     >
-      <div className="rounded-2xl border border-border bg-card p-4 md:p-4.5">
-        <p className="flex items-center gap-1.5 text-2xl font-extrabold md:text-[28px]">
-          <span
-            aria-hidden="true"
-            className="text-xl text-[#D99A1E] md:text-2xl"
-          >
-            ★
+      <div>
+        <p className="flex items-center gap-1.5 text-2xl font-bold tracking-[-0.02em]">
+          <IconStarFilled aria-hidden="true" className="size-5 text-star md:size-6" />
+          <span className="tabular">
+            {hasRating ? userData.ratingAvg.toFixed(2) : "—"}
           </span>
-          {hasRating ? userData.ratingAvg.toFixed(2) : "—"}
         </p>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-[13px] text-muted-foreground">
           {reviewsCount === undefined
             ? "Рейтинг"
             : reviewsCount > 0
@@ -56,20 +54,17 @@ export default function ProfileStats({
       </div>
 
       {stats.map((stat) => (
-        <div
-          key={stat.label}
-          className="rounded-2xl border border-border bg-card p-4 md:p-4.5"
-        >
+        <div key={stat.label}>
           <p
             className={cn(
-              "text-2xl font-extrabold md:text-[28px]",
+              "tabular text-2xl font-bold tracking-[-0.02em]",
               stat.value > 0 && stat.tone === "success" && "text-success",
               stat.value > 0 && stat.tone === "danger" && "text-destructive",
             )}
           >
             {stat.value}
           </p>
-          <p className="text-sm text-muted-foreground">{stat.label}</p>
+          <p className="text-[13px] text-muted-foreground">{stat.label}</p>
         </div>
       ))}
     </section>

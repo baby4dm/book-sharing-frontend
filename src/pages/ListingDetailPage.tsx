@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import QueryErrorState from "@/components/errors/QueryErrorState";
 import { useAuth } from "@/context/AuthContext";
 import { useListing } from "@/features/listings/hooks/useListing";
@@ -13,19 +13,18 @@ import {
   pluralizeExchanges,
 } from "@/features/userProfile/utils/profileFormat";
 import { DELIVERY_METHODS, STATUS_CONFIG } from "@/lib/constants";
-import { formatDaysAgo } from "@/lib/utils";
+import { cn, formatDaysAgo } from "@/lib/utils";
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import {
   IconArrowLeft,
   IconArrowRight,
-  IconBox,
+  IconBook,
   IconCheck,
-  IconClock,
-  IconMapPin,
   IconChevronRight,
   IconStarFilled,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { findMyActiveRequest } from "@/api/listingQueue";
 import ListingRequestQueue from "@/features/listings/components/ListingRequestQueue";
 import { useListingRequests } from "@/features/listings/hooks/useListingRequests";
@@ -36,9 +35,9 @@ export default function ListingDetailPage() {
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { data: listing, isLoading, error, refetch } = useListing(id!);
   const { data: owner } = useUserProfile(listing?.ownerId);
-  const [avatarFailed, setAvatarFailed] = useState(false);
   const [currentPhoto, setCurrentPhoto] = useState(0);
   const { data: user } = useCurrentUserProfile();
   const {
@@ -78,8 +77,33 @@ export default function ListingDetailPage() {
 
   if (isLoading) {
     return (
-      <section className="w-full px-4 py-16 flex items-center justify-center">
-        <Spinner size={40} />
+      <section
+        aria-busy="true"
+        aria-label="Завантаження оголошення"
+        className="mx-auto flex w-full max-w-300 flex-col gap-6 px-4 py-5 md:px-8 lg:py-8"
+      >
+        <Skeleton className="h-5 w-24" />
+        <div className="grid w-full gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10 lg:gap-14">
+          <Skeleton className="mx-auto aspect-2/3 w-full max-w-60 rounded-xl md:max-w-105" />
+          <div className="flex flex-col gap-4">
+            <div className="flex gap-2">
+              <Skeleton className="h-6 w-16 rounded-full" />
+              <Skeleton className="h-6 w-24 rounded-full" />
+            </div>
+            <Skeleton className="h-8 w-3/4" />
+            <Skeleton className="h-5 w-1/3" />
+            <div className="surface mt-2 flex flex-col divide-y divide-border">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex gap-6 px-5 py-4">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 flex-1" />
+                </div>
+              ))}
+            </div>
+            <Skeleton className="h-18.5 rounded-xl" />
+            <Skeleton className="h-10 rounded-lg" />
+          </div>
+        </div>
       </section>
     );
   }
@@ -101,219 +125,223 @@ export default function ListingDetailPage() {
   const isOwner = !!user && user.id === listing.ownerId;
   const myRequest = findMyActiveRequest(requests, listing.status, user?.id);
   const isArchived = listing.status === "ARCHIVED";
+  const photos = listing.photoUrls?.length
+    ? listing.photoUrls
+    : listing.bookCoverUrl
+      ? [listing.bookCoverUrl]
+      : [];
+  const photoIndex = Math.min(currentPhoto, Math.max(photos.length - 1, 0));
+  const place = listing.settlementName
+    ? `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}. ${listing.settlementName}, ${listing.region}`
+    : "Місто не вказано";
+  const facts = [
+    {
+      label: "Стан примірника",
+      value: listing.conditionDescription || "Власник не описав стан",
+    },
+    { label: "Де знаходиться", value: place },
+    {
+      label: "Як отримати",
+      value: listing.deliveryMethods
+        .map((el) => DELIVERY_METHODS[el])
+        .join(", "),
+    },
+    { label: "Опубліковано", value: formatDaysAgo(listing.createdAt) },
+  ];
+  const arrowClass =
+    "absolute top-1/2 z-10 flex size-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full bg-card/90 text-foreground transition-transform duration-150 ease-(--ease-out) active:scale-[0.94] outline-none focus-visible:ring-3 focus-visible:ring-ring/50";
+
   return (
-    <section className="px-4 py-6 flex flex-col w-full gap-6 md:px-6 lg:px-10 lg:max-w-350 lg:mx-auto md:py-8">
-      <Button
-        variant="ghost"
-        className="max-w-40 cursor-pointer"
-        nativeButton={false}
-        render={
-          <Link
-            to="/"
-            className="text-xs font-base text-muted-foreground flex items-center gap-1"
-          />
-        }
+    <section className="mx-auto flex w-full max-w-300 flex-col gap-6 px-4 py-5 md:px-8 lg:py-8">
+      <Link
+        to="/"
+        className="flex w-fit items-center gap-1.5 rounded-full py-1 pr-2 text-sm font-semibold text-muted-foreground transition-colors duration-150 hover:text-foreground outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
-        <IconArrowLeft />
-        Назад до каталогу
-      </Button>
-      <div className="w-full flex flex-col mt-2 gap-2 md:flex-row md:gap-6 md:justify-between lg:gap-10 lg:items-center">
-        {listing.photoUrls && listing.photoUrls.length > 0 && (
-          <div className="w-full flex flex-col items-center gap-2">
-            <div className="relative w-full flex flex-col h-90 lg:h-110 bg-card border border-border rounded-xl">
-              <Button
-                variant="outline"
-                className="absolute left-4 top-0 bottom-0 my-auto shadow-sm cursor-pointer rounded-full bg-card"
-                onClick={goPrevPhoto}
-              >
-                <IconArrowLeft />
-              </Button>
+        <IconArrowLeft size={18} />
+        Каталог
+      </Link>
+
+      <div className="grid w-full gap-6 md:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] md:gap-10 lg:gap-14">
+        <div className="flex flex-col gap-3">
+          <div className="relative mx-auto aspect-2/3 w-full max-w-60 md:max-w-105 overflow-hidden rounded-xl bg-muted">
+            {photos.length > 0 ? (
               <SmartImage
-                className="absolute inset-0 z-10 h-80 w-auto m-auto lg:h-90 rounded-md shadow-md"
-                src={listing.photoUrls[currentPhoto]}
-                alt="Listing Photo"
+                key={photos[photoIndex]}
+                className="h-full w-full object-cover"
+                src={photos[photoIndex]}
+                alt={`${listing.bookTitle} — фото ${photoIndex + 1}`}
               />
-              <Button
-                variant="outline"
-                className="absolute right-4 top-0 bottom-0 my-auto shadow-sm cursor-pointer rounded-full bg-card"
-                onClick={goNextPhoto}
-              >
-                <IconArrowRight />
-              </Button>
-              <p className="text-sm text-card bg-muted-foreground px-2 w-fit rounded-md absolute bottom-3 right-3">
-                {currentPhoto + 1}/{listing.photoUrls.length}
-              </p>
-            </div>
-            <div className="flex items-center w-full h-20 gap-2 justify-center">
-              {listing.photoUrls.map((el, i) => (
-                <SmartImage
-                  className={`h-15 w-15 rounded-sm ${currentPhoto === i ? "ring-2 ring-accent-vivid shadow-xl" : ""}`}
-                  key={el}
-                  src={el}
-                  alt="Listing photo"
+            ) : (
+              <div className="flex h-full items-center justify-center">
+                <IconBook
+                  size={40}
+                  stroke={1.5}
+                  className="text-muted-foreground"
                 />
+              </div>
+            )}
+            {photos.length > 1 && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Попереднє фото"
+                  className={`${arrowClass} left-3`}
+                  onClick={goPrevPhoto}
+                >
+                  <IconArrowLeft size={18} />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Наступне фото"
+                  className={`${arrowClass} right-3`}
+                  onClick={goNextPhoto}
+                >
+                  <IconArrowRight size={18} />
+                </button>
+                <span className="tabular absolute right-3 bottom-3 rounded-full bg-black/55 px-2.5 py-0.5 text-xs font-semibold text-white">
+                  {photoIndex + 1}/{photos.length}
+                </span>
+              </>
+            )}
+          </div>
+          {photos.length > 1 && (
+            <div className="flex justify-center gap-2">
+              {photos.map((el, i) => (
+                <button
+                  type="button"
+                  key={el}
+                  aria-label={`Фото ${i + 1}`}
+                  aria-current={photoIndex === i ? "true" : undefined}
+                  onClick={() => setCurrentPhoto(i)}
+                  className={cn(
+                    "size-14 cursor-pointer overflow-hidden rounded-lg outline-none transition-[opacity,box-shadow] duration-150 focus-visible:ring-3 focus-visible:ring-ring/50",
+                    photoIndex === i
+                      ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                      : "opacity-60 hover:opacity-100",
+                  )}
+                >
+                  <SmartImage
+                    className="h-full w-full object-cover"
+                    src={el}
+                    alt=""
+                  />
+                </button>
               ))}
             </div>
-          </div>
-        )}
-        <div className="w-full flex flex-col gap-4 px-2">
-          <div className="flex flex-col gap-1">
-            <div className="flex gap-2">
-              <p className="bg-muted text-foreground py-1 px-4 rounded-xl w-fit text-sm font-bold lg:text-base">
-                {listing.bookGenre ?? "Жанр невідомий"}
-              </p>
-              <div
-                className={`flex items-center gap-1.5 py-1 px-4 ${status.bg} rounded-xl`}
-              >
-                <status.icon
-                  className={`${status.color} stroke-3 w-5 h-5 lg:w-6 lg:h-6`}
-                />
-                <span
-                  className={`text-sm text-muted-foreground font-bold lg:text-base ${status.color}`}
-                >
-                  {status.label}
-                </span>
-              </div>
-            </div>
+          )}
+        </div>
 
-            <h1 className="text-foreground font-bold text-2xl leading-none mt-4 lg:text-4xl">
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-wrap gap-2">
+              {listing.bookGenre && (
+                <span className="rounded-full bg-tint-neutral px-2.5 py-1 text-xs font-semibold text-tint-neutral-ink">
+                  {listing.bookGenre}
+                </span>
+              )}
+              <span
+                className={cn(
+                  "flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold",
+                  status.bg,
+                  status.color,
+                )}
+              >
+                <status.icon size={14} />
+                {status.label}
+              </span>
+            </div>
+            <h1 className="book-title mt-1 text-[26px] leading-tight lg:text-[32px]">
               {listing.bookTitle}
             </h1>
-            <p className="text-foreground font-light text-sm lg:text-base">
+            <p className="text-base text-muted-foreground">
               {listing.bookAuthor ?? "Автор невідомий"}
             </p>
           </div>
-          <div className="flex flex-col gap-0.5 lg:gap-1">
-            <div className="flex items-center gap-1.5">
-              <IconClock className=" w-5 h-5 text-muted-foreground lg:w-5.5 lg:h-5.5" />
-              <span className="text-sm text-muted-foreground">{`Опубліковано: ${formatDaysAgo(listing.createdAt)}`}</span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-4 lg:gap-6">
-            <div className="bg-card p-5 rounded-xl shadow-sm flex flex-col gap-2">
-              <p className="text-muted-foreground font-bold text-sm">
-                СТАН ПРИМІРНИКА
-              </p>
-              <p className="text-foreground font-light text-sm lg:text-base">
-                {listing.conditionDescription}
-              </p>
-            </div>
-            <div className="flex flex-col gap-3 lg:flex-row lg:gap-5 lg:items-center w-full">
-              <div className="flex flex-col gap-2 bg-card p-5 rounded-xl shadow-sm w-full">
-                <p className="flex gap-1 items-center">
-                  <IconMapPin className="w-5 h-5 text-accent-vivid" />
-                  <span className="flex text-muted-foreground font-bold text-xs lg:text-sm">
-                    МІСЦЕЗНАХОДЖЕННЯ
-                  </span>
-                </p>
 
-                <p className="text-xs text-muted-foreground lg:text-sm">
-                  {!listing.settlementName
-                    ? "Місто не вказано"
-                    : `${SETTLEMENT_TYPE_LABELS[listing.settlementType].substring(0, 1).toLowerCase()}.${listing.settlementName}, ${listing.region}`}
-                </p>
+          <dl className="divide-y divide-border surface">
+            {facts.map((f) => (
+              <div
+                key={f.label}
+                className="flex flex-col gap-0.5 px-5 py-3.5 sm:flex-row sm:gap-6"
+              >
+                <dt className="field-label shrink-0 sm:w-36">{f.label}</dt>
+                <dd className="text-sm text-foreground">{f.value}</dd>
               </div>
-              <div className="flex flex-col gap-2 bg-card p-5 rounded-xl shadow-sm w-full">
-                <p className="flex items-center gap-1">
-                  <IconBox className="w-5 h-5 text-accent-vivid" />
-                  <span className="text-muted-foreground font-bold text-xs lg:text-sm">
-                    СПОСІБ ОТРИМАННЯ
+            ))}
+          </dl>
+
+          <UserLink
+            userId={listing.ownerId}
+            className="surface surface-interactive flex w-full items-center gap-3 p-4"
+          >
+            <UserAvatar
+              name={listing.ownerName}
+              src={listing.ownerAvatarUrl}
+              seed={listing.ownerId}
+              className="size-11"
+              fallbackClassName="text-base"
+            />
+            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+              <p className="truncate text-[15px] font-bold underline-offset-2 group-hover:underline">
+                {listing.ownerName}
+              </p>
+              <p className="flex flex-wrap items-center gap-x-2 text-[13px] text-muted-foreground">
+                <span className="flex items-center gap-0.5 font-semibold text-foreground">
+                  <IconStarFilled size={14} className="text-star" />
+                  <span className="tabular">
+                    {Number(listing.ownerRatingAvg ?? 0).toFixed(1)}
                   </span>
-                </p>
-                <p className="text-xs text-muted-foreground lg:text-sm">
-                  {listing.deliveryMethods
-                    .map((el) => DELIVERY_METHODS[el])
-                    .join(", ")}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="w-full flex flex-col gap-5 border-t border-border py-4">
-            <UserLink
-              userId={listing.ownerId}
-              className="w-full flex items-center gap-3 lg:flex-1 lg:gap-4 bg-card p-5 rounded-xl shadow-sm transition-colors hover:bg-muted/60"
-            >
-              <div className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-primary flex items-center justify-center lg:w-13 lg:h-13">
-                {listing.ownerAvatarUrl && !avatarFailed ? (
-                  <SmartImage
-                    src={listing.ownerAvatarUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                    onError={() => setAvatarFailed(true)}
-                  />
-                ) : (
-                  <p className="text-primary-foreground text-sm font-semibold">
-                    {listing.ownerName.substring(0, 1).toUpperCase()}
-                  </p>
-                )}
-              </div>
-              <div className="flex min-w-0 flex-1 flex-col">
-                <p className="truncate text-sm text-foreground font-bold underline-offset-2 group-hover:underline lg:text-base">
-                  {listing.ownerName}
-                </p>
+                </span>
                 {owner && (
-                  <p className="text-sm font-light text-foreground">
-                    {formatMemberSince(owner.createdAt)}
-                  </p>
+                  <span>
+                    {pluralizeExchanges(owner.booksGiven + owner.booksTaken)}
+                  </span>
                 )}
-                <div className="flex items-center gap-2.5 lg:gap-2">
-                  <p className="flex items-center gap-0.5 h-6">
-                    <IconStarFilled className="w-4 h-4 text-yellow-500 lg:w-5 lg:h-5" />
-                    <span className="text-sm font-medium text-foreground">
-                      {Number(listing.ownerRatingAvg ?? 0).toFixed(1)}
-                    </span>
-                  </p>
-                  {owner && (
-                    <p className="text-sm font-light text-foreground">
-                      {pluralizeExchanges(owner.booksGiven + owner.booksTaken)}
-                    </p>
-                  )}
-                </div>
+                {owner && <span>· {formatMemberSince(owner.createdAt)}</span>}
+              </p>
+            </div>
+            <IconChevronRight className="size-5 shrink-0 text-muted-foreground" />
+          </UserLink>
+
+          {!isOwner &&
+            (myRequest?.status === "ACTIVE" && myRequest.exchangeId ? (
+              <Button
+                className="h-10 w-full"
+                nativeButton={false}
+                render={<Link to={`/exchanges/${myRequest.exchangeId}`} />}
+              >
+                Перейти до обміну
+                <IconArrowRight />
+              </Button>
+            ) : myRequest ? (
+              <div className="flex flex-col items-center gap-2 rounded-xl bg-tint-green px-5 py-4 text-center text-tint-green-ink">
+                <p className="flex items-center gap-1.5 text-sm font-bold">
+                  <IconCheck size={18} />
+                  Заявку вже надіслано
+                </p>
+                <Link
+                  to="/requests?tab=sent"
+                  className="text-sm font-semibold underline underline-offset-2"
+                >
+                  Переглянути мої заявки
+                </Link>
               </div>
-              <IconChevronRight className="size-5 shrink-0 text-muted-foreground" />
-            </UserLink>
-            {!isOwner &&
-              (myRequest?.status === "ACTIVE" && myRequest.exchangeId ? (
-                <Button
-                  className="cursor-pointer w-full h-10"
-                  nativeButton={false}
-                  render={<Link to={`/exchanges/${myRequest.exchangeId}`} />}
-                >
-                  Перейти до обміну
-                  <IconArrowRight />
-                </Button>
-              ) : myRequest ? (
-                <div className="flex flex-col gap-1.5">
-                  <Button className="w-full h-10 gap-2" disabled>
-                    <IconCheck />
-                    Заявку вже надіслано
-                  </Button>
-                  <Link
-                    to="/requests?tab=sent"
-                    className="self-center text-sm font-semibold text-accent-vivid hover:underline"
-                  >
-                    Переглянути мої заявки
-                  </Link>
-                </div>
-              ) : (
-                <Button
-                  className="cursor-pointer w-full h-10"
-                  disabled={isArchived || (isAuthenticated && requestsLoading)}
-                  onClick={(e) => handleClick(e)}
-                >
-                  {isArchived
-                    ? "Оголошення знято з публікації"
-                    : "Подати заявку"}
-                </Button>
-              ))}
-            {requestDialogIsOpen && (
-              <RequestFormDialog
-                listing={listing}
-                open={requestDialogIsOpen}
-                onOpenChange={setRequestDialogIsOpen}
-              />
-            )}
-          </div>
+            ) : (
+              <Button
+                className="h-10 w-full"
+                disabled={isArchived || (isAuthenticated && requestsLoading)}
+                onClick={(e) => handleClick(e)}
+              >
+                {isArchived ? "Оголошення знято з публікації" : "Подати заявку"}
+              </Button>
+            ))}
+          {requestDialogIsOpen && (
+            <RequestFormDialog
+              listing={listing}
+              open={requestDialogIsOpen}
+              onOpenChange={setRequestDialogIsOpen}
+            />
+          )}
         </div>
       </div>
 

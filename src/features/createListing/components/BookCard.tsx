@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { BookSearchResult } from "../types";
-import { IconBook } from "@tabler/icons-react";
+import { IconBook, IconChevronRight } from "@tabler/icons-react";
 import SmartImage from "@/components/ui/SmartImage";
 
 interface BookCardProps {
@@ -9,38 +9,35 @@ interface BookCardProps {
 }
 
 export default function BookCard({ book, onSelect }: BookCardProps) {
-  const [imageIsLoaded, setImageIsLoaded] = useState(false);
   const [imageIsFailed, setImageIsFailed] = useState(false);
   return (
     <button
-      className="bg-card w-full flex gap-4 items-center border border-border rounded-md p-3 shadow-sm cursor-pointer hover:border-accent-vivid hover:outline-2 transition-all duration-100 hover:scale-[101%]"
+      type="button"
+      className="group surface surface-interactive flex w-full cursor-pointer items-center gap-4 p-3 text-left outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.99]"
       onClick={() => onSelect(book)}
     >
-      <div className="relative h-30 w-25 rounded-md overflow-hidden">
-        {!imageIsLoaded && !imageIsFailed && (
-          <div className="absolute inset-0 bg-border shimmer rounded-md" />
-        )}
-
+      <div className="relative aspect-[2/3] w-14 shrink-0 overflow-hidden rounded-md bg-muted shadow-[inset_0_0_0_1px_var(--border)]">
         {imageIsFailed || !book.coverUrl ? (
-          <div className="absolute inset-0 flex items-center justify-center bg-secondary rounded-md">
-            <IconBook size={32} className="text-muted-foreground" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <IconBook size={22} stroke={1.5} className="text-muted-foreground" />
           </div>
         ) : (
           <SmartImage
-            className={`w-25 h-full transition-opacity duration-300 ${
-              imageIsLoaded ? "opacity-100" : "opacity-0"
-            }`}
+            className="size-full object-cover"
             src={book.coverUrl}
-            alt={book.title}
-            onLoad={() => setImageIsLoaded(true)}
+            alt=""
             onError={() => setImageIsFailed(true)}
           />
         )}
       </div>
-      <div className="w-full flex flex-col items-start text-start gap-1">
-        <h2 className="text-sm font-bold">{book.title}</h2>
-        <p className="text-sm text-muted-foreground">{book.author}</p>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <h2 className="book-title line-clamp-2 text-[15px] leading-snug">{book.title}</h2>
+        <p className="truncate text-[13px] text-muted-foreground">{book.author}</p>
       </div>
+      <IconChevronRight
+        aria-hidden="true"
+        className="size-4 shrink-0 text-muted-foreground transition-[translate,color] duration-150 group-hover:translate-x-0.5 group-hover:text-foreground"
+      />
     </button>
   );
 }

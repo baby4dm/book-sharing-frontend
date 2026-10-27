@@ -1,3 +1,5 @@
+import { motion } from "motion/react";
+import { EASE_OUT } from "@/lib/motion";
 import { useLayoutEffect, useRef, useState } from "react";
 import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
@@ -120,7 +122,7 @@ export default function MessageList({
     <div
       ref={scrollRef}
       onScroll={handleScroll}
-      className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-[#FAF9F6] px-3 py-4 sm:px-5.5 sm:py-5"
+      className="flex min-h-0 flex-1 flex-col overflow-y-auto bg-background px-3 py-4 sm:px-5.5 sm:py-5"
       role="log"
       aria-live="polite"
       aria-label="Повідомлення"
@@ -133,7 +135,7 @@ export default function MessageList({
             <button
               type="button"
               onClick={onLoadOlder}
-              className="h-8 cursor-pointer rounded-full px-3 text-[13px] font-bold text-primary hover:bg-accent"
+              className="h-8 cursor-pointer rounded-lg px-3 text-[13px] font-semibold text-primary hover:bg-accent"
             >
               Показати попередні
             </button>
@@ -154,7 +156,7 @@ export default function MessageList({
             return (
               <div
                 key={row.key}
-                className="my-3 self-center rounded-full bg-secondary px-2.5 py-1 text-xs font-bold text-muted-foreground"
+                className="my-3 self-center rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
               >
                 {row.label}
               </div>
@@ -163,7 +165,11 @@ export default function MessageList({
           const { message, mine, firstInGroup, lastInGroup } = row;
           const isLast = message.id === lastMessage?.id && pending.length === 0;
           return (
-            <div
+            <motion.div
+              initial={{ opacity: 0, transform: "translateY(8px) scale(0.98)" }}
+              animate={{ opacity: 1, transform: "translateY(0px) scale(1)" }}
+              transition={{ duration: 0.2, ease: EASE_OUT }}
+              style={{ transformOrigin: mine ? "bottom right" : "bottom left" }}
               key={row.key}
               className={cn(
                 "flex flex-col",
@@ -173,17 +179,17 @@ export default function MessageList({
             >
               <div
                 className={cn(
-                  "max-w-[85%] px-3.5 py-2.5 text-[15px] leading-normal wrap-break-word whitespace-pre-wrap sm:max-w-[70%]",
+                  "max-w-[85%] px-3 py-2 text-[15px] leading-normal wrap-break-word whitespace-pre-wrap sm:max-w-[70%]",
                   mine
-                    ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-card text-foreground",
+                    ? "bg-primary text-primary-foreground shadow-(--highlight-fill)"
+                    : "border border-border bg-card text-foreground shadow-xs",
                   mine
                     ? lastInGroup
-                      ? "rounded-[16px_16px_4px_16px]"
-                      : "rounded-2xl"
+                      ? "rounded-[14px_14px_4px_14px]"
+                      : "rounded-xl"
                     : lastInGroup
-                      ? "rounded-[16px_16px_16px_4px]"
-                      : "rounded-2xl",
+                      ? "rounded-[14px_14px_14px_4px]"
+                      : "rounded-xl",
                 )}
               >
                 {message.content}
@@ -198,7 +204,7 @@ export default function MessageList({
                     (message.readAt ? " · Прочитано" : " · Надіслано")}
                 </span>
               )}
-            </div>
+            </motion.div>
           );
         })}
 
@@ -224,7 +230,7 @@ export default function MessageList({
                 <button
                   type="button"
                   onClick={() => onRetry(item.tempId)}
-                  className="cursor-pointer font-bold text-primary hover:underline"
+                  className="cursor-pointer font-semibold text-primary hover:underline"
                 >
                   Повторити
                 </button>

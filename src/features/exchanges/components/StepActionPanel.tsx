@@ -19,10 +19,9 @@ interface StepActionPanelProps {
   actions: ExchangeActions;
 }
 
-/** Обгортка дії на активному кроці — сірий блок під заголовком кроку. */
 function ActionBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mt-3 flex flex-col gap-3 rounded-xl bg-background p-4">
+    <div className="mt-3 flex flex-col gap-3 rounded-lg border border-border bg-background p-4">
       {children}
     </div>
   );
@@ -101,14 +100,14 @@ export default function StepActionPanel({
           </p>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button
-              className="h-11 cursor-pointer rounded-lg px-5 font-bold"
+              className="h-10 rounded-lg px-5 font-semibold"
               onClick={() => setReturnDialogOpen(true)}
             >
               Підтвердити повернення
             </Button>
             <Button
               variant="outline"
-              className="h-11 cursor-pointer gap-2 rounded-lg border-destructive/40 px-4 font-bold text-destructive hover:bg-destructive/5 hover:text-destructive"
+              className="h-10 gap-2 rounded-lg border-destructive/40 px-4 font-semibold text-destructive hover:bg-destructive/5 hover:text-destructive"
               onClick={() => setDisputeOpen(true)}
             >
               <IconAlertTriangle size={18} />Є проблема — відкрити спір

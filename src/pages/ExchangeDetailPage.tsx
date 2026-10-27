@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { IconArrowLeft } from "@tabler/icons-react";
-import { Spinner } from "@/components/ui/Spinner";
+import { IconAlertTriangle, IconArrowLeft } from "@tabler/icons-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
+import { Button } from "@/components/ui/button";
 import QueryErrorState from "@/components/errors/QueryErrorState";
 import DisputeNotice from "@/features/exchanges/components/DisputeNotice";
 import DisputeResolution from "@/features/exchanges/components/DisputeResolution";
@@ -35,9 +37,36 @@ export default function ExchangeDetailPage() {
 
   if (isLoading || isProfileLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <Spinner size={28} />
-      </div>
+      <section
+        aria-busy="true"
+        aria-label="Завантаження обміну"
+        className="mx-auto flex w-full max-w-295 flex-col gap-6 px-4 pt-6 pb-16 md:px-8 lg:px-12 lg:pt-8"
+      >
+        <Skeleton className="h-5 w-24" />
+        <div className="flex gap-4 md:gap-5">
+          <Skeleton className="h-30 w-20 rounded-lg md:h-40 md:w-28" />
+          <div className="flex flex-1 flex-col gap-3 pt-1">
+            <Skeleton className="h-7 w-1/2" />
+            <Skeleton className="h-4 w-1/4" />
+            <Skeleton className="h-6 w-28 rounded-full" />
+          </div>
+        </div>
+        <div className="flex flex-col gap-6 lg:flex-row-reverse">
+          <div className="flex flex-col gap-4 lg:w-80">
+            <Skeleton className="h-44 rounded-xl" />
+            <Skeleton className="h-32 rounded-xl" />
+          </div>
+          <div className="surface flex flex-1 flex-col gap-5 p-5 md:p-6">
+            <Skeleton className="h-5 w-28" />
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-4">
+                <Skeleton className="size-5 rounded-full" />
+                <Skeleton className="h-4 w-48" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     );
   }
 
@@ -55,14 +84,22 @@ export default function ExchangeDetailPage() {
 
   if (!exchange || !currentUser) {
     return (
-      <div className="flex flex-col items-center gap-3 py-16 text-center">
-        <p className="text-sm text-destructive">Не вдалось завантажити обмін</p>
-        <Link
-          to="/exchanges"
-          className="text-sm font-semibold text-accent-vivid hover:underline"
-        >
-          Повернутись до обмінів
-        </Link>
+      <div className="mx-auto w-full max-w-236 px-4 py-10 md:px-8">
+        <EmptyState
+          framed
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити обмін"
+          description="Перевірте з'єднання і спробуйте ще раз."
+          action={
+            <Button
+              variant="outline"
+              nativeButton={false}
+              render={<Link to="/exchanges" />}
+            >
+              До моїх обмінів
+            </Button>
+          }
+        />
       </div>
     );
   }
@@ -78,12 +115,12 @@ export default function ExchangeDetailPage() {
   const readerCanExtend = canRequestExtension(exchange, currentUser.id);
 
   return (
-    <section className="mx-auto flex w-full max-w-295 flex-col gap-6 px-4 pb-16 pt-6 md:px-8 lg:px-12">
+    <section className="mx-auto flex w-full max-w-295 flex-col gap-6 px-4 pt-6 pb-16 md:px-8 lg:px-12 lg:pt-8">
       <Link
         to="/exchanges"
-        className="inline-flex h-9 w-fit items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
+        className="-ml-1 inline-flex h-8 w-fit items-center gap-1.5 rounded-md px-1 text-[13px] font-semibold text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        <IconArrowLeft size={18} />
+        <IconArrowLeft size={16} />
         До обмінів
       </Link>
 
@@ -101,7 +138,7 @@ export default function ExchangeDetailPage() {
       <DisputeResolution exchange={exchange} currentUserId={currentUser.id} />
 
       <div className="flex flex-wrap items-start gap-6">
-        <aside className="flex w-full flex-col gap-4 lg:sticky lg:top-6 lg:order-2 lg:w-auto lg:flex-[1_1_320px]">
+        <aside className="flex w-full flex-col gap-4 lg:sticky lg:top-24 lg:order-2 lg:w-auto lg:flex-[1_1_320px]">
           {isOwner && pendingExtension && !isDisputed && (
             <ExtensionDecisionCard
               key={pendingExtension.id}
@@ -146,8 +183,8 @@ export default function ExchangeDetailPage() {
             onSubmit={(payload) => actions.submitReview.mutateAsync(payload)}
           />
 
-          <div className="rounded-2xl border border-border bg-card p-5 md:p-6">
-            <h2 className="mb-5 text-lg font-extrabold">Хід обміну</h2>
+          <div className="surface p-5 md:p-6">
+            <h2 className="section-title mb-5">Хід обміну</h2>
             <ExchangeTimeline
               exchange={exchange}
               steps={steps}

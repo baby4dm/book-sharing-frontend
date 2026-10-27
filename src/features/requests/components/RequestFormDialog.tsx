@@ -20,6 +20,7 @@ import { useCreateRequest } from "@/features/requests/hooks/useCreateRequest";
 import { cn, pluralizeDays } from "@/lib/utils";
 import type { DeliveryMethod, ListingResponse } from "../../listings/types";
 import SmartImage from "@/components/ui/SmartImage";
+import RequiredMark from "@/components/ui/RequiredMark";
 
 const PRESET_DAYS = [7, 14, 21, 30] as const;
 const MIN_DAYS = 1;
@@ -100,7 +101,7 @@ export default function RequestFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         onClick={(e) => e.stopPropagation()}
-        className="flex max-h-[92dvh] flex-col gap-5 overflow-y-auto rounded-2xl p-6 sm:max-w-135 sm:p-7"
+        className="flex max-h-[92dvh] flex-col gap-5 overflow-y-auto p-6 sm:max-w-135 sm:p-7"
       >
         {showSuccess ? (
           <div className="flex flex-col items-center gap-4 py-6 text-center">
@@ -108,7 +109,7 @@ export default function RequestFormDialog({
               <IconCheck size={28} className="text-success" />
             </div>
             <div>
-              <p className="font-heading text-xl font-semibold">
+              <p className="text-lg font-bold">
                 Заявку надіслано!
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
@@ -117,7 +118,7 @@ export default function RequestFormDialog({
               </p>
             </div>
             <Button
-              className="h-11 w-full cursor-pointer rounded-[10px] font-bold"
+              className="h-10 w-full cursor-pointer rounded-lg font-semibold"
               onClick={() => {
                 setShowSuccess(false);
                 onOpenChange(false);
@@ -129,7 +130,7 @@ export default function RequestFormDialog({
         ) : (
           <>
             <DialogHeader>
-              <DialogTitle className="font-heading text-2xl font-semibold">
+              <DialogTitle className="text-xl font-bold">
                 Подати заявку
               </DialogTitle>
             </DialogHeader>
@@ -157,7 +158,7 @@ export default function RequestFormDialog({
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate font-heading text-lg font-semibold">
+                <p className="book-title truncate text-lg">
                   {listing.bookTitle}
                 </p>
                 {listing.bookAuthor && (
@@ -175,7 +176,7 @@ export default function RequestFormDialog({
             >
               <fieldset className="flex flex-col gap-2.5">
                 <legend className="mb-2.5 text-sm font-semibold">
-                  Скільки днів вам потрібно на читання?
+                  Скільки днів вам потрібно на читання? <RequiredMark />
                 </legend>
                 <div className="flex flex-wrap gap-2">
                   {PRESET_DAYS.map((value) => {
@@ -187,10 +188,10 @@ export default function RequestFormDialog({
                         aria-pressed={active}
                         onClick={() => pickPreset(value)}
                         className={cn(
-                          "h-11 cursor-pointer rounded-[10px] border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                          "h-10 cursor-pointer rounded-lg border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                           active
                             ? "border-primary bg-accent font-bold text-accent-foreground"
-                            : "border-input bg-card text-foreground/80 hover:bg-muted",
+                            : "border-input bg-card text-muted-foreground hover:bg-muted",
                         )}
                       >
                         {pluralizeDays(value)}
@@ -206,10 +207,10 @@ export default function RequestFormDialog({
                       setValidationError(null);
                     }}
                     className={cn(
-                      "h-11 cursor-pointer rounded-[10px] border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                      "h-10 cursor-pointer rounded-lg border px-4 text-sm font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                       customMode
                         ? "border-primary bg-accent font-bold text-accent-foreground"
-                        : "border-input bg-card text-foreground/80 hover:bg-muted",
+                        : "border-input bg-card text-muted-foreground hover:bg-muted",
                     )}
                   >
                     Інше
@@ -234,7 +235,7 @@ export default function RequestFormDialog({
                         setCustomValue(e.target.value);
                         setValidationError(null);
                       }}
-                      className="h-11 w-28 rounded-[10px] border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20 aria-invalid:border-destructive"
+                      className="h-11 w-28 rounded-xl border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20 aria-invalid:border-destructive"
                     />
                     <span className="text-sm text-muted-foreground">
                       днів (від {MIN_DAYS} до {MAX_DAYS})
@@ -259,7 +260,7 @@ export default function RequestFormDialog({
 
               <fieldset className="flex flex-col gap-2">
                 <legend className="mb-2 text-sm font-semibold">
-                  Спосіб отримання
+                  Спосіб отримання <RequiredMark />
                 </legend>
                 <div className="flex gap-2">
                   {listing.deliveryMethods.includes("PICKUP") && (
@@ -271,10 +272,10 @@ export default function RequestFormDialog({
                         setValidationError(null);
                       }}
                       className={cn(
-                        "flex h-13 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] border text-[15px] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                        "flex h-13 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border text-[15px] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                         deliveryMethod === "PICKUP"
                           ? "border-[1.5px] border-primary bg-accent font-bold text-accent-foreground"
-                          : "border-input bg-card font-semibold text-foreground/75 hover:bg-muted",
+                          : "border-input bg-card font-semibold text-muted-foreground hover:bg-muted",
                       )}
                     >
                       <IconHeartHandshake size={20} />
@@ -290,10 +291,10 @@ export default function RequestFormDialog({
                         setValidationError(null);
                       }}
                       className={cn(
-                        "flex h-13 flex-1 cursor-pointer items-center justify-center gap-2 rounded-[10px] border text-[15px] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                        "flex h-13 flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border text-[15px] transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                         deliveryMethod === "MAIL"
                           ? "border-[1.5px] border-primary bg-accent font-bold text-accent-foreground"
-                          : "border-input bg-card font-semibold text-foreground/75 hover:bg-muted",
+                          : "border-input bg-card font-semibold text-muted-foreground hover:bg-muted",
                       )}
                     >
                       <IconBox size={20} />
@@ -320,7 +321,7 @@ export default function RequestFormDialog({
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Напишіть кілька слів про себе чи чому хочете прочитати цю книгу"
-                  className="resize-none rounded-[10px] border-input px-3.5 py-3 text-[15px] leading-normal"
+                  className="resize-none rounded-xl border-input px-3.5 py-3 text-[15px] leading-normal"
                 />
               </div>
 

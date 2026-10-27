@@ -20,16 +20,17 @@ export default function ProfileView({
   const isOwn = Boolean(onEditing);
 
   return (
-    <aside className="flex w-full flex-col items-center gap-4 rounded-[20px] border border-border bg-card p-6 text-center md:p-7 lg:sticky lg:top-24 lg:w-85 lg:shrink-0">
+    <aside className="flex w-full flex-col items-center gap-4 surface p-6 text-center md:p-7 lg:sticky lg:top-24 lg:w-85 lg:shrink-0">
       <UserAvatar
         name={userData.name}
         src={userData.avatarUrl}
+        seed={userData.id}
         className="h-24 w-24 md:h-28 md:w-28"
         fallbackClassName="text-4xl md:text-5xl"
       />
 
       <div className="flex w-full min-w-0 flex-col gap-1">
-        <h1 className="font-heading text-2xl font-semibold wrap-break-word md:text-[30px] md:leading-tight">
+        <h1 className="page-title wrap-break-word">
           {userData.name}
         </h1>
         {userData.email && (
@@ -39,9 +40,9 @@ export default function ProfileView({
         )}
       </div>
 
-      <div className="flex flex-col gap-1.5 text-sm text-foreground/80">
+      <div className="flex flex-col gap-1.5 text-sm text-muted-foreground">
         <p className="flex items-center justify-center gap-1.5">
-          <IconMapPin className="size-4 shrink-0 text-primary" />
+          <IconMapPin className="size-4 shrink-0 text-muted-foreground" />
           {location ?? (
             <span className="text-muted-foreground">Місто не вказано</span>
           )}
@@ -52,7 +53,7 @@ export default function ProfileView({
       </div>
 
       {userData.bio?.trim() ? (
-        <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground/80">
+        <p className="text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-muted-foreground">
           {userData.bio}
         </p>
       ) : (
@@ -66,7 +67,7 @@ export default function ProfileView({
       {onEditing && (
         <Button
           variant="outline"
-          className="h-11 cursor-pointer gap-2 rounded-[10px] px-5 font-bold"
+          className="h-10 cursor-pointer gap-2 px-5"
           onClick={() => onEditing(true)}
         >
           <IconPencil className="size-4" />

@@ -13,7 +13,7 @@ import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUs
 import { Input } from "@/components/ui/input";
 import SingleSelectList from "@/components/ui/SingleSelectList";
 import { REGIONS } from "@/lib/constants";
-import { ArrowLeft } from "lucide-react";
+import StepHeader from "./StepHeader";
 import { useResolveBook } from "../hooks/useResolveBook";
 import PhotoUploadGrid from "../../../components/layout/PhotoUploadGrid";
 import { useCreateListing } from "../hooks/useCreateListing";
@@ -159,39 +159,22 @@ export default function DetailsStep({
   }
 
   return (
-    <div className="w-full flex flex-col gap-5 max-w-160 md:max-w-200 lg:max-w-220">
-      <div className="flex items-center justify-between">
-        <Button
-          variant="ghost"
-          className="px-2 cursor-pointer font-bold text-sm text-muted-foreground"
-          onClick={onCancel}
-        >
-          <ArrowLeft />
-          <span>Назад до пошуку</span>
-        </Button>
-        <p className="font-bold text-sm">Крок 2 з 2</p>
-      </div>
-      <div className="w-full flex gap-1.5">
-        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
-        <span className="bg-accent-vivid block w-full h-1.5 rounded-md flex-1"></span>
-      </div>
-      <h1 className="text-4xl font-medium">Деталі оголошення</h1>
-      <div
-        className="w-full flex gap-4 items-center bg-card
-      rounded-xl border border-border p-5 shadow-md"
-      >
-        <div className="relative h-30 w-24 rounded-md overflow-hidden">
+    <div className="flex w-full max-w-180 flex-col gap-6">
+      <StepHeader step={2} backLabel="Назад до пошуку" onBack={onCancel} />
+      <h1 className="page-title">Деталі оголошення</h1>
+      <div className="surface flex w-full items-center gap-4 p-4">
+        <div className="relative aspect-2/3 w-16 shrink-0 overflow-hidden rounded-md bg-muted shadow-[inset_0_0_0_1px_var(--border)]">
           {!imageIsLoaded && !imageIsFailed && (
-            <div className="absolute inset-0 bg-border shimmer rounded-md" />
+            <div className="absolute inset-0 animate-pulse bg-muted" />
           )}
 
           {imageIsFailed || !book.coverUrl ? (
-            <div className="absolute inset-0 flex items-center justify-center bg-secondary rounded-md">
+            <div className="absolute inset-0 flex items-center justify-center bg-muted">
               <IconBook size={32} className="text-muted-foreground" />
             </div>
           ) : (
             <SmartImage
-              className={`w-24 h-full transition-opacity duration-300 ${
+              className={`size-full object-cover transition-opacity duration-300 ${
                 imageIsLoaded ? "opacity-100" : "opacity-0"
               }`}
               src={book.coverUrl}
@@ -202,20 +185,22 @@ export default function DetailsStep({
           )}
         </div>
         <div className="w-full flex flex-col items-start text-start gap-1">
-          <h2 className="text-xl font-bold">{book.title}</h2>
+          <h2 className="book-title text-lg leading-snug">{book.title}</h2>
           <p className="text-sm text-muted-foreground">{book.author}</p>
         </div>
       </div>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <PhotoUploadGrid
-          className="rounded-xl border border-border bg-card p-5"
+          className="surface p-5"
           photos={photos}
           onChange={setPhotos}
           label="Фото примірника"
           description="Необов'язково, до 4 фото. З фото заявок приходить більше."
         />
-        <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
-          <Label className="text-base font-bold">Стан примірника</Label>
+        <div className="flex flex-col gap-1.5 surface p-5">
+          <Label className="section-title" required>
+            Стан примірника
+          </Label>
           <Textarea
             placeholder="Легкі потертості на обкладинці, всередині чисто"
             value={conditionDescription}
@@ -223,9 +208,11 @@ export default function DetailsStep({
           />
           <p className="text-sm self-end">{conditionDescription.length}/2000</p>
         </div>
-        <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
+        <div className="flex flex-col gap-1.5 surface p-5">
           <div className="flex flex-col">
-            <Label className="text-base font-bold">Як можна отримати</Label>
+            <Label className="section-title" required>
+              Як можна отримати
+            </Label>
             <p className="text-sm text-muted-foreground">Можна обрати обидва</p>
           </div>
 
@@ -235,7 +222,7 @@ export default function DetailsStep({
               type="button"
               className={`flex-1 h-9 text-sm font-medium cursor-pointer bg-card ${
                 deliveryMethods.includes("PICKUP")
-                  ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
+                  ? "border-ring/40 bg-accent font-semibold text-accent-foreground hover:border-ring/50 hover:bg-accent"
                   : "text-muted-foreground"
               }`}
               onClick={() => toggleDeliveryMethod("PICKUP")}
@@ -247,7 +234,7 @@ export default function DetailsStep({
               type="button"
               className={`flex-1 h-9 text-sm font-medium cursor-pointer bg-card ${
                 deliveryMethods.includes("MAIL")
-                  ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
+                  ? "border-ring/40 bg-accent font-semibold text-accent-foreground hover:border-ring/50 hover:bg-accent"
                   : "text-muted-foreground"
               }`}
               onClick={() => toggleDeliveryMethod("MAIL")}
@@ -256,7 +243,7 @@ export default function DetailsStep({
             </Button>
           </div>
         </div>
-        <div className="flex flex-col gap-3.5 rounded-xl border border-border bg-card p-5">
+        <div className="flex flex-col gap-3.5 surface p-5">
           <h2 className="text-[17px] font-bold">Де знаходиться книга</h2>
 
           <label
@@ -304,7 +291,7 @@ export default function DetailsStep({
                 Вкажіть його в{" "}
                 <Link
                   to="/profile"
-                  className="font-semibold text-accent-vivid hover:underline"
+                  className="font-semibold text-primary hover:underline"
                 >
                   профілі
                 </Link>{" "}
@@ -315,18 +302,18 @@ export default function DetailsStep({
         </div>
         {!useProfileLocation && (
           <div className="flex flex-col gap-3">
-            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
-              <Label className="text-base font-bold">
+            <div className="flex flex-col gap-1.5 surface p-5">
+              <Label className="section-title" required>
                 Тип населеного пункту
               </Label>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   type="button"
-                  className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                  className={`flex-1 h-9 text-sm font-medium ${
                     settlementType === "VILLAGE"
-                      ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground bg-card"
+                      ? "border-ring/40 bg-accent font-semibold text-accent-foreground hover:border-ring/50 hover:bg-accent"
+                      : "text-muted-foreground"
                   }`}
                   onClick={() => setSettlementType("VILLAGE")}
                 >
@@ -336,10 +323,10 @@ export default function DetailsStep({
                 <Button
                   variant="outline"
                   type="button"
-                  className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                  className={`flex-1 h-9 text-sm font-medium ${
                     settlementType === "SETTLEMENT"
-                      ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground bg-card"
+                      ? "border-ring/40 bg-accent font-semibold text-accent-foreground hover:border-ring/50 hover:bg-accent"
+                      : "text-muted-foreground"
                   }`}
                   onClick={() => setSettlementType("SETTLEMENT")}
                 >
@@ -348,10 +335,10 @@ export default function DetailsStep({
                 <Button
                   variant="outline"
                   type="button"
-                  className={`flex-1 h-9 text-sm font-medium cursor-pointer ${
+                  className={`flex-1 h-9 text-sm font-medium ${
                     settlementType === "CITY"
-                      ? "bg-accent-vivid text-white border-accent-vivid hover:bg-accent-vivid hover:text-white"
-                      : "text-muted-foreground bg-card"
+                      ? "border-ring/40 bg-accent font-semibold text-accent-foreground hover:border-ring/50 hover:bg-accent"
+                      : "text-muted-foreground"
                   }`}
                   onClick={() => setSettlementType("CITY")}
                 >
@@ -359,8 +346,10 @@ export default function DetailsStep({
                 </Button>
               </div>
             </div>
-            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
-              <Label className="text-base font-bold">Область</Label>
+            <div className="flex flex-col gap-1.5 surface p-5">
+              <Label className="section-title" required>
+                Область
+              </Label>
               <SingleSelectList
                 options={REGIONS}
                 placeholder="Вибрати область"
@@ -368,8 +357,8 @@ export default function DetailsStep({
                 onChange={setRegion}
               />
             </div>
-            <div className="flex flex-col gap-1.5 rounded-xl border border-border bg-card p-5">
-              <Label className="text-base font-bold" htmlFor="settlement">
+            <div className="flex flex-col gap-1.5 surface p-5">
+              <Label className="section-title" htmlFor="settlement" required>
                 Населений пункт
               </Label>
               <Input
@@ -383,14 +372,18 @@ export default function DetailsStep({
           </div>
         )}
         {(validationError || resolveBookError || createListingError) && (
-          <p className="text-sm md:text-base text-destructive min-h-4">
+          <p
+            role="alert"
+            className="rounded-lg border border-destructive/25 bg-tint-red px-3.5 py-2.5 text-sm text-tint-red-ink"
+          >
             {validationError ??
               "Не вдалось опублікувати оголошення. Спробуйте ще раз."}
           </p>
         )}
         <Button
           type="submit"
-          className="cursor-pointer mt-2 font-bold py-5"
+          size="lg"
+          className="mt-2 w-full sm:w-auto sm:self-end sm:px-6"
           disabled={isResolving || isCreating}
         >
           {isResolving && "Надсилання даних"}

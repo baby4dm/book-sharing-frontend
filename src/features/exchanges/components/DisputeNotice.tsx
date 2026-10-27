@@ -22,7 +22,7 @@ export default function DisputeNotice({
   return (
     <section
       role="alert"
-      className="overflow-hidden rounded-2xl border border-destructive/30 bg-card"
+      className="overflow-hidden rounded-xl border border-destructive/30 bg-card"
     >
       <div className="flex gap-3 bg-destructive/10 px-5 py-4">
         <IconAlertTriangle
@@ -30,10 +30,10 @@ export default function DisputeNotice({
           className="mt-0.5 shrink-0 text-destructive"
         />
         <div className="flex flex-col gap-0.5">
-          <p className="text-[17px] font-extrabold text-destructive">
+          <p className="text-base font-bold text-destructive">
             Спір на розгляді модератора
           </p>
-          <p className="text-sm text-foreground/80">
+          <p className="text-sm text-muted-foreground">
             {isOwner
               ? "Ви відкрили спір"
               : `${exchange.owner.name} відкрив(ла) спір`}
@@ -46,7 +46,7 @@ export default function DisputeNotice({
       <div className="flex flex-col gap-5 p-5">
         {exchange.disputeReason && (
           <div className="flex flex-col gap-1.5">
-            <span className="text-xs font-extrabold uppercase tracking-wide text-muted-foreground">
+            <span className="field-label">
               {isOwner ? "Ваша причина" : "Причина від власника"}
             </span>
             <p className="whitespace-pre-wrap text-[15px] leading-relaxed">

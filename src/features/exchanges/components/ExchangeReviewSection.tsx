@@ -1,3 +1,4 @@
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { useState } from "react";
 import { IconCheck, IconStarFilled } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import type {
   ExchangeReviewResponse,
 } from "../types";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import SmartImage from "@/components/ui/SmartImage";
+import RequiredMark from "@/components/ui/RequiredMark";
 
 const RATING_LABELS = [
   "",
@@ -22,7 +23,7 @@ const RATING_LABELS = [
   "Чудово",
 ];
 const MAX_COMMENT_LENGTH = 1000;
-const STAR_COLOR = "text-[#D99A1E]";
+const STAR_COLOR = "text-star";
 
 interface ExchangeReviewSectionProps {
   exchange: ExchangeResponse;
@@ -44,7 +45,7 @@ export default function ExchangeReviewSection({
   const reviewAboutMe = reviews.find((r) => r.authorId === partner.id) ?? null;
 
   return (
-    <section className="flex flex-col gap-5 rounded-2xl border border-border bg-card p-5 md:p-6">
+    <section className="flex flex-col gap-5 surface p-5 md:p-6">
       <div className="flex items-center gap-3 rounded-xl bg-accent px-4 py-3 text-accent-foreground">
         <IconCheck size={20} stroke={2.4} className="shrink-0" />
         <p className="text-[15px]">
@@ -64,7 +65,7 @@ export default function ExchangeReviewSection({
 
       {(myReview || reviewAboutMe) && (
         <div className="flex flex-col gap-4">
-          <h2 className="text-base font-extrabold">Відгуки</h2>
+          <h2 className="text-base font-bold">Відгуки</h2>
           {myReview && (
             <ReviewItem review={myReview} title={`Ви про ${partner.name}`} />
           )}
@@ -117,7 +118,7 @@ function ReviewForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
       <div>
-        <h2 className="font-heading text-xl font-semibold">
+        <h2 className="text-lg font-bold">
           Як пройшов обмін?
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -127,7 +128,7 @@ function ReviewForm({
       </div>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-2 text-sm font-semibold">Оцінка</legend>
+        <legend className="mb-2 text-sm font-semibold">Оцінка <RequiredMark /></legend>
         <div
           className="flex items-center gap-1"
           onMouseLeave={() => setHovered(0)}
@@ -190,7 +191,7 @@ function ReviewForm({
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="h-12 w-full cursor-pointer rounded-lg font-bold sm:w-fit sm:px-8"
+        className="h-10 w-full rounded-lg font-semibold sm:w-fit sm:px-8"
       >
         {isSubmitting ? "Надсилання..." : "Надіслати відгук"}
       </Button>
@@ -205,23 +206,11 @@ function ReviewItem({
   review: ExchangeReviewResponse;
   title: string;
 }) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
 
   return (
     <div className="flex flex-col gap-2 border-t border-border pt-4 first:border-t-0 first:pt-0">
       <div className="flex items-center gap-2.5">
-        <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-xs font-bold text-accent-foreground">
-          {review.authorAvatarUrl && !avatarFailed ? (
-            <SmartImage
-              src={review.authorAvatarUrl}
-              alt=""
-              className="size-full object-cover"
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            review.authorName.substring(0, 1).toUpperCase()
-          )}
-        </div>
+        <UserAvatar name={review.authorName} src={review.authorAvatarUrl} seed={review.authorId} className="size-8" fallbackClassName="text-xs" />
         <span className="flex-1 text-[15px] font-semibold">{title}</span>
         <span role="img" aria-label={`${review.rating} з 5`} className="flex">
           {[1, 2, 3, 4, 5].map((n) => (

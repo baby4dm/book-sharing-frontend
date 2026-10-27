@@ -13,7 +13,7 @@ export default function OpenExchangeChatButton({
     <Link
       to={`/chat?exchange=${exchangeId}`}
       className={cn(
-        "inline-flex h-10 items-center gap-2 rounded-[10px] border border-input bg-card px-3.5 text-sm font-semibold hover:bg-muted",
+        "inline-flex h-10 items-center gap-2 rounded-xl border border-input bg-card px-3.5 text-sm font-semibold hover:bg-muted",
         className,
       )}
     >

@@ -52,6 +52,7 @@ export default function WaybillForm({ shipment, onSubmit }: WaybillFormProps) {
         onChange={setPhotos}
         onBusyChange={setIsUploading}
         label="Фото накладної"
+        required
         maxPhotos={1}
         disabled={isSubmitting}
       />

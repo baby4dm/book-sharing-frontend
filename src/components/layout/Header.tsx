@@ -1,208 +1,163 @@
-import { IconBook, IconLogout2, IconMenu2, IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-
-import {
-  IconHome,
-  IconFileText,
-  IconArrowsExchange,
-  IconMessageCircle,
-} from "@tabler/icons-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { isNavItemActive, navItems } from "./navItems";
+import {
+  IconBooks,
+  IconLogout2,
+  IconPlus,
+  IconUser,
+} from "@tabler/icons-react";
+import { useState } from "react";
 import { Button } from "../ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useAuth } from "@/context/AuthContext";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import NotificationBell from "@/features/notifications/components/NotificationBell";
-import { useUnreadChatsCount } from "@/features/chats/hooks/useChats";
 import ChatNavBadge from "@/features/chats/components/ChatNavBadge";
-import SmartImage from "@/components/ui/SmartImage";
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
+import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
+import { springGlide } from "@/lib/motion";
 
-const navItems = [
-  { path: "/feed", label: "Спільнота", icon: IconHome, match: ["/feed"] },
-  { path: "/", label: "Каталог", icon: IconBook, match: ["/", "/listings"] },
-  {
-    path: "/requests",
-    label: "Заявки",
-    icon: IconFileText,
-    match: ["/requests"],
-  },
-  {
-    path: "/exchanges",
-    label: "Обміни",
-    icon: IconArrowsExchange,
-    match: ["/exchanges"],
-  },
-  { path: "/chat", label: "Чат", icon: IconMessageCircle, match: ["/chat"] },
-];
-
-function isNavItemActive(match: string[], pathname: string) {
-  return match.some((base) =>
-    base === "/"
-      ? pathname === "/"
-      : pathname === base || pathname.startsWith(base + "/"),
-  );
-}
-export default function Header() {
-  const [navIsOpen, setNavIsOpen] = useState(false);
-  const location = useLocation();
-  const { logout, isAuthenticated } = useAuth();
+function AccountMenu() {
+  const [open, setOpen] = useState(false);
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const { data: userProfile } = useCurrentUserProfile();
-  const { data: unreadChats = 0 } = useUnreadChatsCount();
-  const [avatarFailed, setAvatarFailed] = useState(false);
-  useEffect(() => {
-    document.body.style.overflow = navIsOpen ? "hidden" : "";
+  const { data: me } = useCurrentUserProfile();
 
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [navIsOpen]);
+  const item =
+    "flex h-9 w-full items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-foreground transition-colors duration-150 hover:bg-muted focus-visible:bg-muted outline-none";
 
   return (
-    <header className="h-15 shadow-md px-4 py-3 flex items-center w-full bg-popover lg:h-18 lg:px-6 xl:px-12">
-      <div className="flex items-center justify-between w-full">
-        <img
-          className="h-5 lg:h-6 dark:invert"
-          src="/logo.svg"
-          alt="Book share logo"
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        aria-label="Меню акаунта"
+        className="flex size-9 cursor-pointer items-center justify-center rounded-full outline-none transition-[scale,box-shadow] duration-150 ease-(--ease-out) hover:shadow-[0_0_0_3px_var(--muted)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95 aria-expanded:shadow-[0_0_0_3px_var(--muted)]"
+      >
+        <UserAvatar
+          name={me?.name ?? "?"}
+          src={me?.avatarUrl}
+          seed={me?.id}
+          className="size-8"
+          fallbackClassName="text-sm"
         />
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-64 gap-0.5 p-1.5">
+        {me && (
+          <div className="mb-1 flex items-center gap-3 border-b border-border px-2.5 pt-1.5 pb-3">
+            <UserAvatar
+              name={me.name}
+              src={me.avatarUrl}
+              seed={me.id}
+              className="size-9"
+              fallbackClassName="text-sm"
+            />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">{me.name}</p>
+              <p className="truncate text-xs text-muted-foreground">
+                {me.email}
+              </p>
+            </div>
+          </div>
+        )}
+        <Link to="/profile" onClick={() => setOpen(false)} className={item}>
+          <IconUser className="size-4.5 text-muted-foreground" stroke={1.75} />
+          Мій профіль
+        </Link>
+        <Link to="/?tab=my" onClick={() => setOpen(false)} className={item}>
+          <IconBooks className="size-4.5 text-muted-foreground" stroke={1.75} />
+          Мої оголошення
+        </Link>
+        <Link
+          to="/listings/create"
+          onClick={() => setOpen(false)}
+          className={item}
+        >
+          <IconPlus className="size-4.5 text-muted-foreground" stroke={1.75} />
+          Додати книгу
+        </Link>
+        <div className="my-1 h-px bg-border" role="separator" />
+        <button
+          type="button"
+          onClick={() => {
+            setOpen(false);
+            logout();
+            navigate("/");
+          }}
+          className={cn(item, "cursor-pointer text-destructive")}
+        >
+          <IconLogout2 className="size-4.5" stroke={1.75} />
+          Вийти
+        </button>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
-        <nav className="hidden w-full lg:flex gap-2 py-4 px-2 h-full ml-6">
+export default function Header() {
+  const { pathname } = useLocation();
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-card">
+      <div className="mx-auto flex h-14 w-full max-w-360 items-center gap-6 px-4 lg:h-16 lg:px-8">
+        <Link
+          to="/"
+          aria-label="bookshare — на головну"
+          className="shrink-0 rounded-md outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <img
+            className="h-5 lg:h-6 dark:invert"
+            src="/logo.svg"
+            alt="bookshare"
+          />
+        </Link>
+
+        <nav
+          aria-label="Головна навігація"
+          className="isolate hidden h-full flex-1 items-center gap-0.5 lg:flex"
+        >
           {navItems.map((item) => {
-            const isActive = isNavItemActive(item.match, location.pathname);
-
+            const active = isNavItemActive(item.match, pathname);
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`flex items-center gap-3 transition-all duration-150 py-1.5 px-5 lg:px-4 lg:gap-2 rounded-sm text-sm  ${
-                  isActive
-                    ? "bg-accent text-foreground font-semibold"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "relative flex h-8 items-center gap-2 rounded-md px-3 text-[13px] font-semibold transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+                  active
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                )}
               >
-                <item.icon
-                  className={`stroke-1 ${isActive ? "text-accent-vivid" : ""}`}
-                />
+                {/* Активний пункт: плашка переїжджає на пружині, а не перемикається */}
+                {active && (
+                  <motion.span
+                    layoutId="header-nav-active"
+                    transition={springGlide}
+                    className="absolute inset-0 -z-10 rounded-md bg-muted shadow-[inset_0_0_0_1px_var(--border)]"
+                  />
+                )}
+                <item.icon className="size-4" stroke={active ? 2 : 1.75} />
                 {item.label}
                 {item.path === "/chat" && <ChatNavBadge />}
               </Link>
             );
           })}
         </nav>
-        {navIsOpen && (
-          <nav className="lg:hidden w-full flex flex-col gap-2 fixed top-15 bottom-0 py-4 left-0 px-6 z-999 bg-popover overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
-            {navItems.map((item) => {
-              const isActive = isNavItemActive(item.match, location.pathname);
 
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  onClick={() => setNavIsOpen(false)}
-                  className={`flex items-center gap-3 transition-colors duration-150 py-1.5 px-5 rounded-sm text-sm ${
-                    isActive
-                      ? "bg-accent text-foreground font-semibold"
-                      : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                  }`}
-                >
-                  <item.icon
-                    className={`stroke-1 ${isActive ? "text-accent-vivid" : ""}`}
-                  />
-                  {item.label}
-                  {item.path === "/chat" && <ChatNavBadge />}
-                </Link>
-              );
-            })}
-            {isAuthenticated ? (
-              <Button
-                variant="ghost"
-                className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setNavIsOpen(false);
-                  logout();
-                  navigate("/");
-                }}
-              >
-                <IconLogout2 className="text-accent-vivid h-10 w-10" />
-                <span className="text-base">Вийти</span>
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                className="lg:hidden cursor-pointer text-muted-foreground self-end flex items-center mt-auto"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate("/login");
-                }}
-              >
-                Увійти
-              </Button>
-            )}
-          </nav>
-        )}
-        <div className="flex items-center gap-2 h-full lg:gap-3">
-          {isAuthenticated && <NotificationBell />}
-          {isAuthenticated && (
-            <div className="relative">
-              <Link
-                className="h-7 w-7 rounded-full bg-primary flex 
-              items-center justify-center lg:h-8 lg:w-8 cursor-pointer hover:scale-105"
-                to="/profile"
-              >
-                <div className="relative w-full h-full rounded-full overflow-hidden bg-primary flex items-center justify-center">
-                  {userProfile?.avatarUrl && !avatarFailed ? (
-                    <SmartImage
-                      src={userProfile.avatarUrl}
-                      alt={userProfile.name}
-                      className="w-full h-full object-cover"
-                      onError={() => setAvatarFailed(true)}
-                    />
-                  ) : (
-                    <p className="text-primary-foreground text-sm font-semibold">
-                      {userProfile?.name.substring(0, 1).toUpperCase()}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            </div>
-          )}
-          {isAuthenticated && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                logout();
-                navigate("/");
-              }}
-              className="hidden lg:flex h-full"
-            >
-              <IconLogout2 className="text-muted-foreground h-7 w-auto stroke-1 cursor-pointer hover:text-foreground hover:scale-110 transition-all" />
-            </button>
-          )}
-          {!isAuthenticated && (
-            <Button
-              variant="outline"
-              className="hidden lg:flex cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
+        <div className="ml-auto flex items-center gap-1 lg:gap-2">
+          {isAuthenticated ? (
+            <>
+              <NotificationBell />
+              <AccountMenu />
+            </>
+          ) : (
+            <Button size="sm" onClick={() => navigate("/login")}>
               Увійти
             </Button>
           )}
-          <button
-            onClick={() => setNavIsOpen((prev) => !prev)}
-            className="relative lg:hidden h-7 cursor-pointer"
-            aria-label={navIsOpen ? "Закрити меню" : "Відкрити меню"}
-          >
-            {!navIsOpen && (
-              <IconMenu2 className="text-muted-foreground h-7 w-auto" />
-            )}
-            {navIsOpen && (
-              <IconX className="text-muted-foreground h-7 w-auto" />
-            )}
-            {!navIsOpen && unreadChats > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 size-2.5 rounded-full bg-destructive ring-2 ring-popover" />
-            )}
-          </button>
         </div>
       </div>
     </header>

@@ -11,6 +11,7 @@ interface PhotoUploadGridProps {
   onChange: React.Dispatch<React.SetStateAction<string[]>>;
   onBusyChange?: (busy: boolean) => void;
   label: string;
+  required?: boolean;
   description?: string;
   disabled?: boolean;
   maxPhotos?: number;
@@ -22,6 +23,7 @@ export default function PhotoUploadGrid({
   onChange,
   onBusyChange,
   label,
+  required = false,
   description,
   disabled = false,
   maxPhotos = MAX_PHOTOS,
@@ -70,29 +72,31 @@ export default function PhotoUploadGrid({
   return (
     <div className={`flex flex-col gap-3 my-4 ${className}`}>
       <div>
-        <Label className="font-bold text-base">{label}</Label>
+        <Label className="text-[15px] font-bold" required={required}>
+          {label}
+        </Label>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
 
-      <div className="flex gap-4 flex-wrap w-full justify-center">
+      <div className="grid w-full grid-cols-2 gap-3 sm:grid-cols-4">
         {photos.map((url, index) => (
           <div
             key={url}
-            className="relative outline-2 outline-border rounded-md overflow-hidden h-50 w-full max-w-45 flex items-center justify-center"
+            className="relative flex aspect-3/4 w-full items-center justify-center overflow-hidden rounded-xl bg-muted"
           >
             <SmartImage
               src={url}
               alt={"Фото " + index}
-              className="h-full object-contain"
+              className="h-full w-full object-cover"
             />
             {!disabled && (
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
-                className="cursor-pointer absolute top-1 right-1 z-10 disabled:cursor-not-allowed 
-                disabled:opacity-50 disabled:hover:text-muted-foreground"
+                aria-label="Прибрати фото"
+                className="absolute top-1.5 right-1.5 z-10 flex size-8 cursor-pointer items-center justify-center rounded-full bg-black/55 text-white transition-transform duration-150 ease-out active:scale-[0.94] disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <IconX className="text-muted-foreground hover:text-accent-vivid" />
+                <IconX size={16} />
               </button>
             )}
           </div>
@@ -100,10 +104,10 @@ export default function PhotoUploadGrid({
         {Array.from({ length: uploadingCount }).map((_, index) => (
           <div
             key={`uploading-` + index}
-            className="relative outline-2 outline-border rounded-md overflow-hidden h-50 w-full max-w-45"
+            className="shimmer relative aspect-3/4 w-full overflow-hidden rounded-xl bg-muted"
           >
             <div className="absolute inset-0 flex items-center justify-center bg-background/6">
-              <div className="w-5 h-5 rounded-full border-2 border-border border-t-accent-vivid animate-spin"></div>
+              <div className="w-5 h-5 rounded-full border-2 border-border border-t-primary animate-spin"></div>
             </div>
           </div>
         ))}
@@ -113,10 +117,10 @@ export default function PhotoUploadGrid({
             type="button"
             disabled={disabled}
             onClick={() => fileInputRef.current?.click()}
-            className="bg-accent-vivid/10 cursor-pointer outline outline-accent-vivid rounded-md overflow-hidden h-50 w-full max-w-45 flex flex-col gap-2 items-center justify-center text-accent-vivid hover:text-foreground transition-all hover:scale-105"
+            className="flex aspect-3/4 w-full cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl border border-dashed border-input bg-card text-muted-foreground transition-[background-color,border-color,color,transform,translate,scale] duration-150 ease-out hover:border-primary/50 hover:bg-accent hover:text-accent-foreground active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <IconCamera size={25} className="stroke-2" />
-            <span className="text-xs font-extrabold">Додати</span>
+            <IconCamera size={22} stroke={1.6} />
+            <span className="text-xs font-semibold">Додати фото</span>
           </button>
         ))}
       </div>

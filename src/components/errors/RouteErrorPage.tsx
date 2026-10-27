@@ -21,7 +21,7 @@ export default function RouteErrorPage({
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      <header className="flex h-15 w-full items-center bg-popover px-4 shadow-md lg:h-18 lg:px-6 xl:px-12">
+      <header className="flex h-15 w-full items-center bg-popover px-4 border-b border-border lg:h-18 lg:px-6 xl:px-12">
         <Link to="/" aria-label="bookshare — на головну">
           <img
             className="h-5 lg:h-6 dark:invert"

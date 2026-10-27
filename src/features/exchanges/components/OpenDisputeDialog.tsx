@@ -82,13 +82,13 @@ export default function OpenDisputeDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[90dvh] flex-col gap-5 overflow-hidden rounded-2xl p-6 sm:max-w-xl sm:p-7">
+      <DialogContent className="flex max-h-[90dvh] flex-col gap-5 overflow-hidden p-6 sm:max-w-xl sm:p-7">
         <DialogHeader className="flex-row items-start gap-3.5 text-left">
           <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-destructive/10">
             <IconAlertTriangle size={22} className="text-destructive" />
           </div>
           <div className="flex flex-col gap-1">
-            <DialogTitle className="font-heading text-2xl font-semibold">
+            <DialogTitle className="text-xl font-bold">
               Відкрити спір
             </DialogTitle>
             <DialogDescription className="text-[15px] leading-relaxed">
@@ -100,21 +100,21 @@ export default function OpenDisputeDialog({
         <div className="-mx-1 flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto px-1">
           <ol className="flex flex-col gap-2 rounded-xl bg-background px-4 py-3.5 text-sm text-muted-foreground">
             <li className="flex gap-2.5">
-              <span className="font-extrabold text-foreground">1</span>
+              <span className="font-bold text-foreground">1</span>
               Обмін переходить у статус «Спір», повернення не підтверджується.
             </li>
             <li className="flex gap-2.5">
-              <span className="font-extrabold text-foreground">2</span>
+              <span className="font-bold text-foreground">2</span>
               {readerName} отримає сповіщення й побачить причину та фото.
             </li>
             <li className="flex gap-2.5">
-              <span className="font-extrabold text-foreground">3</span>
+              <span className="font-bold text-foreground">3</span>
               Модератор порівняє фото до і після та ухвалить рішення.
             </li>
           </ol>
 
           <div className="flex flex-col gap-2">
-            <Label htmlFor="dispute-reason" className="text-sm font-bold">
+            <Label htmlFor="dispute-reason" className="text-sm font-bold" required>
               Причина спору
             </Label>
             <Textarea
@@ -148,6 +148,7 @@ export default function OpenDisputeDialog({
             onChange={setPhotos}
             onBusyChange={setIsUploading}
             label="Фото-докази (від 1 до 4)"
+            required
             disabled={isSubmitting}
           />
 
@@ -164,14 +165,14 @@ export default function OpenDisputeDialog({
         <DialogFooter className="flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row">
           <Button
             variant="outline"
-            className="h-12 cursor-pointer rounded-lg px-5 font-semibold"
+            className="h-10 rounded-lg px-5 font-semibold"
             disabled={isSubmitting}
             onClick={() => handleOpenChange(false)}
           >
             Скасувати
           </Button>
           <Button
-            className="h-12 cursor-pointer rounded-lg bg-destructive px-6 font-bold text-white hover:bg-destructive/90"
+            className="h-10 rounded-lg bg-destructive px-6 font-semibold text-white hover:bg-destructive/90"
             disabled={!canSubmit}
             onClick={handleSubmit}
           >

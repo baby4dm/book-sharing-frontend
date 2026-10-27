@@ -1,3 +1,4 @@
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { IconSend } from "@tabler/icons-react";
@@ -42,21 +43,21 @@ export default function PostComments({
   return (
     <section
       aria-label="Коментарі"
-      className="flex flex-col gap-3.5 border-t border-border/70 bg-[#FBFAF7] px-4 py-4 sm:px-5"
+      className="flex flex-col gap-3.5 border-t border-border bg-background px-4 py-4 sm:px-5"
     >
       {isPending ? (
-        <div className="flex justify-center py-2">
-          <Spinner />
+        <div aria-busy="true" className="flex flex-col gap-3">
+          {[0, 1].map((i) => (
+            <div key={i} className="flex gap-2.5">
+              <Skeleton className="size-8 rounded-full" />
+              <Skeleton className="h-12 w-3/5 rounded-xl" />
+            </div>
+          ))}
         </div>
       ) : isError ? (
         <div className="flex items-center gap-3 text-sm text-muted-foreground">
           Не вдалося завантажити коментарі.
-          <Button
-            variant="outline"
-            size="sm"
-            className="cursor-pointer"
-            onClick={() => refetch()}
-          >
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
             Повторити
           </Button>
         </div>
@@ -66,7 +67,7 @@ export default function PostComments({
             <button
               type="button"
               onClick={() => setShowAll(true)}
-              className="h-8 cursor-pointer self-start text-sm font-bold text-primary hover:underline"
+              className="h-8 cursor-pointer self-start rounded-sm text-[13px] font-semibold text-primary hover:underline"
             >
               Показати попередні коментарі ({hiddenCount})
             </button>
@@ -89,7 +90,10 @@ export default function PostComments({
         <CommentForm postId={postId} currentUser={currentUser} />
       ) : isAuthenticated ? null : (
         <p className="text-sm text-muted-foreground">
-          <Link to="/login" className="font-bold text-primary hover:underline">
+          <Link
+            to="/login"
+            className="font-semibold text-primary hover:underline"
+          >
             Увійдіть
           </Link>
           , щоб коментувати.
@@ -109,14 +113,15 @@ function CommentItem({ comment }: { comment: CommentResponse }) {
       >
         <UserAvatar
           name={comment.authorName}
+          seed={comment.authorId}
           src={comment.authorAvatarUrl}
-          className="h-8.5 w-8.5"
-          fallbackClassName="font-sans text-[13px] font-extrabold"
+          className="size-8"
+          fallbackClassName="font-sans text-[13px] font-bold"
         />
       </UserLink>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <div className="self-start rounded-[4px_14px_14px_14px] bg-[#F1EFE9] px-3 py-2">
-          <p className="text-sm font-bold">
+        <div className="self-start rounded-[4px_12px_12px_12px] border border-border bg-card px-3 py-2">
+          <p className="text-[13px] font-semibold">
             <UserLink
               userId={comment.authorId}
               className="underline-offset-2 hover:underline"
@@ -124,7 +129,7 @@ function CommentItem({ comment }: { comment: CommentResponse }) {
               {comment.authorName}
             </UserLink>
           </p>
-          <p className="text-sm leading-normal wrap-break-word whitespace-pre-line text-foreground/90">
+          <p className="text-sm leading-normal wrap-break-word whitespace-pre-line text-foreground">
             {comment.content}
           </p>
         </div>
@@ -163,9 +168,10 @@ function CommentForm({
       <div className="flex items-center gap-2.5">
         <UserAvatar
           name={currentUser.name}
+          seed={currentUser.id}
           src={currentUser.avatarUrl}
-          className="h-8.5 w-8.5"
-          fallbackClassName="font-sans text-[13px] font-extrabold"
+          className="size-8"
+          fallbackClassName="font-sans text-[13px] font-bold"
         />
         <label htmlFor={inputId} className="sr-only">
           Ваш коментар
@@ -178,23 +184,19 @@ function CommentForm({
           onChange={(e) => setContent(e.target.value)}
           placeholder="Написати коментар…"
           autoComplete="off"
-          className="h-10.5 min-w-0 flex-1 rounded-full border border-border bg-card px-4 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+          className="h-9 min-w-0 flex-1 rounded-lg border border-input bg-card px-3 text-sm shadow-xs transition-[border-color,box-shadow] duration-150 outline-none placeholder:text-muted-foreground hover:border-border-strong focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/15"
         />
         <button
           type="submit"
           aria-label="Надіслати коментар"
           disabled={!trimmed || isPending}
-          className="flex size-10.5 shrink-0 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[var(--highlight-fill),var(--shadow-xs)] transition-[background-color,scale,opacity] duration-150 ease-out outline-none hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:active:scale-100"
         >
-          {isPending ? (
-            <Spinner size={16} />
-          ) : (
-            <IconSend className="size-4.5" />
-          )}
+          {isPending ? <Spinner size={16} /> : <IconSend className="size-4" />}
         </button>
       </div>
       {isError && (
-        <p role="alert" className="pl-11 text-sm text-destructive">
+        <p role="alert" className="pl-10.5 text-[13px] text-destructive">
           {getErrorMessage(error, "Не вдалося надіслати коментар.")}
         </p>
       )}

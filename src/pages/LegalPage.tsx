@@ -88,7 +88,7 @@ export default function LegalPage({ doc }: { doc: keyof typeof DOCS }) {
   return (
     <article className="mx-auto flex w-full max-w-190 flex-col gap-6 px-4 pt-6 pb-16 md:px-6 md:pt-10">
       <header className="flex flex-col gap-2">
-        <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
+        <h1 className="page-title">
           {content.title}
         </h1>
         <p className="text-sm text-muted-foreground">
@@ -118,16 +118,16 @@ export default function LegalPage({ doc }: { doc: keyof typeof DOCS }) {
         </p>
       </header>
 
-      <div className="flex flex-col gap-6 rounded-2xl border border-border bg-card p-5 md:p-8">
+      <div className="flex flex-col gap-6 surface p-5 md:p-8">
         {content.sections.map((section) => (
           <section key={section.heading} className="flex flex-col gap-2.5">
             <h2 className="text-lg font-bold">{section.heading}</h2>
             {section.body.length === 1 ? (
-              <p className="text-[15px] leading-relaxed text-foreground/85">
+              <p className="text-[15px] leading-relaxed text-foreground">
                 {section.body[0]}
               </p>
             ) : (
-              <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-relaxed text-foreground/85">
+              <ul className="flex list-disc flex-col gap-1.5 pl-5 text-[15px] leading-relaxed text-foreground">
                 {section.body.map((line) => (
                   <li key={line}>{line}</li>
                 ))}

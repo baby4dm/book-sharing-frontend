@@ -19,24 +19,22 @@ export default function RequestsPage() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-236 justify-center px-4 pb-10 pt-6 md:px-8">
+    <section className="mx-auto flex w-full max-w-236 justify-center px-4 pt-6 pb-12 md:px-8 lg:pt-8">
       <Tabs
         value={tab}
         onValueChange={(value) => changeTab(value as RequestsTab)}
-        className="flex w-full flex-col gap-4 lg:gap-8"
+        className="flex w-full flex-col gap-5 lg:gap-6"
       >
         <div className="flex w-full flex-wrap items-center justify-between gap-4">
-          <h1 className="font-heading text-3xl font-semibold md:text-4xl">
-            Заявки
-          </h1>
-          <TabsList className="w-full bg-muted p-1.5 group-data-horizontal/tabs:h-12 sm:max-w-80">
-            <TabsTrigger className="cursor-pointer gap-2" value="received">
+          <h1 className="page-title">Заявки</h1>
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger className="gap-2 px-4" value="received">
               Отримані
               {tab === "received" && receivedCount !== undefined && (
                 <CountBadge value={receivedCount} />
               )}
             </TabsTrigger>
-            <TabsTrigger className="cursor-pointer gap-2" value="sent">
+            <TabsTrigger className="gap-2 px-4" value="sent">
               Надіслані
               {tab === "sent" && sentCount !== undefined && (
                 <CountBadge value={sentCount} />
@@ -59,7 +57,7 @@ export default function RequestsPage() {
 
 function CountBadge({ value }: { value: number }) {
   return (
-    <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-xs font-bold text-primary-foreground">
+    <span className="tabular flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground">
       {value}
     </span>
   );

@@ -43,7 +43,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
   return (
     <article
       className={cn(
-        "flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row md:gap-5 md:p-5",
+        "flex w-full max-w-220 flex-col gap-4 surface p-4 sm:flex-row md:gap-5 md:p-5",
         isCancelled ? "bg-card/60" : "bg-card",
       )}
     >
@@ -59,7 +59,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
             <Link
               to={`/listings/${request.listingId}`}
               className={cn(
-                "font-heading text-lg font-semibold leading-tight hover:underline md:text-xl",
+                "book-title text-lg leading-tight hover:underline md:text-xl",
                 isCancelled ? "text-muted-foreground" : "text-foreground",
               )}
             >
@@ -71,7 +71,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
                   Власник ·{" "}
                   <UserLink
                     userId={listing.ownerId}
-                    className="font-semibold text-foreground/80 underline-offset-2 hover:underline"
+                    className="font-semibold text-muted-foreground underline-offset-2 hover:underline"
                   >
                     {listing.ownerName}
                   </UserLink>
@@ -96,11 +96,11 @@ export default function SentRequestCard({ request }: RequestCardProps) {
         {!isCancelled && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <IconClock size={15} className="text-accent-vivid" />
+              <IconClock size={15} className="text-primary" />
               {pluralizeDays(request.readingDays)} на читання
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <DeliveryIcon size={15} className="text-accent-vivid" />
+              <DeliveryIcon size={15} className="text-primary" />
               {DELIVERY_METHODS[request.preferredDeliveryMethod]}
             </span>
 
@@ -109,7 +109,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
                 variant="outline"
                 onClick={() => cancel(request.id)}
                 disabled={isPending}
-                className="h-11 w-full cursor-pointer rounded-lg px-4 font-semibold sm:ml-auto sm:h-10 sm:w-auto"
+                className="w-full sm:ml-auto sm:w-auto"
               >
                 {isPending ? "Скасування..." : "Скасувати заявку"}
               </Button>
@@ -119,10 +119,10 @@ export default function SentRequestCard({ request }: RequestCardProps) {
 
         {request.status === "REJECTED" && request.rejectComment?.trim() && (
           <div className="flex flex-col gap-1 rounded-lg bg-destructive/5 px-3.5 py-3">
-            <span className="text-xs font-bold uppercase tracking-wide text-destructive">
+            <span className="text-[13px] font-semibold text-destructive">
               Причина
             </span>
-            <p className="text-sm leading-relaxed text-foreground/80">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {request.rejectComment}
             </p>
           </div>
@@ -135,7 +135,7 @@ export default function SentRequestCard({ request }: RequestCardProps) {
                 ? `/exchanges/${request.exchangeId}`
                 : "/exchanges"
             }
-            className="inline-flex h-10 w-fit items-center gap-1.5 text-sm font-bold text-accent-vivid hover:underline"
+            className="inline-flex h-8 w-fit items-center gap-1.5 rounded-sm text-sm font-semibold text-primary hover:underline"
           >
             Перейти до обміну
             <IconArrowRight size={16} />

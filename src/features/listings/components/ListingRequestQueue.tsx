@@ -34,14 +34,14 @@ export default function ListingRequestQueue({
   return (
     <section
       aria-labelledby="queue-title"
-      className="flex w-full flex-col gap-4 rounded-xl bg-card p-5 shadow-sm"
+      className="flex w-full flex-col gap-4 surface p-5"
     >
       <div className="flex items-center justify-between gap-3">
         <h2
           id="queue-title"
           className="flex items-center gap-2 text-base font-bold lg:text-lg"
         >
-          <IconUsers className="size-5 text-accent-vivid" />
+          <IconUsers className="size-5 text-primary" />
           Заявки на книгу
           {items.length > 0 && (
             <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-bold text-muted-foreground">
@@ -52,7 +52,7 @@ export default function ListingRequestQueue({
         {isOwner && pendingCount > 0 && (
           <Link
             to="/requests"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-accent-vivid hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline"
           >
             Розглянути
             <IconArrowRight className="size-4" />
@@ -63,7 +63,7 @@ export default function ListingRequestQueue({
       {isLoading ? (
         <div className="flex flex-col gap-3" aria-hidden="true">
           {[0, 1].map((i) => (
-            <div key={i} className="flex animate-pulse items-center gap-3">
+            <div key={i} className="flex shimmer items-center gap-3">
               <div className="size-10 rounded-full bg-muted" />
               <div className="flex flex-1 flex-col gap-2">
                 <div className="h-3.5 w-40 rounded bg-muted" />
@@ -103,7 +103,7 @@ export default function ListingRequestQueue({
                 )}
               >
                 <span
-                  className="w-5 shrink-0 pt-2.5 text-center text-sm font-extrabold text-muted-foreground"
+                  className="w-5 shrink-0 pt-2.5 text-center text-sm font-bold text-muted-foreground"
                   aria-label={
                     queuePosition ? `${queuePosition}-й у черзі` : undefined
                   }
@@ -117,9 +117,10 @@ export default function ListingRequestQueue({
                 >
                   <UserAvatar
                     name={request.requesterName}
+          seed={request.requesterId}
                     src={request.requesterAvatarUrl}
                     className="size-10"
-                    fallbackClassName="font-sans text-sm font-extrabold"
+                    fallbackClassName="font-sans text-sm font-bold"
                   />
                 </UserLink>
                 <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -132,14 +133,14 @@ export default function ListingRequestQueue({
                         {request.requesterName}
                       </UserLink>
                       {isMine && (
-                        <span className="font-semibold text-accent-vivid">
+                        <span className="font-semibold text-primary">
                           {" "}
                           · ви
                         </span>
                       )}
                     </span>
                     <span className="flex items-center gap-0.5 text-xs text-muted-foreground">
-                      <IconStarFilled className="size-3.5 text-[#D99A1E]" />
+                      <IconStarFilled className="size-3.5 text-star" />
                       {Number(request.requesterRatingAvg).toFixed(1)}
                     </span>
                     <span
@@ -159,7 +160,7 @@ export default function ListingRequestQueue({
                     {formatRelativeTime(request.createdAt)}
                   </p>
                   {isOwner && request.message?.trim() && (
-                    <p className="text-sm leading-relaxed text-foreground/80 italic">
+                    <p className="text-sm leading-relaxed text-muted-foreground italic">
                       «{request.message}»
                     </p>
                   )}

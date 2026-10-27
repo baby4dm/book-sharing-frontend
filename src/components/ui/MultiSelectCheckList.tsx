@@ -1,3 +1,6 @@
+import { useDropUp } from "@/lib/useDropUp";
+import { dropdownMotion } from "@/lib/motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useId, useRef, useState } from "react";
 import {
   IconCheck,
@@ -12,6 +15,7 @@ interface MultiSelectCheckListProps {
   selected: string[];
   onChange: (selected: string[]) => void;
   placeholder: string;
+  inline?: boolean;
 }
 
 export default function MultiSelectCheckList({
@@ -19,10 +23,24 @@ export default function MultiSelectCheckList({
   selected,
   onChange,
   placeholder,
+  inline = false,
 }: MultiSelectCheckListProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const rootRef = useRef<HTMLDivElement>(null);
+  const dropUp = useDropUp(rootRef, isOpen && !inline);
+  useEffect(() => {
+    if (!inline || !isOpen) return;
+    const t = setTimeout(
+      () =>
+        rootRef.current?.scrollIntoView({
+          block: "nearest",
+          behavior: "smooth",
+        }),
+      180,
+    );
+    return () => clearTimeout(t);
+  }, [inline, isOpen]);
   const searchRef = useRef<HTMLInputElement>(null);
   const listId = useId();
 
@@ -50,7 +68,6 @@ export default function MultiSelectCheckList({
     setSearchQuery("");
   }
 
-  // Закриття по кліку поза компонентом і по Escape
   useEffect(() => {
     if (!isOpen) return;
 
@@ -84,11 +101,11 @@ export default function MultiSelectCheckList({
         aria-controls={isOpen ? listId : undefined}
         onClick={() => (isOpen ? close() : setIsOpen(true))}
         className={cn(
-          "flex h-11 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border bg-card px-3 text-left text-sm transition-colors",
-          "outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+          "flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border bg-card px-3 text-left text-sm shadow-xs transition-[border-color,box-shadow] duration-150",
+          "outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/15",
           isOpen
-            ? "border-primary"
-            : "border-input hover:border-muted-foreground/40",
+            ? "border-ring ring-3 ring-ring/15"
+            : "border-input hover:border-border-strong",
         )}
       >
         <span
@@ -111,112 +128,124 @@ export default function MultiSelectCheckList({
           <IconChevronDown
             size={16}
             className={cn(
-              "text-muted-foreground transition-transform duration-200",
+              "text-muted-foreground transition-[rotate] duration-200 ease-out",
               isOpen && "rotate-180",
             )}
           />
         </span>
       </button>
 
-      {isOpen && (
-        <div className="absolute left-0 right-0 top-full z-30 mt-1.5 overflow-clip rounded-xl border border-border bg-popover shadow-lg animate-in fade-in-0 zoom-in-95">
-          <div className="relative border-b border-border p-2">
-            <IconSearch
-              size={16}
-              className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground"
-            />
-            <input
-              ref={searchRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Пошук..."
-              aria-label="Пошук варіантів"
-              className="h-9 w-full rounded-md bg-background pl-9 pr-8 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/40"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                aria-label="Очистити пошук"
-                onClick={() => setSearchQuery("")}
-                className="absolute right-4 top-1/2 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded text-muted-foreground hover:text-foreground"
-              >
-                <IconX size={14} />
-              </button>
-            )}
-          </div>
-
-          <ul
-            id={listId}
-            role="listbox"
-            aria-multiselectable="true"
-            className="max-h-56 overflow-y-auto p-1"
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            {...dropdownMotion}
+            style={{ transformOrigin: dropUp ? "bottom center" : "top center" }}
+            className={
+              inline
+                ? "relative mt-1.5 overflow-clip rounded-xl bg-popover shadow-[0_0_0_1px_var(--border)]"
+                : `absolute right-0 left-0 z-30 overflow-clip rounded-xl bg-popover shadow-pop ${
+                    dropUp ? "bottom-full mb-1.5" : "top-full mt-1.5"
+                  }`
+            }
           >
-            {filtered.length === 0 && (
-              <li className="px-3 py-6 text-center text-sm text-muted-foreground">
-                Нічого не знайдено
-              </li>
-            )}
+            <div className="relative border-b border-border p-2">
+              <IconSearch
+                size={16}
+                className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+              <input
+                ref={searchRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Пошук..."
+                aria-label="Пошук варіантів"
+                className="h-9 w-full rounded-md bg-background pl-9 pr-8 text-sm outline-none placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/40"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  aria-label="Очистити пошук"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-4 top-1/2 flex size-6 -translate-y-1/2 cursor-pointer items-center justify-center rounded text-muted-foreground hover:text-foreground"
+                >
+                  <IconX size={14} />
+                </button>
+              )}
+            </div>
 
-            {filtered.map((option) => {
-              const isChecked = selected.includes(option);
-              return (
-                <li key={option} role="option" aria-selected={isChecked}>
-                  <label
-                    className={cn(
-                      "relative flex min-h-10 cursor-pointer items-center gap-3 rounded-md px-2.5 text-sm transition-colors",
-                      isChecked
-                        ? "bg-accent font-semibold text-accent-foreground"
-                        : "hover:bg-muted",
-                    )}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => toggle(option)}
-                      className="peer sr-only"
-                    />
-                    <span
-                      aria-hidden="true"
+            <ul
+              id={listId}
+              role="listbox"
+              aria-multiselectable="true"
+              className="max-h-56 overflow-y-auto p-1"
+            >
+              {filtered.length === 0 && (
+                <li className="px-3 py-6 text-center text-sm text-muted-foreground">
+                  Нічого не знайдено
+                </li>
+              )}
+
+              {filtered.map((option) => {
+                const isChecked = selected.includes(option);
+                return (
+                  <li key={option} role="option" aria-selected={isChecked}>
+                    <label
                       className={cn(
-                        "flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border transition-colors",
-                        "peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50",
+                        "relative flex min-h-10 cursor-pointer items-center gap-3 rounded-md px-2.5 text-sm transition-colors",
                         isChecked
-                          ? "border-primary bg-primary"
-                          : "border-input bg-card",
+                          ? "bg-accent font-semibold text-accent-foreground"
+                          : "hover:bg-muted",
                       )}
                     >
-                      {isChecked && (
-                        <IconCheck
-                          size={13}
-                          stroke={3}
-                          className="text-primary-foreground"
-                        />
-                      )}
-                    </span>
-                    <span className="truncate">{option}</span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => toggle(option)}
+                        className="peer sr-only"
+                      />
+                      <span
+                        aria-hidden="true"
+                        className={cn(
+                          "flex size-4.5 shrink-0 items-center justify-center rounded-[5px] border transition-colors",
+                          "peer-focus-visible:ring-3 peer-focus-visible:ring-ring/50",
+                          isChecked
+                            ? "border-primary bg-primary"
+                            : "border-input bg-card",
+                        )}
+                      >
+                        {isChecked && (
+                          <IconCheck
+                            size={13}
+                            stroke={3}
+                            className="text-primary-foreground"
+                          />
+                        )}
+                      </span>
+                      <span className="truncate">{option}</span>
+                    </label>
+                  </li>
+                );
+              })}
+            </ul>
 
-          {selected.length > 0 && (
-            <div className="flex items-center justify-between border-t border-border px-3 py-2">
-              <span className="text-xs text-muted-foreground">
-                Обрано: {selected.length}
-              </span>
-              <button
-                type="button"
-                onClick={() => onChange([])}
-                className="cursor-pointer rounded px-1.5 py-1 text-xs font-semibold text-accent-vivid hover:underline"
-              >
-                Очистити
-              </button>
-            </div>
-          )}
-        </div>
-      )}
+            {selected.length > 0 && (
+              <div className="flex items-center justify-between border-t border-border px-3 py-2">
+                <span className="text-xs text-muted-foreground">
+                  Обрано: {selected.length}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => onChange([])}
+                  className="cursor-pointer rounded px-1.5 py-1 text-xs font-semibold text-primary hover:underline"
+                >
+                  Очистити
+                </button>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -23,7 +23,7 @@ export default function ChatComposer({ onSend, onTyping }: ChatComposerProps) {
         e.preventDefault();
         submit();
       }}
-      className="flex items-end gap-2.5 border-t border-border/70 bg-card px-3 py-3 sm:px-5.5 sm:py-3.5"
+      className="flex items-end gap-2.5 border-t border-border bg-card px-3 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:px-5 md:pb-3"
     >
       <label htmlFor="chat-message" className="sr-only">
         Повідомлення
@@ -44,15 +44,15 @@ export default function ChatComposer({ onSend, onTyping }: ChatComposerProps) {
             submit();
           }
         }}
-        className="max-h-40 min-h-12 min-w-0 flex-1 resize-none rounded-xl border border-input bg-card px-3.5 py-3 text-[15px] leading-snug outline-none field-sizing-content placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+        className="max-h-40 min-h-10 min-w-0 flex-1 resize-none rounded-lg border border-input bg-card px-3 py-2 text-[15px] leading-snug shadow-xs transition-[border-color,box-shadow] duration-150 outline-none field-sizing-content placeholder:text-muted-foreground hover:border-border-strong focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/15"
       />
       <button
         type="submit"
         aria-label="Надіслати"
         disabled={!trimmed}
-        className="flex size-12 shrink-0 cursor-pointer items-center justify-center rounded-xl bg-primary text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-[var(--highlight-fill),var(--shadow-xs)] transition-[background-color,scale,opacity] duration-150 ease-out outline-none hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:active:scale-100"
       >
-        <IconSend className="size-5" />
+        <IconSend className="size-4.5" />
       </button>
     </form>
   );

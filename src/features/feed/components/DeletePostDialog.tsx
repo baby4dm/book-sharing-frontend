@@ -33,10 +33,10 @@ export default function DeletePostDialog({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="gap-4 rounded-2xl p-6 sm:max-w-md"
+        className="gap-4 p-6 sm:max-w-md"
       >
         <DialogHeader className="text-left">
-          <DialogTitle className="font-heading text-[22px] font-semibold">
+          <DialogTitle className="text-xl font-bold">
             Видалити пост?
           </DialogTitle>
           <DialogDescription className="text-[15px] leading-relaxed">
@@ -53,7 +53,7 @@ export default function DeletePostDialog({
         <DialogFooter className="mt-2 flex-col-reverse gap-2.5 sm:flex-row sm:justify-end">
           <Button
             variant="outline"
-            className="h-11 cursor-pointer rounded-[10px] px-4.5"
+            className="h-10 cursor-pointer rounded-lg px-4.5"
             disabled={isPending}
             onClick={() => handleOpenChange(false)}
           >
@@ -61,7 +61,7 @@ export default function DeletePostDialog({
           </Button>
           <Button
             variant="destructive"
-            className="h-11 cursor-pointer rounded-[10px] bg-destructive px-4.5 font-bold text-white hover:bg-destructive/90"
+            className="h-10 cursor-pointer rounded-lg bg-destructive px-4.5 font-semibold text-white hover:bg-destructive/90"
             disabled={isPending}
             onClick={() =>
               mutate(postId, { onSuccess: () => onOpenChange(false) })

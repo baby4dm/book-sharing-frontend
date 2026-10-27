@@ -1,3 +1,5 @@
+import { AnimatePresence, motion } from "motion/react";
+import { springPop } from "@/lib/motion";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -22,6 +24,7 @@ import PostComments from "./PostComments";
 import UserLink from "@/features/userProfile/components/UserLink";
 import { useTogglePostLike } from "../hooks/usePostMutation";
 import SmartImage from "@/components/ui/SmartImage";
+import Collapse from "@/components/ui/collapse";
 
 const COLLAPSE_CHARS = 420;
 const COLLAPSE_LINES = 7;
@@ -62,13 +65,12 @@ export default function PostCard({
       return;
     }
     if (like.isPending) return;
-    // сердечко «підстрибує» лише на щойно поставлений лайк
     if (!post.likedByMe) setLikePop((n) => n + 1);
     like.mutate(!post.likedByMe);
   }
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-border bg-card">
+    <article className="surface overflow-hidden">
       <header className="flex items-center gap-3 px-4 pt-4 sm:px-5 sm:pt-4.5">
         <UserLink
           userId={post.authorId}
@@ -77,13 +79,14 @@ export default function PostCard({
         >
           <UserAvatar
             name={post.authorName}
+            seed={post.authorId}
             src={post.authorAvatarUrl}
-            className="h-10.5 w-10.5"
-            fallbackClassName="font-sans text-base font-extrabold"
+            className="size-10"
+            fallbackClassName="text-sm"
           />
         </UserLink>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[15px] font-bold">
+          <p className="truncate text-sm font-semibold">
             <UserLink
               userId={post.authorId}
               className="underline-offset-2 hover:underline"
@@ -94,7 +97,7 @@ export default function PostCard({
           <time
             dateTime={post.createdAt}
             title={formatFullDate(post.createdAt)}
-            className="text-[13px] text-muted-foreground"
+            className="text-xs text-muted-foreground"
           >
             {formatRelativeTime(post.createdAt)}
           </time>
@@ -104,20 +107,20 @@ export default function PostCard({
           <Popover open={menuOpen} onOpenChange={setMenuOpen}>
             <PopoverTrigger
               aria-label="Дії з постом"
-              className="-mr-2 flex size-10 cursor-pointer items-center justify-center rounded-full text-muted-foreground outline-none hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50"
+              className="-mr-1.5 flex size-8 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors outline-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring data-popup-open:bg-muted"
             >
               <IconDots className="size-5" />
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-52 gap-0 rounded-xl p-1.5">
+            <PopoverContent align="end" className="w-48 gap-0 p-1">
               <button
                 type="button"
                 onClick={() => {
                   setMenuOpen(false);
                   setDeleteOpen(true);
                 }}
-                className="flex h-11 w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 text-sm font-bold text-destructive hover:bg-destructive/10"
+                className="flex h-9 w-full cursor-pointer items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-destructive transition-colors outline-none hover:bg-tint-red focus-visible:bg-tint-red"
               >
-                <IconTrash className="size-4.5" />
+                <IconTrash className="size-4" />
                 Видалити пост
               </button>
             </PopoverContent>
@@ -128,7 +131,7 @@ export default function PostCard({
       <div className="px-4 pt-3 pb-3.5 sm:px-5">
         <p
           className={cn(
-            "text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground/90",
+            "text-[15px] leading-relaxed wrap-break-word whitespace-pre-line text-foreground",
             isLong && !expanded && "line-clamp-6",
           )}
         >
@@ -138,7 +141,7 @@ export default function PostCard({
           <button
             type="button"
             onClick={() => setExpanded(true)}
-            className="mt-1 h-8 cursor-pointer text-sm font-bold text-primary hover:underline"
+            className="mt-1 h-8 cursor-pointer rounded-sm text-sm font-semibold text-primary hover:underline"
           >
             Читати далі
           </button>
@@ -158,33 +161,42 @@ export default function PostCard({
             alt={`Фото до поста ${post.authorName}`}
             loading="lazy"
             onError={() => setPhotoFailed(true)}
-            className="max-h-140 w-full object-cover"
+            className="max-h-105 w-full object-cover"
           />
         </a>
       )}
 
-      <div className="flex items-center gap-1 border-t border-border/70 px-2 py-1.5 sm:px-2.5">
+      <div className="flex items-center gap-1 border-t border-border px-2 py-1.5 sm:px-2.5">
         <button
           type="button"
           aria-pressed={post.likedByMe}
           aria-label={post.likedByMe ? "Прибрати вподобання" : "Вподобати"}
           onClick={handleLike}
           className={cn(
-            "flex h-10 cursor-pointer items-center gap-1.75 rounded-[10px] px-3 text-sm transition-[color,background-color,transform] active:scale-95",
+            "flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-[13px] font-semibold transition-[color,background-color,scale] duration-150 ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95",
             post.likedByMe
-              ? "bg-destructive/8 font-bold text-destructive"
-              : "font-semibold text-foreground/75 hover:bg-muted",
+              ? "text-destructive hover:bg-tint-red"
+              : "text-muted-foreground hover:bg-muted hover:text-foreground",
           )}
         >
-          {post.likedByMe ? (
-            <IconHeartFilled
-              key={likePop}
-              className={cn("size-5", likePop > 0 && "animate-like-pop")}
-            />
-          ) : (
-            <IconHeart className="size-5" />
-          )}
-          {post.likesCount}
+          <motion.span
+            key={post.likedByMe ? `on-${likePop}` : "off"}
+            initial={
+              post.likedByMe && likePop > 0
+                ? { transform: "scale(0.6)" }
+                : false
+            }
+            animate={{ transform: "scale(1)" }}
+            transition={springPop}
+            className="flex"
+          >
+            {post.likedByMe ? (
+              <IconHeartFilled className="size-4.5" />
+            ) : (
+              <IconHeart className="size-4.5" stroke={1.75} />
+            )}
+          </motion.span>
+          <span className="tabular">{post.likesCount}</span>
         </button>
 
         <button
@@ -192,24 +204,28 @@ export default function PostCard({
           aria-expanded={commentsOpen}
           onClick={() => setCommentsOpen((open) => !open)}
           className={cn(
-            "flex h-10 cursor-pointer items-center gap-1.75 rounded-[10px] px-3 text-sm font-semibold text-foreground/75 transition-colors hover:bg-muted",
-            commentsOpen && "bg-muted",
+            "flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-[13px] font-semibold text-muted-foreground transition-[color,background-color,scale] duration-150 ease-out outline-none hover:bg-muted hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95",
+            commentsOpen && "bg-muted text-foreground",
           )}
         >
-          <IconMessageCircle className="size-5" />
+          <IconMessageCircle className="size-4.5" stroke={1.75} />
           {post.commentsCount > 0
             ? pluralizeComments(post.commentsCount)
             : "Коментувати"}
         </button>
       </div>
 
-      {commentsOpen && (
-        <PostComments
-          postId={post.id}
-          currentUser={currentUser}
-          isAuthenticated={isAuthenticated}
-        />
-      )}
+      <AnimatePresence initial={false}>
+        {commentsOpen && (
+          <Collapse>
+            <PostComments
+              postId={post.id}
+              currentUser={currentUser}
+              isAuthenticated={isAuthenticated}
+            />
+          </Collapse>
+        )}
+      </AnimatePresence>
 
       {canDelete && (
         <DeletePostDialog

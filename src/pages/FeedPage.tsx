@@ -1,3 +1,8 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
+import { IconAlertTriangle, IconMessageCircle } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "motion/react";
+import { listItemMotion } from "@/lib/motion";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/Spinner";
@@ -10,20 +15,17 @@ import { flattenFeed } from "@/features/feed/utils/feedCache";
 
 function PostSkeleton() {
   return (
-    <div
-      aria-hidden="true"
-      className="flex animate-pulse flex-col gap-3 rounded-2xl border border-border bg-card p-5"
-    >
+    <div aria-hidden="true" className="surface flex flex-col gap-3 p-4 sm:p-5">
       <div className="flex items-center gap-3">
-        <div className="size-10.5 rounded-full bg-muted" />
+        <Skeleton className="size-10 rounded-full" />
         <div className="flex flex-col gap-2">
-          <div className="h-3.5 w-36 rounded bg-muted" />
-          <div className="h-3 w-20 rounded bg-muted" />
+          <Skeleton className="h-3.5 w-36" />
+          <Skeleton className="h-3 w-20" />
         </div>
       </div>
-      <div className="h-3.5 w-full rounded bg-muted" />
-      <div className="h-3.5 w-4/5 rounded bg-muted" />
-      <div className="h-48 rounded-xl bg-muted" />
+      <Skeleton className="h-3.5 w-full" />
+      <Skeleton className="h-3.5 w-4/5" />
+      <Skeleton className="h-48 rounded-lg" />
     </div>
   );
 }
@@ -61,18 +63,16 @@ export default function FeedPage() {
   }, [hasNextPage, isFetchingNextPage, isFetchNextPageError, fetchNextPage]);
 
   return (
-    <section className="mx-auto flex w-full max-w-170 flex-col gap-4 px-3 pt-5 pb-20 sm:px-6 md:pt-8">
-      <div className="mb-1 px-1 sm:px-0">
-        <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
-          Спільнота
-        </h1>
-        <p className="mt-1.5 text-sm text-muted-foreground md:text-[15px]">
+    <section className="mx-auto flex w-full max-w-170 flex-col gap-3 px-4 pt-6 pb-20 sm:gap-4 sm:px-6 lg:pt-8">
+      <div className="mb-2">
+        <h1 className="page-title">Спільнота</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
           Що читають люди на сервісі та що про це думають
         </p>
       </div>
 
       {isAuthenticated && isMePending ? (
-        <div className="h-21 animate-pulse rounded-2xl border border-border bg-card" />
+        <Skeleton className="h-18.5 rounded-xl" />
       ) : (
         <PostComposer currentUser={currentUser} />
       )}
@@ -83,36 +83,37 @@ export default function FeedPage() {
           <PostSkeleton />
         </>
       ) : !data ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center">
-          <p className="font-heading text-lg font-semibold">
-            Не вдалося завантажити стрічку
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Перевірте з'єднання та спробуйте ще раз.
-          </p>
-          <Button className="mt-1 cursor-pointer" onClick={() => refetch()}>
-            Спробувати ще раз
-          </Button>
-        </div>
+        <EmptyState
+          framed
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити стрічку"
+          description="Перевірте з'єднання і спробуйте ще раз."
+          action={
+            <Button variant="outline" onClick={() => refetch()}>
+              Спробувати ще раз
+            </Button>
+          }
+        />
       ) : posts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-input bg-card/60 p-10 text-center">
-          <p className="font-heading text-lg font-semibold">
-            Тут поки порожньо
-          </p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Розкажіть, що читаєте зараз, — ваш пост буде першим.
-          </p>
-        </div>
+        <EmptyState
+          framed
+          icon={IconMessageCircle}
+          title="Почніть розмову"
+          description="Розкажіть, що читаєте зараз, — ваш пост буде першим у стрічці."
+        />
       ) : (
-        <div className="stagger-in contents">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              post={post}
-              currentUser={currentUser}
-              isAuthenticated={isAuthenticated}
-            />
-          ))}
+        <div className="contents">
+          <AnimatePresence initial={false} mode="popLayout">
+            {posts.map((post) => (
+              <motion.div key={post.id} layout {...listItemMotion}>
+                <PostCard
+                  post={post}
+                  currentUser={currentUser}
+                  isAuthenticated={isAuthenticated}
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           <div ref={sentinelRef} />
           {isFetchingNextPage && (
@@ -130,7 +131,6 @@ export default function FeedPage() {
               <Button
                 variant="outline"
                 size="sm"
-                className="cursor-pointer"
                 onClick={() => fetchNextPage()}
               >
                 Повторити

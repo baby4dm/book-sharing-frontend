@@ -1,3 +1,4 @@
+import { buttonVariants } from "@/components/ui/button";
 import { useEffect, type ReactNode } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -33,18 +34,18 @@ function Section({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className="flex scroll-mt-24 flex-col gap-4 rounded-2xl border border-border bg-card p-5 md:p-7"
+      className="flex scroll-mt-24 flex-col gap-4 surface p-5 md:p-7"
     >
       <h2
         id={`${id}-title`}
-        className="flex items-center gap-2.5 font-heading text-[22px] font-semibold md:text-2xl"
+        className="flex items-center gap-2.5 text-lg font-bold tracking-[-0.015em] md:text-xl"
       >
-        <span className="flex size-10 items-center justify-center rounded-xl bg-accent text-primary">
+        <span aria-hidden="true" className="flex text-muted-foreground [&_svg]:size-5">
           {icon}
         </span>
         {title}
       </h2>
-      <div className="flex flex-col gap-3 text-[15px] leading-relaxed text-foreground/85">
+      <div className="flex flex-col gap-3 text-[15px] leading-relaxed text-foreground">
         {children}
       </div>
     </section>
@@ -106,7 +107,7 @@ export default function HelpPage() {
   return (
     <div className="mx-auto flex w-full max-w-295 flex-col gap-6 px-4 pt-6 pb-16 md:px-8 md:pt-8 lg:flex-row lg:items-start lg:gap-10 lg:px-12">
       <aside className="lg:sticky lg:top-6 lg:w-65 lg:shrink-0">
-        <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
+        <h1 className="page-title">
           Як це працює
         </h1>
         <p className="mt-2 text-[15px] text-muted-foreground">
@@ -121,7 +122,7 @@ export default function HelpPage() {
               key={s.id}
               href={`#${s.id}`}
               aria-current={hash === `#${s.id}` ? "true" : undefined}
-              className="rounded-[10px] border border-border bg-card px-3.5 py-2 text-sm font-semibold text-foreground/80 hover:bg-muted aria-current:border-primary aria-current:bg-accent aria-current:text-accent-foreground lg:border-transparent lg:bg-transparent"
+              className="rounded-md border border-border bg-card px-3 py-1.5 text-[13px] font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground aria-current:border-ring/40 aria-current:bg-accent aria-current:text-accent-foreground lg:border-transparent lg:bg-transparent"
             >
               {s.label}
             </a>
@@ -247,27 +248,27 @@ export default function HelpPage() {
                     +
                   </span>
                 </summary>
-                <p className="mt-2 text-foreground/80">{item.a}</p>
+                <p className="mt-2 text-muted-foreground">{item.a}</p>
               </details>
             ))}
           </div>
         </Section>
 
-        <div className="flex flex-col items-start gap-3 rounded-2xl bg-accent p-5 sm:flex-row sm:items-center sm:justify-between md:p-6">
+        <div className="surface flex flex-col items-start gap-3 p-5 sm:flex-row sm:items-center sm:justify-between md:p-6">
           <div>
-            <p className="font-bold text-accent-foreground">
+            <p className="section-title">
               Не знайшли відповіді?
             </p>
-            <p className="text-sm text-accent-foreground/80">
+            <p className="text-sm text-muted-foreground">
               Напишіть нам — відповімо на email.
             </p>
           </div>
           <button
             type="button"
             onClick={() => openFeedback("QUESTION")}
-            className="flex h-11 cursor-pointer items-center gap-2 rounded-[10px] bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90"
+            className={buttonVariants()}
           >
-            <IconMessageCircle className="size-4.5" />
+            <IconMessageCircle />
             Поставити питання
           </button>
         </div>

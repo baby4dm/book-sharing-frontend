@@ -1,8 +1,15 @@
 import { Link } from "react-router-dom";
-import { IconBook, IconChevronRight, IconPlus } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconBook,
+  IconBooks,
+  IconChevronRight,
+  IconPlus,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
 import type { ListingResponse } from "@/features/listings/types";
 import { STATUS_CONFIG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -19,7 +26,7 @@ function ShelfBook({ listing }: { listing: ListingResponse }) {
         to={`/listings/${listing.id}`}
         className="group flex flex-col gap-2 rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
       >
-        <div className="relative flex aspect-2/3 w-full items-center justify-center overflow-hidden rounded-lg bg-secondary shadow-sm transition-transform group-hover:-translate-y-0.5 group-hover:shadow-md">
+        <div className="relative flex aspect-2/3 w-full items-center justify-center overflow-hidden rounded-lg bg-muted shadow-[inset_0_0_0_1px_var(--border)] transition-[translate,box-shadow] duration-200 ease-out group-hover:-translate-y-0.5 group-hover:shadow-raise">
           {listing.bookCoverUrl && !failed ? (
             <SmartImage
               src={listing.bookCoverUrl}
@@ -34,9 +41,9 @@ function ShelfBook({ listing }: { listing: ListingResponse }) {
           {listing.status !== "AVAILABLE" && (
             <span
               className={cn(
-                "absolute inset-x-1.5 bottom-1.5 rounded-md px-1.5 py-0.5 text-center text-[11px] font-bold backdrop-blur",
+                "absolute top-1.5 left-1.5 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                status.bg,
                 status.color,
-                "bg-card/90",
               )}
             >
               {status.label}
@@ -44,7 +51,7 @@ function ShelfBook({ listing }: { listing: ListingResponse }) {
           )}
         </div>
         <div className="min-w-0">
-          <p className="line-clamp-2 text-sm leading-snug font-bold group-hover:underline">
+          <p className="book-title line-clamp-2 text-sm leading-snug group-hover:underline">
             {listing.bookTitle}
           </p>
           {listing.bookAuthor && (
@@ -78,21 +85,19 @@ export default function UserShelf({ userId, isOwn = false }: UserShelfProps) {
   const total = data?.pages[0]?.totalElements ?? 0;
 
   return (
-    <section className="flex flex-col gap-4 rounded-[20px] border border-border bg-card p-5 md:p-6">
+    <section className="flex flex-col gap-4 surface p-5 md:p-6">
       <div className="flex items-baseline justify-between gap-2">
-        <h2 className="font-heading text-xl font-semibold md:text-[22px]">
-          Книги на полиці
-        </h2>
+        <h2 className="section-title">Книги на полиці</h2>
         <div className="flex items-baseline gap-3">
           {total > 0 && (
-            <span className="text-sm font-semibold text-muted-foreground">
+            <span className="tabular text-[13px] font-medium text-muted-foreground">
               {total}
             </span>
           )}
           {isOwn && total > 0 && (
             <Link
               to="/?tab=my"
-              className="inline-flex items-center gap-0.5 text-sm font-bold text-accent-vivid hover:underline"
+              className="inline-flex items-center gap-0.5 text-sm font-semibold text-primary hover:underline"
             >
               Керувати
               <IconChevronRight className="size-4" />
@@ -102,45 +107,56 @@ export default function UserShelf({ userId, isOwn = false }: UserShelfProps) {
       </div>
 
       {isPending ? (
-        <div className="flex justify-center py-6">
-          <Spinner />
+        <div
+          aria-busy="true"
+          className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4"
+        >
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-2">
+              <Skeleton className="aspect-2/3 rounded-lg" />
+              <Skeleton className="h-3.5 w-4/5" />
+            </div>
+          ))}
         </div>
       ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            Не вдалося завантажити книги.
-          </p>
-          <Button
-            variant="outline"
-            className="cursor-pointer"
-            onClick={() => refetch()}
-          >
-            Спробувати ще раз
-          </Button>
-        </div>
+        <EmptyState
+          className="py-6"
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити книги"
+          action={
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              Спробувати ще раз
+            </Button>
+          }
+        />
       ) : listings.length === 0 ? (
         isOwn ? (
-          <div className="flex flex-col items-start gap-3 border-t border-border/70 pt-4">
-            <p className="text-sm text-muted-foreground">
-              Ваша полиця порожня. Додайте книгу — її побачать інші читачі в
-              каталозі й у вашому профілі.
-            </p>
-            <Link
-              to="/listings/create"
-              className="inline-flex h-10 items-center gap-1.5 rounded-[10px] bg-primary px-4 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-            >
-              <IconPlus className="size-4" />
-              Додати книгу
-            </Link>
-          </div>
+          <EmptyState
+            className="border-t border-border py-8"
+            icon={IconBooks}
+            title="Ваша полиця порожня"
+            description="Додайте книгу — її побачать у каталозі й у вашому профілі."
+            action={
+              <Button
+                nativeButton={false}
+                render={<Link to="/listings/create" />}
+              >
+                <IconPlus />
+                Додати книгу
+              </Button>
+            }
+          />
         ) : (
-          <p className="border-t border-border/70 pt-4 text-sm text-muted-foreground">
-            Зараз на полиці немає книг.
-          </p>
+          <EmptyState
+            className="border-t border-border py-8"
+            icon={IconBooks}
+            title="На полиці зараз порожньо"
+            description="Коли людина додасть книгу, вона з'явиться тут."
+          />
         )
       ) : (
         <>
-          <ul className="stagger-in grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4">
+          <ul className="grid grid-cols-3 gap-x-3 gap-y-4 sm:grid-cols-4 md:gap-x-4">
             {listings.map((listing) => (
               <ShelfBook key={listing.id} listing={listing} />
             ))}
@@ -148,7 +164,7 @@ export default function UserShelf({ userId, isOwn = false }: UserShelfProps) {
           {hasNextPage && (
             <Button
               variant="outline"
-              className="h-10 cursor-pointer self-center rounded-[10px] px-5 font-semibold"
+              className="self-center"
               disabled={isFetchingNextPage}
               onClick={() => fetchNextPage()}
             >

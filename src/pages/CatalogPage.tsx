@@ -6,7 +6,17 @@ import ListingFilterPanel from "@/features/listings/components/ListingFilterPane
 import { useListings } from "@/features/listings/hooks/useListings";
 import type { ListingFilters } from "@/features/listings/types";
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  IconBooks,
+  IconPlus,
+  IconSearchOff,
+  IconWifiOff,
+} from "@tabler/icons-react";
+import EmptyState from "@/components/ui/empty-state";
+
+const gridClass =
+  "stagger-in grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUserListings } from "@/features/listings/hooks/useCurrentUserListing";
 
@@ -33,31 +43,30 @@ export default function CatalogPage() {
   const allListings = catalogData?.pages.flatMap((page) => page.content) ?? [];
   const myListings = data?.pages.flatMap((page) => page.content) ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const tab = searchParams.get("tab") === "my" ? "my" : "catalog";
   function updateFilters(filters: ListingFilters) {
     setFilters((prev) => ({ ...prev, ...filters }));
   }
   if (isCatalogError || isError) {
     return (
-      <section className="w-full px-4 py-16 flex flex-col items-center gap-3 text-center">
-        <p className="text-foreground font-semibold">
-          Не вдалось завантажити оголошення
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Перевірте з'єднання з інтернетом і спробуйте ще раз
-        </p>
-        <Button
-          variant="outline"
-          className="cursor-pointer mt-2"
-          onClick={() => window.location.reload()}
-        >
-          Спробувати ще раз
-        </Button>
+      <section className="mx-auto w-full max-w-360 px-4 py-10 md:px-8">
+        <EmptyState
+          framed
+          icon={IconWifiOff}
+          title="Не вдалося завантажити книги"
+          description="Перевірте з'єднання з інтернетом і спробуйте ще раз."
+          action={
+            <Button variant="outline" onClick={() => window.location.reload()}>
+              Спробувати ще раз
+            </Button>
+          }
+        />
       </section>
     );
   }
   return (
-    <section className="w-full px-4 py-6 md:px-4 xl:px-16 2xl:px-20 flex flex-col gap-4 pb-30">
+    <section className="mx-auto flex w-full max-w-360 flex-col gap-5 px-4 py-6 pb-16 md:px-8 lg:py-8">
       <Tabs
         value={tab}
         onValueChange={(value) =>
@@ -65,34 +74,44 @@ export default function CatalogPage() {
             replace: true,
           })
         }
-        className="w-full flex flex-col gap-4 lg:gap-8"
+        className="flex w-full flex-col gap-5"
       >
-        <div className="w-full flex justify-between items-center flex-wrap gap-4 max-w-500 3xl:max-w-530 mx-auto">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-4xl font-medium">Каталог</h1>
-            <p className="text-base font-light">
+        <div className="flex w-full flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="page-title">Каталог</h1>
+            <p className="text-sm text-muted-foreground">
               Книги, якими діляться люди поруч і по всій Україні
             </p>
           </div>
-          <TabsList className="group-data-horizontal/tabs:h-12 p-1.5 max-w-80 w-full">
-            <TabsTrigger className="cursor-pointer" value="catalog">
-              Каталог
-            </TabsTrigger>
-            <TabsTrigger className="cursor-pointer" value="my">
-              Мої оголошення ({myListings.length})
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex items-center gap-2">
+            <TabsList>
+              <TabsTrigger className="cursor-pointer" value="catalog">
+                Каталог
+              </TabsTrigger>
+              <TabsTrigger className="cursor-pointer" value="my">
+                Мої{" "}
+                <span className="tabular text-muted-foreground">
+                  {myListings.length}
+                </span>
+              </TabsTrigger>
+            </TabsList>
+            <Button
+              aria-label="Додати книгу"
+              className="h-9 px-2.5 sm:px-3.5"
+              onClick={() => navigate("/listings/create")}
+            >
+              <IconPlus size={16} />
+              <span className="hidden sm:inline">Додати книгу</span>
+            </Button>
+          </div>
         </div>
 
         <ListingFilterPanel filters={filters} onUpdateFilters={updateFilters} />
         <TabsContent value="catalog">
-          <div className="w-full flex flex-col gap-4 lg:gap-8">
-            <div
-              className="stagger-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
-      gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-800 mx-auto"
-            >
+          <div className="flex w-full flex-col gap-6">
+            <div className={gridClass}>
               {isCatalogLoading &&
-                Array.from({ length: 16 }).map((_, i) => (
+                Array.from({ length: 12 }).map((_, i) => (
                   <ListingCardSkeleton key={i} />
                 ))}
               {!isCatalogLoading &&
@@ -100,10 +119,18 @@ export default function CatalogPage() {
                   <ListingCard key={listing.id} listing={listing} />
                 ))}
             </div>
+            {!isCatalogLoading && allListings.length === 0 && (
+              <EmptyState
+                framed
+                icon={IconSearchOff}
+                title="Нічого не знайдено"
+                description="Спробуйте іншу назву чи автора або приберіть частину фільтрів."
+              />
+            )}
             {hasNextCatalogPage && (
               <Button
                 variant="outline"
-                className="cursor-pointer w-full max-w-60 h-11 self-center mt-5"
+                className="w-full max-w-60 self-center"
                 onClick={() => fetchNextCatalogPage()}
               >
                 {isFetchingNextCatalogPage ? (
@@ -116,13 +143,10 @@ export default function CatalogPage() {
           </div>
         </TabsContent>
         <TabsContent value="my">
-          <div className="w-full flex flex-col gap-4 lg:gap-8">
-            <div
-              className="stagger-in grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 2xl:gap-8 3xl:grid-cols-5  4xl:grid-cols-6
-      gap-4 max-w-175 md:max-w-300 lg:max-w-350 xl:max-w-400 2xl:max-w-600 3xl:max-w-800 mx-auto"
-            >
+          <div className="flex w-full flex-col gap-6">
+            <div className={gridClass}>
               {isLoading &&
-                Array.from({ length: 16 }).map((_, i) => (
+                Array.from({ length: 12 }).map((_, i) => (
                   <ListingCardSkeleton key={i} />
                 ))}
               {!isLoading &&
@@ -130,10 +154,24 @@ export default function CatalogPage() {
                   <ListingCard key={listing.id} listing={listing} owner />
                 ))}
             </div>
+            {!isLoading && myListings.length === 0 && (
+              <EmptyState
+                framed
+                icon={IconBooks}
+                title="Ваша полиця порожня"
+                description="Додайте книгу, яку готові дати почитати, — її побачать у каталозі."
+                action={
+                  <Button onClick={() => navigate("/listings/create")}>
+                    <IconPlus size={16} />
+                    Додати книгу
+                  </Button>
+                }
+              />
+            )}
             {hasNextPage && (
               <Button
                 variant="outline"
-                className="cursor-pointer w-full max-w-60 h-11 self-center mt-5"
+                className="w-full max-w-60 self-center"
                 onClick={() => fetchNextPage()}
               >
                 {isFetchingNextPage ? <Spinner size={20} /> : "Завантажити ще"}

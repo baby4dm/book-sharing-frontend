@@ -1,3 +1,4 @@
+import { buttonVariants } from "@/components/ui/button";
 import { useContext, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -25,42 +26,42 @@ const CONTENT: Record<
     code: "404",
     title: "Сторінку не знайдено",
     text: "Можливо, посилання застаріло, запис видалили або в адресі помилка.",
-    tone: "bg-accent text-accent-vivid",
+    tone: "text-muted-foreground",
   },
   forbidden: {
     icon: IconLock,
     code: "403",
     title: "Немає доступу",
     text: "Ця сторінка доступна лише учасникам або модераторам. Перевірте, чи ви увійшли в потрібний акаунт.",
-    tone: "bg-orange-500/12 text-orange-700 dark:text-orange-300",
+    tone: "text-muted-foreground",
   },
   network: {
     icon: IconWifiOff,
     code: null,
     title: "Немає з'єднання",
     text: "Не вдалося зв'язатися із сервером. Перевірте інтернет і спробуйте ще раз.",
-    tone: "bg-muted text-muted-foreground",
+    tone: "text-muted-foreground",
   },
   server: {
     icon: IconServerOff,
     code: "500",
     title: "Збій на сервері",
     text: "Сервер не зміг обробити запит. Спробуйте трохи пізніше — якщо повторюється, напишіть нам.",
-    tone: "bg-destructive/10 text-destructive",
+    tone: "text-destructive",
   },
   outdated: {
     icon: IconSparkles,
     code: null,
     title: "Вийшла нова версія",
     text: "Сайт оновився, поки сторінка була відкрита. Оновіть її, щоб продовжити.",
-    tone: "bg-accent text-accent-vivid",
+    tone: "text-muted-foreground",
   },
   crash: {
     icon: IconAlertTriangle,
     code: null,
     title: "Щось пішло не так",
     text: "Сталася неочікувана помилка. Оновіть сторінку — зазвичай це допомагає.",
-    tone: "bg-destructive/10 text-destructive",
+    tone: "text-destructive",
   },
 };
 
@@ -76,10 +77,8 @@ export interface ErrorScreenProps {
   className?: string;
 }
 
-const primaryBtn =
-  "inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[10px] bg-primary px-5 text-[15px] font-bold text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
-const secondaryBtn =
-  "inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-[10px] border border-input bg-card px-5 text-[15px] font-semibold text-foreground transition-colors hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none";
+const primaryBtn = buttonVariants({ size: "lg" });
+const secondaryBtn = buttonVariants({ variant: "outline", size: "lg" });
 
 export default function ErrorScreen({
   kind,
@@ -127,15 +126,15 @@ export default function ErrorScreen({
         <span
           aria-hidden="true"
           className={cn(
-            "flex items-center justify-center rounded-full",
-            compact ? "size-16" : "size-24",
+            "flex items-center justify-center rounded-xl border border-border bg-card shadow-xs",
+            compact ? "size-12" : "size-16",
             content.tone,
           )}
         >
-          <Icon className={compact ? "size-8" : "size-11"} stroke={1.6} />
+          <Icon className={compact ? "size-6" : "size-7"} stroke={1.6} />
         </span>
         {content.code && !compact && (
-          <span className="absolute -right-3 -bottom-1 rounded-full border-2 border-background bg-card px-2.5 py-0.5 text-xs font-extrabold tracking-wide text-muted-foreground shadow-sm">
+          <span className="tabular absolute -right-4 -bottom-2 rounded-md border border-border bg-card px-1.5 py-0.5 text-[11px] font-semibold text-muted-foreground shadow-xs">
             {content.code}
           </span>
         )}
@@ -144,8 +143,8 @@ export default function ErrorScreen({
       <div className="flex flex-col gap-2">
         <h1
           className={cn(
-            "font-heading leading-tight font-semibold text-foreground",
-            compact ? "text-2xl" : "text-[28px] md:text-4xl",
+            "leading-tight font-bold tracking-[-0.02em] text-foreground",
+            compact ? "text-xl" : "text-2xl md:text-[28px]",
           )}
         >
           {title ?? content.title}
@@ -179,7 +178,7 @@ export default function ErrorScreen({
         <button
           type="button"
           onClick={() => feedback.openFeedback("BUG")}
-          className="mt-1 cursor-pointer text-sm font-semibold text-accent-vivid hover:underline"
+          className="mt-1 cursor-pointer text-sm font-semibold text-primary hover:underline"
         >
           Повідомити про проблему
         </button>
@@ -187,10 +186,10 @@ export default function ErrorScreen({
 
       {showDetails && (
         <details className="mt-4 w-full rounded-xl border border-dashed border-border bg-card p-3 text-left">
-          <summary className="cursor-pointer text-xs font-bold tracking-wide text-muted-foreground uppercase">
+          <summary className="cursor-pointer field-label">
             Деталі (видно лише в dev-режимі)
           </summary>
-          <pre className="mt-2 max-h-60 overflow-auto text-xs leading-relaxed whitespace-pre-wrap text-foreground/80">
+          <pre className="mt-2 max-h-60 overflow-auto text-xs leading-relaxed whitespace-pre-wrap text-muted-foreground">
             {describeError(error)}
           </pre>
         </details>

@@ -1,5 +1,6 @@
+import { motion } from "motion/react";
+import { EASE_OUT, springPop } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
-import { IconCheck } from "@tabler/icons-react";
 import { Link, useNavigate } from "react-router-dom";
 
 interface SuccessStepProps {
@@ -14,19 +15,38 @@ export default function SuccessStep({
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center gap-4 py-6 text-center max-w-150">
-      <div className="w-14 h-14 rounded-full bg-success/10 flex items-center justify-center">
-        <IconCheck size={28} className="text-success" />
-      </div>
+    <div className="surface flex w-full max-w-120 flex-col items-center gap-5 px-6 py-10 text-center">
+      <motion.div
+        initial={{ opacity: 0, transform: "scale(0.7)" }}
+        animate={{ opacity: 1, transform: "scale(1)" }}
+        transition={springPop}
+        className="flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-(--highlight-fill)"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          className="size-7"
+          fill="none"
+          aria-hidden="true"
+        >
+          <motion.path
+            d="M5 12.5l4.5 4.5L19 7.5"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 0.35, ease: EASE_OUT, delay: 0.18 }}
+          />
+        </svg>
+      </motion.div>
       <div>
-        <p className="text-lg font-bold text-foreground">
-          Оголошення опубліковано!
-        </p>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h1 className="page-title">Оголошення опубліковано</h1>
+        <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">
           Вашу книгу{" "}
           <Link
             to={`/listings/${listingId}`}
-            className="text-accent-vivid font-medium hover:underline"
+            className="text-primary font-medium hover:underline"
           >
             «{bookTitle}»
           </Link>{" "}
@@ -34,9 +54,15 @@ export default function SuccessStep({
           сповіщення, щойно хтось зацікавиться.
         </p>
       </div>
-      <Button className="w-full cursor-pointer" onClick={() => navigate("/")}>
-        Зрозуміло
-      </Button>
+      <div className="flex w-full flex-col-reverse gap-2 sm:flex-row sm:justify-center">
+        <Button
+          variant="outline"
+          onClick={() => navigate(`/listings/${listingId}`)}
+        >
+          Переглянути оголошення
+        </Button>
+        <Button onClick={() => navigate("/")}>До каталогу</Button>
+      </div>
     </div>
   );
 }

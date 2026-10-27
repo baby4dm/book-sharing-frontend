@@ -60,8 +60,8 @@ export default function LoginPage() {
   return (
     <AuthCardLayout
       title={
-        <h1 className="text-2xl font-extrabold md:text-3xl lg:text-4xl">
-          Даруй книгам <span className="text-accent-vivid">друге життя</span>
+        <h1 className="page-title">
+          Даруй книгам <span className="text-primary">друге життя</span>
         </h1>
       }
       subtitle="Увійдіть, щоб продовжити"
@@ -74,13 +74,14 @@ export default function LoginPage() {
       >
         <div className="flex flex-col gap-1.5">
           <Label
-            className="text-xs font-medium md:text-sm lg:text-base"
+            className="text-sm font-medium"
             htmlFor="email"
+            required
           >
             Email
           </Label>
           <Input
-            className="h-10 md:h-11 md:text-base"
+            className="h-10 md:h-10"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             id="email"
@@ -91,13 +92,14 @@ export default function LoginPage() {
         </div>
         <div className="flex flex-col gap-1">
           <Label
-            className="text-xs font-medium md:text-sm lg:text-base"
+            className="text-sm font-medium"
             htmlFor="password"
+            required
           >
             Пароль
           </Label>
           <Input
-            className="h-10 md:h-11 md:text-base"
+            className="h-10 md:h-10"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             id="password"
@@ -106,10 +108,10 @@ export default function LoginPage() {
             required
           />
         </div>
-        {error && <p className="text-sm text-destructive">{error}</p>}
+        {error && (<p role="alert" className="rounded-lg border border-destructive/25 bg-tint-red px-3.5 py-2.5 text-sm text-tint-red-ink">{error}</p>)}
         <Button
           type="submit"
-          className="w-full cursor-pointer h-10 md:h-11 lg:text-base"
+          className="h-10 w-full"
           disabled={isLoading}
         >
           {isLoading ? (
@@ -130,17 +132,17 @@ export default function LoginPage() {
             (window.location.href =
               "http://localhost:8080/oauth2/authorization/google")
           }
-          className="flex gap-2 font-normal cursor-pointer h-10 md:h-11 lg:text-base"
+          className="h-10 gap-2"
           variant="outline"
         >
           <GoogleIcon />
           <span>Google</span>
         </Button>
-        <div className="text-sm self-center flex gap-1 lg:text-base">
+        <div className="flex gap-1 self-center text-sm text-muted-foreground">
           <p>Немає акаунту?</p>
           <Link
             to="/register"
-            className="text-sm font-semibold text-accent-vivid lg:text-base cursor-pointer"
+            className="cursor-pointer rounded-sm text-sm font-semibold text-primary hover:underline"
           >
             Зареєструватися
           </Link>

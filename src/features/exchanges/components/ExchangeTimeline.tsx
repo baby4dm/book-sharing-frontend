@@ -1,28 +1,10 @@
-import type { ComponentType } from "react";
-import {
-  IconCamera,
-  IconCheck,
-  IconPackage,
-  IconTruck,
-} from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import type { ExchangeActions } from "../hooks/useExchangeActions";
 import type { ExchangeResponse } from "../types";
 import type { TimelineStep } from "../utils/computeExchangeSteps";
 import StepActionPanel from "./StepActionPanel";
 import SmartImage from "@/components/ui/SmartImage";
-
-const STEP_ICONS: Record<
-  string,
-  ComponentType<{ size?: number; className?: string; stroke?: number }>
-> = {
-  preparation: IconCamera,
-  "shipping-to-reader": IconTruck,
-  "with-reader": IconPackage,
-  "return-prep": IconCamera,
-  "shipping-to-owner": IconTruck,
-  completed: IconCheck,
-};
 
 const CARRIER_LABELS = {
   NOVA_POSHTA: "Нова Пошта",
@@ -56,7 +38,6 @@ export default function ExchangeTimeline({
   return (
     <ol className="flex flex-col">
       {steps.map((step, index) => {
-        const Icon = STEP_ICONS[step.key] ?? IconCheck;
         const isLast = index === steps.length - 1;
         const isActive = step.state === "active";
         const isCompleted = step.state === "completed";
@@ -70,56 +51,48 @@ export default function ExchangeTimeline({
             aria-current={isActive ? "step" : undefined}
             className="flex gap-4"
           >
-            {/* Маркер + лінія */}
-            <div className="flex flex-col items-center">
-              <div
-                className={cn(
-                  "flex shrink-0 items-center justify-center rounded-full",
-                  isActive &&
-                    (activeDanger
-                      ? "size-10 bg-destructive ring-[5px] ring-destructive/15"
-                      : "size-10 bg-primary ring-[5px] ring-accent"),
-                  isCompleted &&
-                    "size-9 border-[1.5px] border-success bg-success/10",
-                  isLocked && "size-9 bg-secondary",
-                )}
-              >
+            <div className="flex w-5 shrink-0 flex-col items-center pt-0.75">
+              <div className="flex size-5 shrink-0 items-center justify-center">
                 {isCompleted ? (
-                  <IconCheck size={16} stroke={2.6} className="text-success" />
-                ) : (
-                  <Icon
-                    size={isActive ? 18 : 16}
-                    className={
-                      isActive ? "text-white" : "text-muted-foreground"
-                    }
+                  <span className="flex size-5 items-center justify-center rounded-full bg-primary">
+                    <IconCheck
+                      size={12}
+                      stroke={3}
+                      className="text-primary-foreground"
+                    />
+                  </span>
+                ) : isActive ? (
+                  <span
+                    className={cn(
+                      "size-3.5 rounded-full ring-4",
+                      activeDanger
+                        ? "bg-destructive ring-destructive/15"
+                        : "bg-primary ring-accent",
+                    )}
                   />
+                ) : (
+                  <span className="size-2.5 rounded-full bg-input" />
                 )}
               </div>
               {!isLast && (
                 <div
                   className={cn(
-                    "w-0.5 flex-1",
-                    isCompleted ? "min-h-6 bg-success/30" : "min-h-5 bg-border",
+                    "mt-1 w-0.5 flex-1 rounded-full",
+                    isCompleted ? "min-h-6 bg-primary/35" : "min-h-5 bg-border",
                   )}
                 />
               )}
             </div>
 
             {/* Вміст кроку */}
-            <div
-              className={cn(
-                "min-w-0 flex-1",
-                isLast ? "pb-0" : "pb-6",
-                isActive ? "pt-2" : "pt-1.5",
-              )}
-            >
+            <div className={cn("min-w-0 flex-1", isLast ? "pb-0" : "pb-6")}>
               <div className="flex items-baseline justify-between gap-2">
                 <p
                   className={cn(
                     "text-[15px]",
-                    isActive && "font-extrabold",
-                    isCompleted && "font-bold",
-                    isLocked && "font-bold text-muted-foreground",
+                    isActive && "font-bold",
+                    isCompleted && "font-semibold",
+                    isLocked && "font-medium text-muted-foreground",
                   )}
                 >
                   {step.title}
@@ -146,7 +119,7 @@ export default function ExchangeTimeline({
 
               {step.shipment && (
                 <div className="mt-1.5 flex flex-col gap-2">
-                  <p className="text-sm font-semibold text-accent-vivid">
+                  <p className="text-sm font-semibold text-primary">
                     {CARRIER_LABELS[step.shipment.carrier]} · №
                     {step.shipment.branchNumber}, {step.shipment.city}
                   </p>

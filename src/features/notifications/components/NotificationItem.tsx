@@ -27,17 +27,17 @@ export default function NotificationItem({
       <span
         aria-hidden="true"
         className={cn(
-          "flex size-9 shrink-0 items-center justify-center rounded-full",
+          "flex size-5 shrink-0 items-center justify-center pt-0.5",
           toneClass,
         )}
       >
-        <Icon className="size-4.5" stroke={2} />
+        <Icon className="size-4.5" stroke={1.75} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-1">
         <span
           className={cn(
             "text-sm leading-[1.45] wrap-break-word",
-            unread ? "font-semibold text-foreground" : "text-foreground/75",
+            unread ? "font-semibold text-foreground" : "text-muted-foreground",
           )}
         >
           {notification.message}
@@ -52,15 +52,15 @@ export default function NotificationItem({
       {unread && (
         <span
           aria-label="Непрочитане"
-          className="mt-1.5 size-2 shrink-0 rounded-full bg-accent-vivid"
+          className="mt-1.5 size-2 shrink-0 rounded-full bg-primary"
         />
       )}
     </>
   );
 
   const rowClass = cn(
-    "flex w-full gap-3 px-[18px] py-3.5 text-left transition-colors outline-none focus-visible:bg-muted hover:bg-muted/70",
-    unread && "bg-accent/45",
+    "flex w-full gap-3 px-4 py-3.5 text-left transition-colors duration-150 outline-none hover:bg-muted focus-visible:bg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--ring)]",
+    unread && "bg-accent/40 hover:bg-accent/70",
     className,
   );
 

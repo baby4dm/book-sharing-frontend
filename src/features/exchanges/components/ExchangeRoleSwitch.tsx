@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import SegmentedControl from "@/components/ui/segmented";
 import type { ExchangeRole } from "../types";
 
 const OPTIONS: { value: ExchangeRole; label: string }[] = [
@@ -13,24 +13,12 @@ interface ExchangeRoleSwitchProps {
 }
 
 const ExchangeRoleSwitch = ({ value, onChange }: ExchangeRoleSwitchProps) => (
-  <div className="flex rounded-lg bg-muted p-1">
-    {OPTIONS.map((option) => (
-      <button
-        key={option.value}
-        type="button"
-        aria-pressed={option.value === value}
-        onClick={() => onChange(option.value)}
-        className={cn(
-          "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
-          option.value === value
-            ? "bg-card text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground",
-        )}
-      >
-        {option.label}
-      </button>
-    ))}
-  </div>
+  <SegmentedControl
+    aria-label="Моя роль в обміні"
+    options={OPTIONS}
+    value={value}
+    onChange={onChange}
+  />
 );
 
 export default ExchangeRoleSwitch;

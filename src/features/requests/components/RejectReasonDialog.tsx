@@ -62,7 +62,7 @@ export default function RejectReasonDialog({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <Label htmlFor="message">Причина відхилення</Label>
+            <Label htmlFor="message" required>Причина відхилення</Label>
             <Textarea
               id="message"
               value={comment}

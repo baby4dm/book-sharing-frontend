@@ -68,26 +68,26 @@ export const REQUEST_STATUS_CONFIG: Record<
 > = {
   PENDING: {
     label: "Очікує рішення",
-    color: "text-warning",
-    bgColor: "bg-warning/10",
+    color: "text-tint-amber-ink",
+    bgColor: "bg-tint-amber",
     icon: IconClock,
   },
   ACTIVE: {
     label: "Підтверджено",
-    color: "text-success",
-    bgColor: "bg-success/10",
+    color: "text-tint-green-ink",
+    bgColor: "bg-tint-green",
     icon: IconCheck,
   },
   REJECTED: {
     label: "Відхилено",
-    color: "text-destructive",
-    bgColor: "bg-destructive/10",
+    color: "text-tint-red-ink",
+    bgColor: "bg-tint-red",
     icon: IconX,
   },
   CANCELLED: {
     label: "Скасовано",
-    color: "text-muted-foreground",
-    bgColor: "bg-muted",
+    color: "text-tint-neutral-ink",
+    bgColor: "bg-tint-neutral",
     icon: IconBan,
   },
 };

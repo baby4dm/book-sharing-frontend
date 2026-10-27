@@ -30,6 +30,7 @@ import {
 } from "../types";
 import { useCreateFeedback } from "../hooks/useFeeback";
 import SmartImage from "@/components/ui/SmartImage";
+import RequiredMark from "@/components/ui/RequiredMark";
 
 const TOPIC_ICONS = {
   QUESTION: IconHelpCircle,
@@ -134,20 +135,20 @@ export default function FeedbackDialog({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="flex max-h-[92dvh] flex-col gap-5 overflow-y-auto rounded-2xl p-6 sm:max-w-140 sm:p-7">
+      <DialogContent className="flex max-h-[92dvh] flex-col gap-5 overflow-y-auto p-6 sm:max-w-140 sm:p-7">
         {sentTo ? (
           <div className="flex flex-col items-center gap-3.5 py-4 text-center">
             <span className="flex size-14 items-center justify-center rounded-full bg-accent text-primary">
               <IconCheck className="size-7" stroke={2.4} />
             </span>
-            <DialogTitle className="font-heading text-2xl font-semibold">
+            <DialogTitle className="text-xl font-bold">
               Дякуємо, звернення надіслано
             </DialogTitle>
             <DialogDescription className="text-[15px]">
               Відповідь прийде на {sentTo}.
             </DialogDescription>
             <Button
-              className="mt-2 h-12 w-full cursor-pointer rounded-xl text-[15px] font-bold"
+              className="mt-2 h-10 w-full rounded-xl text-[15px] font-semibold"
               onClick={() => onOpenChange(false)}
             >
               Зрозуміло
@@ -156,7 +157,7 @@ export default function FeedbackDialog({
         ) : (
           <>
             <DialogHeader className="text-left">
-              <DialogTitle className="font-heading text-2xl font-semibold">
+              <DialogTitle className="text-xl font-bold">
                 Зворотний зв'язок
               </DialogTitle>
               <DialogDescription>
@@ -170,7 +171,7 @@ export default function FeedbackDialog({
               className="flex flex-col gap-5"
             >
               <fieldset className="flex flex-col gap-2">
-                <legend className="mb-2 text-sm font-semibold">Тема</legend>
+                <legend className="mb-2 text-sm font-semibold">Тема <RequiredMark /></legend>
                 <div className="grid grid-cols-2 gap-2">
                   {FEEDBACK_TOPICS.map((t) => {
                     const Icon = TOPIC_ICONS[t.value];
@@ -182,10 +183,10 @@ export default function FeedbackDialog({
                         aria-pressed={active}
                         onClick={() => setTopic(t.value)}
                         className={cn(
-                          "flex h-13 cursor-pointer items-center gap-2.5 rounded-[10px] border px-3.5 text-left text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                          "flex h-13 cursor-pointer items-center gap-2.5 rounded-xl border px-3.5 text-left text-sm transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                           active
                             ? "border-[1.5px] border-primary bg-accent font-bold text-accent-foreground"
-                            : "border-input bg-card font-semibold text-foreground/75 hover:bg-muted",
+                            : "border-input bg-card font-semibold text-muted-foreground hover:bg-muted",
                         )}
                       >
                         <Icon className="size-5 shrink-0" />
@@ -211,7 +212,7 @@ export default function FeedbackDialog({
                     maxLength={512}
                     onChange={(e) => setLink(e.target.value)}
                     placeholder="Скопіюйте адресу сторінки"
-                    className="h-12 rounded-[10px] border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+                    className="h-12 rounded-xl border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
                   />
                   <span className="text-[13px] text-muted-foreground">
                     Щодо конкретного обміну краще відкрити спір на сторінці
@@ -222,7 +223,7 @@ export default function FeedbackDialog({
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="fb-email" className="text-sm font-semibold">
-                  Email для відповіді
+                  Email для відповіді <RequiredMark />
                 </label>
                 <input
                   id="fb-email"
@@ -231,7 +232,7 @@ export default function FeedbackDialog({
                   value={email}
                   maxLength={255}
                   onChange={(e) => setEmailDraft(e.target.value)}
-                  className="h-12 rounded-[10px] border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+                  className="h-12 rounded-xl border border-input bg-card px-3.5 text-[15px] outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
                 />
                 {me?.email && emailDraft === null && (
                   <span className="text-[13px] text-muted-foreground">
@@ -242,7 +243,7 @@ export default function FeedbackDialog({
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="fb-message" className="text-sm font-semibold">
-                  Повідомлення
+                  Повідомлення <RequiredMark />
                 </label>
                 <textarea
                   id="fb-message"
@@ -251,7 +252,7 @@ export default function FeedbackDialog({
                   maxLength={FEEDBACK_MESSAGE_MAX}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder={topicConfig.placeholder}
-                  className="resize-none rounded-[10px] border border-input bg-card px-3.5 py-3 text-[15px] leading-normal outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
+                  className="resize-none rounded-xl border border-input bg-card px-3.5 py-3 text-[15px] leading-normal outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/20"
                 />
                 <div className="flex items-center justify-between gap-3">
                   {isAuthenticated ? (
@@ -276,7 +277,7 @@ export default function FeedbackDialog({
                         type="button"
                         disabled={upload.isPending}
                         onClick={() => fileRef.current?.click()}
-                        className="flex h-10 cursor-pointer items-center gap-2 rounded-[10px] border border-dashed border-input px-3 text-sm font-semibold text-foreground/75 hover:bg-muted disabled:opacity-60"
+                        className="flex h-10 cursor-pointer items-center gap-2 rounded-xl border border-dashed border-input px-3 text-sm font-semibold text-muted-foreground hover:bg-muted disabled:opacity-60"
                       >
                         {upload.isPending ? (
                           <Spinner size={16} />
@@ -319,14 +320,14 @@ export default function FeedbackDialog({
                   variant="outline"
                   disabled={create.isPending}
                   onClick={() => handleOpenChange(false)}
-                  className="h-12 cursor-pointer rounded-[10px] px-5 text-[15px] font-semibold"
+                  className="h-10 cursor-pointer rounded-lg px-5 text-sm font-semibold"
                 >
                   Скасувати
                 </Button>
                 <Button
                   type="submit"
                   disabled={create.isPending || upload.isPending}
-                  className="h-12 cursor-pointer rounded-[10px] px-6 text-[15px] font-bold"
+                  className="h-10 cursor-pointer rounded-lg px-6 text-sm font-semibold"
                 >
                   {create.isPending ? "Надсилання..." : "Надіслати"}
                 </Button>

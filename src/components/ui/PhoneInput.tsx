@@ -89,7 +89,7 @@ export default function PhoneInput({
     >
       <span
         aria-hidden="true"
-        className="flex h-full select-none items-center border-r border-input pr-2 pl-2.5 text-base font-semibold text-foreground/80 md:text-sm"
+        className="flex h-full select-none items-center border-r border-input pr-2 pl-2.5 text-base font-semibold text-muted-foreground md:text-sm"
       >
         {PHONE_PREFIX}
       </span>

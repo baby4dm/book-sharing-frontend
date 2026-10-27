@@ -36,12 +36,12 @@ export default function ExchangeDeadlineCard({
 
   if (!progress.started || !progress.end) {
     return (
-      <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
+      <section className="flex flex-col gap-3 surface p-5">
         <span className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
           <IconHourglass size={17} />
           Термін читання
         </span>
-        <span className="font-heading text-2xl leading-tight font-semibold md:text-[28px]">
+        <span className="tabular text-2xl leading-tight font-bold md:text-[28px]">
           {pluralizeDays(exchange.readingDays)}
         </span>
         <p className="text-sm leading-snug text-muted-foreground">
@@ -79,7 +79,7 @@ export default function ExchangeDeadlineCard({
   return (
     <section
       className={cn(
-        "flex flex-col gap-4 rounded-2xl border bg-card p-5",
+        "flex flex-col gap-4 rounded-xl border bg-card p-5 shadow-xs",
         isOverdue ? "border-destructive/30" : "border-border",
       )}
     >
@@ -98,7 +98,7 @@ export default function ExchangeDeadlineCard({
                 ? "Відправити назад до"
                 : "Повернути до"}
           </span>
-          <span className="font-heading text-2xl leading-tight font-semibold md:text-[28px]">
+          <span className="tabular text-2xl leading-tight font-bold md:text-[28px]">
             {formatDayMonth(end)}
           </span>
           <span className="text-sm text-muted-foreground">
@@ -163,7 +163,7 @@ export default function ExchangeDeadlineCard({
           >
             <div
               className={cn(
-                "h-full rounded-full transition-all",
+                "h-full rounded-full transition-[width] duration-300 ease-out",
                 tone === "danger" && "bg-destructive",
                 tone === "warning" && "bg-warning",
                 tone === "ok" && "bg-primary",
@@ -191,7 +191,7 @@ export default function ExchangeDeadlineCard({
             <IconClockPlus size={16} />
             {isOwner ? "Читач просить більше часу" : "Запит надіслано"}
           </span>
-          <span className="text-sm text-foreground/80">
+          <span className="text-sm text-muted-foreground">
             +<strong>{pluralizeDays(pending.extraDays)}</strong> — орієнтовно до{" "}
             {formatDayMonth(addDays(end, pending.extraDays))}.{" "}
             {isOwner
@@ -215,7 +215,7 @@ export default function ExchangeDeadlineCard({
             Запит на продовження відхилено
           </span>
           {latestDecided.decisionComment && (
-            <span className="text-sm text-foreground/80">
+            <span className="text-sm text-muted-foreground">
               «{latestDecided.decisionComment}»
             </span>
           )}
@@ -227,7 +227,7 @@ export default function ExchangeDeadlineCard({
           <Button
             variant="outline"
             onClick={onRequestExtension}
-            className="h-11 w-full cursor-pointer gap-2 rounded-lg border-primary font-bold text-primary hover:bg-accent hover:text-accent-foreground"
+            className="h-10 w-full gap-2 rounded-lg border-primary font-semibold text-primary hover:bg-accent hover:text-accent-foreground"
           >
             <IconClockPlus size={18} />
             Попросити більше часу

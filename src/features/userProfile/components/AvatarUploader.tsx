@@ -26,7 +26,6 @@ export default function AvatarUploader({
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
-    // Скидаємо value, щоб повторний вибір того самого файлу теж спрацював
     e.target.value = "";
     if (!file) return;
 
@@ -49,12 +48,12 @@ export default function AvatarUploader({
   }
 
   return (
-    <div className="flex items-center gap-4 md:gap-[18px]">
+    <div className="flex items-center gap-4 md:gap-4.5">
       <div className="relative">
         <UserAvatar
           name={name || "?"}
           src={value}
-          className="h-20 w-20 md:h-[84px] md:w-[84px]"
+          className="h-20 w-20 md:h-21 md:w-21"
           fallbackClassName="text-4xl"
         />
         {isPending && (
@@ -68,7 +67,7 @@ export default function AvatarUploader({
         <Button
           type="button"
           variant="outline"
-          className="h-10 cursor-pointer rounded-[10px] px-4 font-bold"
+          className="h-10 cursor-pointer rounded-lg px-4 font-semibold"
           disabled={isPending}
           onClick={() => inputRef.current?.click()}
         >

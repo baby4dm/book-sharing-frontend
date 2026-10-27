@@ -34,14 +34,14 @@ export default function DisputeResolution({
         : "Спір завершено без санкцій.";
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5">
+    <section className="flex flex-col gap-3 surface p-5">
       <div className="flex items-start gap-3">
         <IconShieldCheck
           size={22}
-          className="mt-0.5 shrink-0 text-accent-vivid"
+          className="mt-0.5 shrink-0 text-primary"
         />
         <div className="flex flex-col gap-0.5">
-          <p className="text-base font-extrabold">{TITLES[dispute.status]}</p>
+          <p className="text-base font-bold">{TITLES[dispute.status]}</p>
           <p className="text-sm text-muted-foreground">
             {summary}
             {dispute.resolvedAt
@@ -53,7 +53,7 @@ export default function DisputeResolution({
 
       {dispute.resolutionComment && (
         <div className="flex flex-col gap-1.5">
-          <span className="text-xs font-extrabold uppercase tracking-wide text-muted-foreground">
+          <span className="field-label">
             Коментар модератора
             {dispute.moderatorName ? ` · ${dispute.moderatorName}` : ""}
           </span>

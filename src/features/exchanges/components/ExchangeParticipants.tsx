@@ -1,9 +1,8 @@
-import { useState } from "react";
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { IconStarFilled } from "@tabler/icons-react";
 import type { ExchangeParticipant } from "../types";
 import UserLink from "@/features/userProfile/components/UserLink";
 import OpenExchangeChatButton from "@/features/chats/components/OpenExchangeChatButton";
-import SmartImage from "@/components/ui/SmartImage";
 
 interface ParticipantCardProps {
   participant: ExchangeParticipant;
@@ -18,11 +17,10 @@ function ParticipantCard({
   isCurrentUser,
   exchangeId,
 }: ParticipantCardProps) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
 
   return (
-    <div className="flex min-w-0 flex-1 flex-col gap-3 rounded-2xl border border-border bg-card p-4">
-      <span className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+    <div className="flex min-w-0 flex-1 flex-col gap-3 surface p-4">
+      <span className="field-label">
         {role}
         {isCurrentUser && " · це ви"}
       </span>
@@ -31,24 +29,13 @@ function ParticipantCard({
         userId={participant.id}
         className="flex items-center gap-3 self-start"
       >
-        <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-base font-bold text-accent-foreground">
-          {participant.avatarUrl && !avatarFailed ? (
-            <SmartImage
-              src={participant.avatarUrl}
-              alt=""
-              className="size-full object-cover"
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            participant.name.substring(0, 1).toUpperCase()
-          )}
-        </div>
+        <UserAvatar name={participant.name} src={participant.avatarUrl} seed={participant.id} className="size-11" fallbackClassName="text-base" />
         <div className="flex min-w-0 flex-col">
           <span className="truncate font-semibold text-foreground underline-offset-2 group-hover:underline">
             {participant.name}
           </span>
           <span className="flex items-center gap-1 text-sm text-muted-foreground">
-            <IconStarFilled size={13} className="text-[#D99A1E]" />
+            <IconStarFilled size={13} className="text-star" />
             {Number(participant.ratingAvg).toFixed(1)}
           </span>
         </div>

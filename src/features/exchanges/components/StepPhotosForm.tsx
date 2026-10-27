@@ -55,6 +55,7 @@ export default function StepPhotosForm({
         onChange={setPhotos}
         onBusyChange={setIsUploading}
         label={label}
+        required
         disabled={isSubmitting}
       />
 
@@ -69,7 +70,7 @@ export default function StepPhotosForm({
 
       <Button
         disabled={!canSubmit}
-        className="h-11 w-full cursor-pointer rounded-lg px-5 font-bold sm:w-fit"
+        className="h-10 w-full rounded-lg px-5 font-semibold sm:w-fit"
         onClick={() => (confirm ? setDialogOpen(true) : submit())}
       >
         {isSubmitting && !confirm

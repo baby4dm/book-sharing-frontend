@@ -67,7 +67,7 @@ export default function ModerationFeedbackPage() {
   if (!isModerator) {
     return (
       <div className="flex flex-col items-center gap-3 px-4 py-20 text-center">
-        <p className="font-heading text-xl font-semibold">Немає доступу</p>
+        <p className="text-lg font-bold">Немає доступу</p>
         <p className="text-sm text-muted-foreground">
           Ця сторінка доступна лише модераторам.
         </p>
@@ -83,18 +83,16 @@ export default function ModerationFeedbackPage() {
 
   const tabClass = (active: boolean) =>
     cn(
-      "flex h-10 cursor-pointer items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors",
+      "flex h-10 cursor-pointer items-center gap-2 rounded-lg border px-4 text-sm font-semibold transition-colors",
       active
         ? "border-foreground bg-foreground text-background"
-        : "border-input bg-card text-foreground/80 hover:bg-muted",
+        : "border-input bg-card text-muted-foreground hover:bg-muted",
     );
 
   return (
     <section className="mx-auto flex w-full max-w-250 flex-col gap-5 px-4 pt-6 pb-16 md:px-8 md:pt-8">
       <div>
-        <h1 className="font-heading text-[28px] leading-tight font-semibold md:text-4xl">
-          Звернення
-        </h1>
+        <h1 className="page-title">Звернення</h1>
         <p className="mt-1.5 text-[15px] text-muted-foreground">
           Повідомлення з форми зворотного зв'язку. Відповідайте на email автора,
           а тут позначайте статус.
@@ -155,10 +153,10 @@ export default function ModerationFeedbackPage() {
               setPage(0);
             }}
             className={cn(
-              "h-8 cursor-pointer rounded-full border px-3 text-[13px] font-semibold",
+              "h-8 cursor-pointer rounded-lg border px-3 text-[13px] font-semibold",
               topic === t
                 ? "border-primary bg-accent text-accent-foreground"
-                : "border-input bg-card text-foreground/75 hover:bg-muted",
+                : "border-input bg-card text-muted-foreground hover:bg-muted",
             )}
           >
             {t ? FEEDBACK_TOPIC_LABELS[t] : "Усі"}
@@ -171,7 +169,7 @@ export default function ModerationFeedbackPage() {
           <Spinner size={28} />
         </div>
       ) : isError || !data ? (
-        <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="flex flex-col items-center gap-3 surface p-8 text-center">
           <p className="text-sm text-muted-foreground">
             Не вдалося завантажити звернення.
           </p>
@@ -184,7 +182,7 @@ export default function ModerationFeedbackPage() {
           </Button>
         </div>
       ) : data.items.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-input bg-card/60 p-10 text-center text-sm text-muted-foreground">
+        <p className="rounded-xl border border-dashed border-input bg-card/60 p-10 text-center text-sm text-muted-foreground">
           Звернень з такими фільтрами немає.
         </p>
       ) : (
@@ -254,7 +252,7 @@ function FeedbackCard({ item }: { item: FeedbackResponse }) {
   );
 
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5">
+    <article className="flex flex-col gap-4 surface p-5">
       <header className="flex flex-wrap items-center gap-3">
         <span
           className={cn(
@@ -272,9 +270,10 @@ function FeedbackCard({ item }: { item: FeedbackResponse }) {
             >
               <UserAvatar
                 name={item.userName}
+                seed={item.userId}
                 src={item.userAvatarUrl}
                 className="size-7"
-                fallbackClassName="font-sans text-xs font-extrabold"
+                fallbackClassName="font-sans text-xs font-bold"
               />
               <span className="truncate text-sm font-bold underline-offset-2 group-hover:underline">
                 {item.userName}
@@ -386,7 +385,7 @@ function FeedbackCard({ item }: { item: FeedbackResponse }) {
                 "h-9 cursor-pointer rounded-[9px] px-3 text-sm transition-colors disabled:cursor-wait",
                 item.status === s.value
                   ? "bg-card font-bold shadow-sm"
-                  : "font-semibold text-foreground/70 hover:text-foreground",
+                  : "font-semibold text-muted-foreground hover:text-foreground",
               )}
             >
               {s.label}

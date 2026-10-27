@@ -6,10 +6,15 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IconMessageCircle } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconMessageCircle,
+  IconMessageOff,
+} from "@tabler/icons-react";
 import { getChatRoomByExchange, getChatRoomWithUser } from "@/api/chats";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
+import EmptyState from "@/components/ui/empty-state";
 import { getErrorMessage } from "@/features/exchanges/utils/getErrorMessage";
 
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
@@ -64,23 +69,44 @@ export default function ChatPage() {
 
   return (
     <div className="mx-auto w-full max-w-295 md:px-6 md:py-6 xl:px-12">
-      <div className="flex h-[calc(100dvh-60px)] overflow-hidden bg-card md:h-[calc(100dvh-60px-48px)] md:rounded-[20px] md:border md:border-border lg:h-[calc(100dvh-72px-48px)]">
+      <h1 className="sr-only">Чат</h1>
+      <div
+        className={cn(
+          "flex overflow-hidden bg-card md:rounded-xl md:border md:border-border md:shadow-xs lg:h-[calc(100dvh-64px-48px)]",
+          roomId
+            ? "h-[calc(100dvh-56px)] md:h-[calc(100dvh-56px-48px)]"
+            : "h-[calc(100dvh-56px-4rem-env(safe-area-inset-bottom))] md:h-[calc(100dvh-56px-4rem-48px)]",
+        )}
+      >
         {loading ? (
-          <div className="flex flex-1 items-center justify-center">
-            <Spinner size={28} />
+          <div aria-busy="true" className="flex flex-1">
+            <div className="flex w-full flex-col gap-1 p-3 md:w-[320px] md:border-r md:border-border lg:w-85">
+              <Skeleton className="mx-1 mb-3 h-7 w-16" />
+              <Skeleton className="mx-1 mb-2 h-9" />
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex gap-3 px-1 py-2">
+                  <Skeleton className="size-10 rounded-full" />
+                  <div className="flex flex-1 flex-col gap-2 pt-0.5">
+                    <Skeleton className="h-3.5 w-2/3" />
+                    <Skeleton className="h-3 w-1/2" />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="hidden flex-1 bg-background md:block" />
           </div>
         ) : roomsQuery.isError ? (
-          <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-            <p className="font-heading text-lg font-semibold">
-              Не вдалося завантажити чати
-            </p>
-            <Button
-              className="cursor-pointer"
-              onClick={() => roomsQuery.refetch()}
-            >
-              Спробувати ще раз
-            </Button>
-          </div>
+          <EmptyState
+            className="flex-1 justify-center"
+            icon={IconAlertTriangle}
+            title="Не вдалося завантажити чати"
+            description="Перевірте з'єднання і спробуйте ще раз."
+            action={
+              <Button variant="outline" onClick={() => roomsQuery.refetch()}>
+                Спробувати ще раз
+              </Button>
+            }
+          />
         ) : target && resolveRoom.isError ? (
           <NotFound
             text={getErrorMessage(
@@ -92,7 +118,7 @@ export default function ChatPage() {
           <>
             <aside
               className={cn(
-                "h-full w-full min-w-0 border-border/70 md:w-[320px] md:shrink-0 md:border-r lg:w-85",
+                "h-full w-full min-w-0 border-border md:w-[320px] md:shrink-0 md:border-r lg:w-85",
                 roomId ? "hidden md:block" : "block",
               )}
             >
@@ -114,13 +140,12 @@ export default function ChatPage() {
               ) : roomId ? (
                 <NotFound text="Розмову не знайдено або у вас немає до неї доступу." />
               ) : (
-                <div className="flex flex-1 flex-col items-center justify-center gap-2 bg-[#FAF9F6] p-6 text-center">
-                  <IconMessageCircle className="size-10 text-muted-foreground/50" />
-                  <p className="font-semibold">Оберіть розмову</p>
-                  <p className="max-w-xs text-sm text-muted-foreground">
-                    Тут ви домовляєтесь про передачу й повернення книги.
-                  </p>
-                </div>
+                <EmptyState
+                  className="flex-1 justify-center bg-background"
+                  icon={IconMessageCircle}
+                  title="Оберіть розмову"
+                  description="Тут ви домовляєтесь про передачу й повернення книги."
+                />
               )}
             </div>
           </>
@@ -132,14 +157,20 @@ export default function ChatPage() {
 
 function NotFound({ text }: { text: string }) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center">
-      <p className="text-sm text-muted-foreground">{text}</p>
-      <Link
-        to="/chat"
-        className="text-sm font-bold text-primary hover:underline"
-      >
-        До списку розмов
-      </Link>
-    </div>
+    <EmptyState
+      className="flex-1 justify-center bg-background"
+      icon={IconMessageOff}
+      title="Розмову не знайдено"
+      description={text}
+      action={
+        <Button
+          variant="outline"
+          nativeButton={false}
+          render={<Link to="/chat" />}
+        >
+          До списку розмов
+        </Button>
+      }
+    />
   );
 }

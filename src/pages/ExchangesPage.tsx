@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { IconArrowsExchange } from "@tabler/icons-react";
+import { IconAlertTriangle, IconArrowsExchange, IconFilterOff } from "@tabler/icons-react";
+import { AnimatePresence, motion } from "motion/react";
+import { listItemMotion } from "@/lib/motion";
+import EmptyState from "@/components/ui/empty-state";
+import BookRowSkeleton from "@/components/layout/BookRowSkeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/Spinner";
 import { cn } from "@/lib/utils";
 import Pagination from "@/features/requests/components/Pagination";
 import ExchangeCard from "@/features/exchanges/components/ExchangeCard";
@@ -62,9 +66,10 @@ export default function ExchangesPage() {
 
   if (isProfileLoading) {
     return (
-      <div className="flex justify-center py-16">
-        <Spinner size={28} />
-      </div>
+      <section className="mx-auto flex w-full max-w-236 flex-col gap-6 px-4 pt-6 pb-16 md:px-8 lg:pt-8">
+        <Skeleton className="h-8 w-44" />
+        <BookRowSkeleton />
+      </section>
     );
   }
   if (!profile) return null;
@@ -75,9 +80,9 @@ export default function ExchangesPage() {
       : null;
 
   return (
-    <section className="mx-auto flex w-full max-w-236 flex-col gap-6 px-4 pb-16 pt-6 md:px-8">
+    <section className="mx-auto flex w-full max-w-236 flex-col gap-5 px-4 pt-6 pb-16 md:px-8 lg:gap-6 lg:pt-8">
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <h1 className="font-heading text-3xl font-semibold md:text-4xl">
+        <h1 className="page-title">
           Мої обміни
         </h1>
         <ExchangeRoleSwitch
@@ -94,59 +99,65 @@ export default function ExchangesPage() {
       />
 
       {isPending ? (
-        <div className="flex justify-center py-12">
-          <Spinner size={24} />
-        </div>
+        <BookRowSkeleton />
       ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-12 text-center">
-          <p className="text-sm text-destructive">
-            Не вдалось завантажити обміни
-          </p>
-          {hasActiveFilters && (
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={reset}
-            >
-              Скинути фільтри
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          framed
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити обміни"
+          description="Перевірте з'єднання і спробуйте ще раз."
+          action={
+            hasActiveFilters ? (
+              <Button variant="outline" onClick={reset}>
+                Скинути фільтри
+              </Button>
+            ) : undefined
+          }
+        />
       ) : data.items.length === 0 ? (
-        <EmptyState hasActiveFilters={hasActiveFilters} onReset={reset} />
+        <ExchangesEmpty hasActiveFilters={hasActiveFilters} onReset={reset} />
       ) : (
         <>
           <div
             aria-busy={isPlaceholderData}
             className={cn(
-              "flex flex-col gap-7 transition-opacity",
+              "flex flex-col gap-8 transition-opacity duration-200",
               isPlaceholderData && "pointer-events-none opacity-60",
             )}
           >
             {groups ? (
               groups.map((group) => (
-                <section key={group.key} className="stagger-in flex flex-col gap-3">
-                  <h2 className="text-xs font-extrabold uppercase tracking-wider text-muted-foreground">
-                    {group.title} · {group.items.length}
+                <section key={group.key} className="flex flex-col gap-3">
+                  <h2 className="flex items-baseline gap-2 section-title">
+                    {group.title}
+                    <span className="tabular text-[13px] font-medium text-muted-foreground">
+                      {group.items.length}
+                    </span>
                   </h2>
-                  {group.items.map((exchange) => (
-                    <ExchangeCard
-                      key={exchange.id}
-                      exchange={exchange}
-                      currentUserId={profile.id}
-                    />
-                  ))}
+                  <AnimatePresence initial={false} mode="popLayout">
+                    {group.items.map((exchange) => (
+                      <motion.div key={exchange.id} layout {...listItemMotion}>
+                        <ExchangeCard
+                          exchange={exchange}
+                          currentUserId={profile.id}
+                        />
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
                 </section>
               ))
             ) : (
-              <div className="stagger-in flex flex-col gap-3">
-                {data.items.map((exchange) => (
-                  <ExchangeCard
-                    key={exchange.id}
-                    exchange={exchange}
-                    currentUserId={profile.id}
-                  />
-                ))}
+              <div className="flex flex-col gap-3">
+                <AnimatePresence initial={false} mode="popLayout">
+                  {data.items.map((exchange) => (
+                    <motion.div key={exchange.id} layout {...listItemMotion}>
+                      <ExchangeCard
+                        exchange={exchange}
+                        currentUserId={profile.id}
+                      />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
           </div>
@@ -164,7 +175,7 @@ export default function ExchangesPage() {
   );
 }
 
-function EmptyState({
+function ExchangesEmpty({
   hasActiveFilters,
   onReset,
 }: {
@@ -173,37 +184,31 @@ function EmptyState({
 }) {
   if (hasActiveFilters) {
     return (
-      <div className="flex flex-col items-center gap-4 py-12 text-center">
-        <p className="text-sm text-muted-foreground">
-          За цими умовами обмінів не знайдено
-        </p>
-        <Button className="cursor-pointer" onClick={onReset}>
-          Скинути фільтри
-        </Button>
-      </div>
+      <EmptyState
+        framed
+        icon={IconFilterOff}
+        title="За цими умовами обмінів немає"
+        description="Спробуйте інший статус чи спосіб доставки або скиньте фільтри."
+        action={
+          <Button variant="outline" onClick={onReset}>
+            Скинути фільтри
+          </Button>
+        }
+      />
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 rounded-2xl border border-dashed border-input px-6 py-14 text-center">
-      <div className="flex size-14 items-center justify-center rounded-full bg-accent">
-        <IconArrowsExchange size={26} className="text-accent-vivid" />
-      </div>
-      <div className="flex flex-col gap-1">
-        <p className="font-heading text-xl font-semibold">
-          Поки що немає обмінів
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Знайдіть книгу в каталозі й подайте заявку — після підтвердження тут
-          з'явиться обмін.
-        </p>
-      </div>
-      <Link
-        to="/"
-        className="inline-flex h-11 items-center rounded-lg bg-primary px-5 text-sm font-bold text-primary-foreground hover:bg-primary/90"
-      >
-        До каталогу
-      </Link>
-    </div>
+    <EmptyState
+      framed
+      icon={IconArrowsExchange}
+      title="Обмінів поки немає"
+      description="Знайдіть книгу в каталозі й подайте заявку — після підтвердження тут з'явиться обмін."
+      action={
+        <Button nativeButton={false} render={<Link to="/" />}>
+          Перейти до каталогу
+        </Button>
+      }
+    />
   );
 }

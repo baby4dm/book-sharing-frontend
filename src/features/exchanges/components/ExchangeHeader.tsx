@@ -37,9 +37,9 @@ export default function ExchangeHeader({
       </div>
 
       <div className="flex min-w-0 flex-1 flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col-reverse items-start gap-2 sm:flex-row sm:justify-between sm:gap-3">
           <div className="min-w-0">
-            <h1 className="font-heading text-xl font-bold leading-tight md:text-3xl">
+            <h1 className="book-title text-[22px] leading-tight wrap-break-word md:text-[28px]">
               {exchange.bookTitle}
             </h1>
             {exchange.bookAuthor && (
@@ -49,14 +49,14 @@ export default function ExchangeHeader({
             )}
           </div>
           <span
-            className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold md:text-[13px] ${status.bgColor} ${status.color}`}
+            className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold md:text-[13px] ${status.bgColor} ${status.color}`}
           >
             <status.icon size={14} className="stroke-[2.4]" />
             {status.label}
           </span>
         </div>
 
-        <span className="inline-flex w-fit items-center gap-1.5 rounded-lg bg-muted px-2.5 py-1.5 text-xs font-semibold text-muted-foreground">
+        <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-tint-neutral px-2.5 py-1 text-xs font-medium text-tint-neutral-ink">
           <IconBox size={15} />
           {DELIVERY_METHODS[exchange.deliveryMethod]}
         </span>

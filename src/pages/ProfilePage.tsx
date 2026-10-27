@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Spinner } from "@/components/ui/Spinner";
+import ProfileSkeleton from "@/features/userProfile/components/ProfileSkeleton";
 import QueryErrorState from "@/components/errors/QueryErrorState";
 import ProfileEditingForm from "@/features/userProfile/components/ProfileEditingForm";
 import ProfileReviews from "@/features/userProfile/components/ProfileReviews";
@@ -15,11 +15,7 @@ export default function ProfilePage() {
   const { data: reviewsData } = useUserReviews(data?.id);
 
   if (isPending) {
-    return (
-      <section className="flex w-full justify-center py-24">
-        <Spinner size={28} />
-      </section>
-    );
+    return <ProfileSkeleton />;
   }
 
   if (isError) {
@@ -35,7 +31,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-295 flex-col items-start gap-4 px-4 pt-6 pb-20 md:gap-6 md:px-8 md:pt-8 lg:flex-row lg:px-12">
+    <section className="mx-auto flex w-full max-w-295 flex-col items-start gap-4 px-4 pt-6 pb-20 md:gap-6 md:px-8 lg:flex-row lg:px-12 lg:pt-8">
       <ProfileView userData={data} onEditing={setIsEditing} />
 
       <div className="flex w-full min-w-0 flex-1 flex-col gap-4 md:gap-6">

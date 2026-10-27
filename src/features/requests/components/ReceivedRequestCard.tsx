@@ -1,3 +1,4 @@
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { AxiosError } from "axios";
@@ -19,14 +20,12 @@ import RejectReasonDialog from "./RejectReasonDialog";
 import UserLink from "@/features/userProfile/components/UserLink";
 import { cn } from "cn";
 import BookCardCover from "@/components/layout/BookCardCover";
-import SmartImage from "@/components/ui/SmartImage";
 
 interface RequestCardProps {
   request: RequestResponse;
 }
 
 export default function ReceivedRequestCard({ request }: RequestCardProps) {
-  const [avatarFailed, setAvatarFailed] = useState(false);
   const [rejectDialogIsOpen, setRejectDialogIsOpen] = useState(false);
   const {
     mutate: approve,
@@ -53,7 +52,7 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
   return (
     <article
       className={cn(
-        "flex w-full max-w-220 flex-col gap-4 rounded-2xl border border-border p-4 sm:flex-row md:gap-5 md:p-5",
+        "flex w-full max-w-220 flex-col gap-4 surface p-4 sm:flex-row md:gap-5 md:p-5",
         isCancelled ? "bg-card/60" : "bg-card",
       )}
     >
@@ -68,7 +67,7 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           <Link
             to={`/listings/${request.listingId}`}
             className={cn(
-              "font-heading text-lg font-semibold leading-tight hover:underline md:text-xl",
+              "book-title text-lg leading-tight hover:underline md:text-xl",
               isCancelled ? "text-muted-foreground" : "text-foreground",
             )}
           >
@@ -91,24 +90,13 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
             userId={request.requesterId}
             className="inline-flex items-center gap-2.5"
           >
-            <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-[13px] font-bold text-accent-foreground">
-              {request.requesterAvatarUrl && !avatarFailed ? (
-                <SmartImage
-                  src={request.requesterAvatarUrl}
-                  alt=""
-                  className="size-full object-cover"
-                  onError={() => setAvatarFailed(true)}
-                />
-              ) : (
-                request.requesterName.substring(0, 1).toUpperCase()
-              )}
-            </div>
+            <UserAvatar name={request.requesterName} src={request.requesterAvatarUrl} seed={request.requesterId} className="size-8" fallbackClassName="text-[13px]" />
             <span className="text-[15px] font-semibold text-foreground underline-offset-2 group-hover:underline">
               {request.requesterName}
             </span>
           </UserLink>
           <span className="flex items-center gap-1 text-muted-foreground">
-            <IconStarFilled size={13} className="text-[#D99A1E]" />
+            <IconStarFilled size={13} className="text-star" />
             {Number(request.requesterRatingAvg).toFixed(1)}
           </span>
           <span className="text-[13px] text-muted-foreground">
@@ -119,11 +107,11 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         {!isCancelled && (
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <IconClock size={15} className="text-accent-vivid" />
+              <IconClock size={15} className="text-primary" />
               {pluralizeDays(request.readingDays)} на читання
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-lg bg-background px-2.5 py-1.5 text-[13px] font-semibold text-muted-foreground">
-              <DeliveryIcon size={15} className="text-accent-vivid" />
+              <DeliveryIcon size={15} className="text-primary" />
               {DELIVERY_METHODS[request.preferredDeliveryMethod]}
             </span>
           </div>
@@ -137,10 +125,10 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
 
         {request.status === "REJECTED" && request.rejectComment?.trim() && (
           <div className="flex flex-col gap-1 rounded-lg bg-destructive/5 px-3.5 py-3">
-            <span className="text-xs font-bold uppercase tracking-wide text-destructive">
+            <span className="text-[13px] font-semibold text-destructive">
               Ваша причина відмови
             </span>
-            <p className="text-sm leading-relaxed text-foreground/80">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {request.rejectComment}
             </p>
           </div>
@@ -159,14 +147,14 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
           <div className="mt-1 flex gap-2.5">
             <Button
               variant="outline"
-              className="h-11 flex-1 cursor-pointer rounded-lg px-5 font-semibold sm:flex-none"
+              className="flex-1 sm:flex-none"
               disabled={isApproving}
               onClick={() => setRejectDialogIsOpen(true)}
             >
               Відхилити
             </Button>
             <Button
-              className="h-11 flex-1 cursor-pointer rounded-lg px-6 font-bold sm:flex-none"
+              className="flex-1 sm:flex-none"
               disabled={isApproving}
               onClick={() => approve(request.id)}
             >
@@ -178,7 +166,7 @@ export default function ReceivedRequestCard({ request }: RequestCardProps) {
         {request.status === "ACTIVE" && request.exchangeId && (
           <Link
             to={`/exchanges/${request.exchangeId}`}
-            className="inline-flex h-10 w-fit items-center gap-1.5 text-sm font-bold text-accent-vivid hover:underline"
+            className="inline-flex h-8 w-fit items-center gap-1.5 rounded-sm text-sm font-semibold text-primary hover:underline"
           >
             Перейти до обміну
             <IconArrowRight size={16} />

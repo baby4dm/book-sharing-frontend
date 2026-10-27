@@ -1,3 +1,4 @@
+import UserAvatar from "@/features/userProfile/components/UserAvatar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,7 +7,6 @@ import { formatDayMonth, formatRelativeTime, pluralizeDays } from "@/lib/utils";
 import type { DeadlineExtensionResponse, ExchangeParticipant } from "../types";
 import { addDays } from "../utils/extensions";
 import { getErrorMessage } from "../utils/getErrorMessage";
-import SmartImage from "@/components/ui/SmartImage";
 
 interface ExtensionDecisionCardProps {
   request: DeadlineExtensionResponse;
@@ -29,7 +29,6 @@ export default function ExtensionDecisionCard({
     "approve" | "reject" | null
   >(null);
   const [error, setError] = useState<string | null>(null);
-  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const extraDays = request.extraDays;
   const proposedDeadline = currentDeadline
@@ -53,21 +52,10 @@ export default function ExtensionDecisionCard({
   return (
     <section
       aria-label="Запит на продовження дедлайну"
-      className="flex flex-col gap-4 rounded-2xl border border-warning/40 bg-card p-5"
+      className="flex flex-col gap-4 rounded-xl border border-warning/40 bg-card p-5"
     >
       <div className="flex items-center gap-3">
-        <div className="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent text-sm font-bold text-accent-foreground">
-          {reader.avatarUrl && !avatarFailed ? (
-            <SmartImage
-              src={reader.avatarUrl}
-              alt=""
-              className="size-full object-cover"
-              onError={() => setAvatarFailed(true)}
-            />
-          ) : (
-            reader.name.substring(0, 1).toUpperCase()
-          )}
-        </div>
+        <UserAvatar name={reader.name} src={reader.avatarUrl} seed={reader.id} className="size-10" fallbackClassName="text-sm" />
         <div className="min-w-0">
           <p className="font-bold">{reader.name} просить більше часу</p>
           <p className="text-[13px] text-muted-foreground">
@@ -131,7 +119,7 @@ export default function ExtensionDecisionCard({
       {mode === "idle" ? (
         <div className="grid grid-cols-2 gap-2.5">
           <Button
-            className="h-11 cursor-pointer rounded-lg font-bold"
+            className="h-10 rounded-lg font-semibold"
             disabled={isBusy}
             onClick={() => run("approve")}
           >
@@ -139,7 +127,7 @@ export default function ExtensionDecisionCard({
           </Button>
           <Button
             variant="outline"
-            className="h-11 cursor-pointer rounded-lg font-semibold"
+            className="h-10 rounded-lg font-semibold"
             disabled={isBusy}
             onClick={() => setMode("rejecting")}
           >
@@ -150,7 +138,7 @@ export default function ExtensionDecisionCard({
         <div className="grid grid-cols-2 gap-2.5">
           <Button
             variant="outline"
-            className="h-11 cursor-pointer rounded-lg font-semibold"
+            className="h-10 rounded-lg font-semibold"
             disabled={isBusy}
             onClick={() => {
               setMode("idle");
@@ -160,7 +148,7 @@ export default function ExtensionDecisionCard({
             Назад
           </Button>
           <Button
-            className="h-11 cursor-pointer rounded-lg bg-destructive font-bold text-white hover:bg-destructive/90"
+            className="h-10 rounded-lg bg-destructive font-semibold text-white hover:bg-destructive/90"
             disabled={isBusy}
             onClick={() => run("reject")}
           >

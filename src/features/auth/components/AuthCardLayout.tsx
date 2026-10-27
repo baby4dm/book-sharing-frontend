@@ -12,17 +12,22 @@ export default function AuthCardLayout({
   children,
 }: AuthCardLayoutProps) {
   return (
-    <main className="bg-bg w-full min-h-dvh flex items-center px-2 py-5 md:px-12 justify-center">
+    <main className="relative isolate flex min-h-dvh w-full items-center justify-center overflow-hidden px-3 py-6 md:px-12">
+      <div
+        aria-hidden="true"
+        className="auth-bg-zoom absolute inset-0 -z-20 bg-[#2A1E14] bg-[url('/auth-bg.jpg')] bg-cover bg-center"
+      />
+      <div aria-hidden="true" className="absolute inset-0 -z-10 bg-black/55" />
       <section
-        className="border-2 border-border rounded-[14px] py-7
-       px-5.5 w-full flex flex-col gap-5.5 md:px-14 md:py-10 md:max-w-160 lg:max-w-260 md:items-center shadow-lg
+        className="animate-rise w-full flex flex-col gap-5.5 surface px-5.5 py-7
+       shadow-[0_16px_40px_-16px_rgba(0,0,0,0.5)] md:max-w-160 md:items-center md:px-14 md:py-10 lg:max-w-260
        lg:flex-row lg:justify-center"
       >
         <div className="flex flex-col gap-5.5 items-start w-full md:items-center md:text-center">
           <img
             className="h-5 lg:h-7 dark:invert"
             src="/logo.svg"
-            alt="Book share logo"
+            alt="bookshare"
           />
           <div className="flex flex-col gap-2">
             {title}

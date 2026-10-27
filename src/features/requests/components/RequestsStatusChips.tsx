@@ -22,7 +22,7 @@ const RequestStatusChips = ({
   total,
   onChange,
 }: RequestStatusChipsProps) => (
-  <div className="flex flex-wrap gap-2">
+  <div className="flex flex-wrap gap-1.5">
     {CHIPS.map((chip) => {
       const count = chip.value === null ? total : counts?.[chip.value];
       const selected = chip.value === value;
@@ -34,16 +34,25 @@ const RequestStatusChips = ({
           aria-pressed={selected}
           onClick={() => onChange(chip.value)}
           className={cn(
-            "cursor-pointer rounded-full border px-3 py-1.5 text-sm font-medium transition-colors",
+            "inline-flex h-8 cursor-pointer items-center rounded-md border px-2.5 text-[13px] font-medium transition-[background-color,border-color,color,scale] duration-150 ease-out outline-none select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-[0.97]",
             selected
-              ? "border-accent-vivid bg-accent-vivid text-white"
-              : "border-input bg-card hover:bg-muted",
+              ? "border-ring/40 bg-accent font-semibold text-accent-foreground"
+              : "border-input bg-card text-foreground shadow-xs hover:border-border-strong hover:bg-muted",
             !selected && count === 0 && "text-muted-foreground",
           )}
         >
           {chip.label}
           {count !== undefined && (
-            <span className="ml-1.5 opacity-70">· {count}</span>
+            <span
+              className={cn(
+                "tabular ml-1.5",
+                selected
+                  ? "text-accent-foreground/70"
+                  : "text-muted-foreground",
+              )}
+            >
+              {count}
+            </span>
           )}
         </button>
       );

@@ -1,3 +1,8 @@
+import { AnimatePresence, motion } from "motion/react";
+import { listItemMotion } from "@/lib/motion";
+import EmptyState from "@/components/ui/empty-state";
+import BookRowSkeleton from "@/components/layout/BookRowSkeleton";
+import { IconAlertTriangle, IconFilterOff, IconInbox } from "@tabler/icons-react";
 import { useEffect } from "react";
 import { useRequestsFilters } from "../hooks/useRequestsFilters";
 import { useRequestsList } from "../hooks/useRequestsList";
@@ -53,53 +58,62 @@ export default function ReceivedRequestsList({
       />
 
       {isPending ? (
-        <p className="py-8 text-center text-sm text-muted-foreground">
-          Завантаження...
-        </p>
+        <BookRowSkeleton />
       ) : isError ? (
-        <div className="flex flex-col items-center gap-3 py-8 text-center">
-          <p className="text-sm text-destructive">
-            Не вдалось завантажити заявки
-          </p>
-          {hasActiveFilters && (
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={reset}
-            >
-              Скинути фільтри
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          framed
+          className="w-full max-w-220"
+          icon={IconAlertTriangle}
+          title="Не вдалося завантажити заявки"
+          description="Перевірте з'єднання і спробуйте ще раз."
+          action={
+            hasActiveFilters ? (
+              <Button variant="outline" onClick={reset}>
+                Скинути фільтри
+              </Button>
+            ) : undefined
+          }
+        />
       ) : data.items.length === 0 ? (
-        <div className="flex flex-col items-center gap-4 py-8 text-center">
-          <p className="text-sm text-muted-foreground">
-            {hasActiveFilters
-              ? "За цими умовами нічого не знайдено"
-              : "Вам ще не надсилали заявок"}
-          </p>
-          {hasActiveFilters && (
-            <Button
-              className="w-fit cursor-pointer"
-              type="button"
-              onClick={reset}
-            >
-              Скинути фільтри
-            </Button>
-          )}
-        </div>
+        <EmptyState
+          framed
+          className="w-full max-w-220"
+          icon={hasActiveFilters ? IconFilterOff : IconInbox}
+          title={hasActiveFilters ? "За цими умовами нічого немає" : "Вам ще не надсилали заявок"}
+          description={
+            hasActiveFilters
+              ? "Спробуйте інший статус чи спосіб доставки або скиньте фільтри."
+              : "Коли хтось захоче почитати вашу книгу, заявка з'явиться тут."
+          }
+          action={
+            hasActiveFilters ? (
+              <Button variant="outline" onClick={reset}>
+                Скинути фільтри
+              </Button>
+            ) : undefined
+          }
+        />
       ) : (
         <>
           <div
             aria-busy={isPlaceholderData}
             className={cn(
-              "stagger-in flex w-full flex-col items-center gap-4 transition-opacity",
+              "flex w-full flex-col items-center gap-3 transition-opacity duration-200",
               isPlaceholderData && "pointer-events-none opacity-60",
             )}
           >
-            {data.items.map((req) => (
-              <ReceivedRequestCard key={req.id} request={req} />
-            ))}
+            <AnimatePresence initial={false} mode="popLayout">
+              {data.items.map((req) => (
+                <motion.div
+                  key={req.id}
+                  layout
+                  {...listItemMotion}
+                  className="flex w-full justify-center"
+                >
+                  <ReceivedRequestCard request={req} />
+                </motion.div>
+              ))}
+            </AnimatePresence>
           </div>
 
           {data.totalPages > 1 && (
