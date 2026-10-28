@@ -5,7 +5,11 @@ import type { UserReview } from "../types";
 import { useUserReviews } from "../hooks/useUserReviews";
 import UserAvatar from "./UserAvatar";
 import UserLink from "./UserLink";
-import { IconAlertTriangle, IconMessageStar, IconStarFilled } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconMessageStar,
+  IconStarFilled,
+} from "@tabler/icons-react";
 
 interface ProfileReviewsProps {
   userId: string;
@@ -24,11 +28,7 @@ function formatReviewDate(iso: string): string {
 
 function ReviewStars({ rating }: { rating: number }) {
   return (
-    <div
-      role="img"
-      aria-label={`${rating} з 5`}
-      className="flex gap-0.5"
-    >
+    <div role="img" aria-label={`${rating} з 5`} className="flex gap-0.5">
       {Array.from({ length: 5 }, (_, i) => (
         <IconStarFilled
           key={i}

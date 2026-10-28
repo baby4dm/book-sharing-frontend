@@ -10,7 +10,7 @@ import {
 } from "@tabler/icons-react";
 import QueryErrorState from "@/components/errors/QueryErrorState";
 import BookCardCover from "@/components/layout/BookCardCover";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import SmartImage from "@/components/ui/SmartImage";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -481,17 +481,6 @@ export default function ModerationDisputePage() {
             </p>
           )}
         </div>
-        <Link
-          to={`/exchanges/${dispute.exchangeId}`}
-          className={buttonVariants({
-            variant: "outline",
-            size: "sm",
-            className: "w-fit",
-          })}
-        >
-          Сторінка обміну
-          <IconArrowUpRight />
-        </Link>
       </header>
 
       <DisputeBody dispute={dispute} />

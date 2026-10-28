@@ -18,6 +18,7 @@ interface ListingRequestQueueProps {
   listingStatus: ListingStatus;
   currentUserId: string | null;
   isOwner: boolean;
+  isModerator?: boolean;
 }
 
 export default function ListingRequestQueue({
@@ -27,6 +28,7 @@ export default function ListingRequestQueue({
   listingStatus,
   currentUserId,
   isOwner,
+  isModerator = false,
 }: ListingRequestQueueProps) {
   const items = requests ? getActiveRequests(requests, listingStatus) : [];
   const pendingCount = items.filter((r) => r.status === "PENDING").length;
@@ -78,7 +80,7 @@ export default function ListingRequestQueue({
         </p>
       ) : items.length === 0 ? (
         <p className="text-sm text-muted-foreground">
-          {isOwner
+          {isOwner || isModerator
             ? "Поки ніхто не подав заявку на цю книгу."
             : "Заявок поки немає — ваша може бути першою."}
         </p>
@@ -117,7 +119,7 @@ export default function ListingRequestQueue({
                 >
                   <UserAvatar
                     name={request.requesterName}
-          seed={request.requesterId}
+                    seed={request.requesterId}
                     src={request.requesterAvatarUrl}
                     className="size-10"
                     fallbackClassName="font-sans text-sm font-bold"

@@ -23,7 +23,7 @@ export interface UserResponse {
 
 export type PublicUserProfile = Omit<
   UserResponse,
-  "email" | "role" | "status" | "restrictedUntil"
+  "email" | "status" | "restrictedUntil"
 >;
 
 export interface UpdateProfilePayload {

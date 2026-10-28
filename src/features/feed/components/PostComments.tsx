@@ -30,6 +30,7 @@ export default function PostComments({
   isAuthenticated,
 }: PostCommentsProps) {
   const [showAll, setShowAll] = useState(false);
+  const isStaff = isModeratorRole(currentUser?.role);
   const {
     data: comments,
     isPending,
@@ -77,7 +78,8 @@ export default function PostComments({
           )}
           {visible.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Коментарів ще немає.{currentUser ? " Напишіть перший." : ""}
+              Коментарів ще немає.
+              {currentUser && !isStaff ? " Напишіть перший." : ""}
             </p>
           ) : (
             <ul className="flex flex-col gap-3.5">
@@ -86,10 +88,7 @@ export default function PostComments({
                   key={comment.id}
                   comment={comment}
                   postId={postId}
-                  canModerate={
-                    isModeratorRole(currentUser?.role) &&
-                    currentUser?.id !== comment.authorId
-                  }
+                  canModerate={isStaff && currentUser?.id !== comment.authorId}
                 />
               ))}
             </ul>
@@ -97,7 +96,7 @@ export default function PostComments({
         </>
       )}
 
-      {currentUser ? (
+      {isStaff ? null : currentUser ? (
         <CommentForm postId={postId} currentUser={currentUser} />
       ) : isAuthenticated ? null : (
         <p className="text-sm text-muted-foreground">

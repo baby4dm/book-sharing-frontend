@@ -1,5 +1,10 @@
 import { Link } from "react-router-dom";
-import { IconMail, IconMessageCircle, IconPlus } from "@tabler/icons-react";
+import {
+  IconMail,
+  IconMessageCircle,
+  IconPlus,
+  IconShield,
+} from "@tabler/icons-react";
 import { useAuth } from "@/context/AuthContext";
 import { SUPPORT_EMAIL } from "@/features/feedback/types";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
@@ -9,8 +14,7 @@ const CURRENT_YEAR = new Date().getFullYear();
 
 const linkClass =
   "text-sm text-[oklch(0.92_0.02_158)] transition-colors hover:text-white hover:underline underline-offset-4 w-fit";
-const headingClass =
-  "mb-1 text-sm font-bold text-white";
+const headingClass = "mb-1 text-sm font-bold text-white";
 
 export default function Footer() {
   const { openFeedback } = useFeedbackDialog();
@@ -24,9 +28,7 @@ export default function Footer() {
       <div className="mx-auto w-full max-w-295 px-5 md:px-8 lg:px-12">
         <div className="flex flex-col items-stretch gap-4 border-b border-white/15 py-7 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-col gap-1">
-            <p className="text-lg font-bold">
-              Маєте ідею чи щось не працює?
-            </p>
+            <p className="text-lg font-bold">Маєте ідею чи щось не працює?</p>
             <p className="text-sm text-[oklch(0.86_0.03_158)]">
               Напишіть нам: питання, пропозиція чи скарга — усе в одній формі.
             </p>
@@ -58,13 +60,23 @@ export default function Footer() {
               Діліться книгами з людьми поруч і по всій Україні. Прочитали —
               передайте далі.
             </p>
-            <Link
-              to="/listings/create"
-              className="flex h-9 w-fit items-center gap-2 rounded-lg border border-white/25 px-3.5 text-sm font-semibold text-white transition-colors outline-none hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-            >
-              <IconPlus className="size-4" />
-              Додати книгу
-            </Link>
+            {isModerator ? (
+              <Link
+                to="/moderation"
+                className="flex h-9 w-fit items-center gap-2 rounded-lg border border-white/25 px-3.5 text-sm font-semibold text-white transition-colors outline-none hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <IconShield className="size-4" />
+                Панель модерації
+              </Link>
+            ) : (
+              <Link
+                to="/listings/create"
+                className="flex h-9 w-fit items-center gap-2 rounded-lg border border-white/25 px-3.5 text-sm font-semibold text-white transition-colors outline-none hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                <IconPlus className="size-4" />
+                Додати книгу
+              </Link>
+            )}
           </div>
 
           <nav aria-label="Сервіс" className="hidden flex-col gap-3 md:flex">
@@ -75,12 +87,25 @@ export default function Footer() {
             <Link to="/feed" className={linkClass}>
               Спільнота
             </Link>
-            <Link to="/requests?tab=sent" className={linkClass}>
-              Мої заявки
-            </Link>
-            <Link to="/exchanges" className={linkClass}>
-              Мої обміни
-            </Link>
+            {isModerator ? (
+              <>
+                <Link to="/moderation" className={linkClass}>
+                  Скарги
+                </Link>
+                <Link to="/moderation?tab=users" className={linkClass}>
+                  Користувачі
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/requests?tab=sent" className={linkClass}>
+                  Мої заявки
+                </Link>
+                <Link to="/exchanges" className={linkClass}>
+                  Мої обміни
+                </Link>
+              </>
+            )}
           </nav>
 
           <nav aria-label="Як це працює" className="flex flex-col gap-3">
@@ -129,7 +154,7 @@ export default function Footer() {
             )}
             {isModerator && (
               <Link
-                to="/moderation/feedback"
+                to="/moderation?tab=feedback"
                 className={`${linkClass} font-bold text-white`}
               >
                 Звернення (модерація)

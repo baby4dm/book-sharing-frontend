@@ -15,6 +15,7 @@ import EmptyState from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import ActionLog from "@/features/moderation/components/ActionLog";
 import ReasonDialog from "@/features/moderation/components/ReasonDialog";
+import RoleCard from "@/features/moderation/components/RoleCard";
 import RestrictUserDialog from "@/features/moderation/components/RestrictUserDialog";
 import UserStatusPill from "@/features/moderation/components/UserStatusPill";
 import {
@@ -120,6 +121,9 @@ export default function ModerationUserPage() {
   const { user } = data;
   const isSelf = me?.id === user.id;
   const canRestrict = user.role === "USER" && !isSelf;
+  const isStaffTarget = user.role !== "USER";
+  const canManageRole =
+    me?.role === "ADMIN" && !isSelf && user.role !== "ADMIN";
   const stats = [
     { label: "Віддано", value: user.booksGiven },
     { label: "Взято", value: user.booksTaken },
@@ -176,11 +180,16 @@ export default function ModerationUserPage() {
                 </span>
               )}
               <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                <IconStarFilled className="size-3.5 text-star" />
-                <span className="tabular font-semibold text-foreground">
-                  {Number(user.ratingAvg ?? 0).toFixed(1)}
-                </span>
-                · з {formatDate(user.createdAt)}
+                {!isStaffTarget && (
+                  <>
+                    <IconStarFilled className="size-3.5 text-star" />
+                    <span className="tabular font-semibold text-foreground">
+                      {Number(user.ratingAvg ?? 0).toFixed(1)}
+                    </span>
+                    ·{" "}
+                  </>
+                )}
+                з {formatDate(user.createdAt)}
               </span>
             </div>
           </div>
@@ -238,21 +247,25 @@ export default function ModerationUserPage() {
         </p>
       )}
 
-      <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-border bg-border shadow-xs sm:grid-cols-6 [&>div]:bg-card [&>div]:px-4 [&>div]:py-3.5">
-        {stats.map((s) => (
-          <div key={s.label} className="flex flex-col-reverse">
-            <dt className="text-xs text-muted-foreground">{s.label}</dt>
-            <dd
-              className={cn(
-                "tabular text-xl font-bold tracking-[-0.02em]",
-                s.warn && "text-tint-amber-ink",
-              )}
-            >
-              {s.value}
-            </dd>
-          </div>
-        ))}
-      </dl>
+      {canManageRole && <RoleCard data={data} />}
+
+      {!isStaffTarget && (
+        <dl className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-border bg-border shadow-xs sm:grid-cols-6 [&>div]:bg-card [&>div]:px-4 [&>div]:py-3.5">
+          {stats.map((s) => (
+            <div key={s.label} className="flex flex-col-reverse">
+              <dt className="text-xs text-muted-foreground">{s.label}</dt>
+              <dd
+                className={cn(
+                  "tabular text-xl font-bold tracking-[-0.02em]",
+                  s.warn && "text-tint-amber-ink",
+                )}
+              >
+                {s.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
         <section

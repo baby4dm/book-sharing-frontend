@@ -5,7 +5,9 @@ import ProfileEditingForm from "@/features/userProfile/components/ProfileEditing
 import ProfileReviews from "@/features/userProfile/components/ProfileReviews";
 import ProfileStats from "@/features/userProfile/components/ProfileStats";
 import ProfileView from "@/features/userProfile/components/ProfileView";
+import StaffProfileNote from "@/features/userProfile/components/StaffProfileNote";
 import UserShelf from "@/features/userProfile/components/UserShelf";
+import { isModeratorRole } from "@/features/moderation/types";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { useUserReviews } from "@/features/userProfile/hooks/useUserReviews";
 
@@ -35,12 +37,18 @@ export default function ProfilePage() {
       <ProfileView userData={data} onEditing={setIsEditing} />
 
       <div className="flex w-full min-w-0 flex-1 flex-col gap-4 md:gap-6">
-        <ProfileStats
-          userData={data}
-          reviewsCount={reviewsData?.pages[0]?.totalElements}
-        />
-        <UserShelf userId={data.id} isOwn />
-        <ProfileReviews userId={data.id} />
+        {isModeratorRole(data.role) ? (
+          <StaffProfileNote isOwn />
+        ) : (
+          <>
+            <ProfileStats
+              userData={data}
+              reviewsCount={reviewsData?.pages[0]?.totalElements}
+            />
+            <UserShelf userId={data.id} isOwn />
+            <ProfileReviews userId={data.id} />
+          </>
+        )}
       </div>
     </section>
   );

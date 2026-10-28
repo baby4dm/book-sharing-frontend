@@ -76,7 +76,9 @@ export type ModerationActionType =
   | "DELETE_COMMENT"
   | "RESTRICT_USER"
   | "BLOCK_USER"
-  | "LIFT_RESTRICTION";
+  | "LIFT_RESTRICTION"
+  | "GRANT_MODERATOR"
+  | "REVOKE_MODERATOR";
 
 export type ModerationTargetType =
   "DISPUTE" | "LISTING" | "POST" | "COMMENT" | "USER";
@@ -101,6 +103,7 @@ export interface ModerationUserDetail {
   actions: ModerationAction[];
   disputesFiled: number;
   disputesAgainst: number;
+  moderatorBlockers: string[];
 }
 
 /** Spring Page, як його серіалізує бекенд */
@@ -151,6 +154,8 @@ export const ACTION_LABELS: Record<ModerationActionType, string> = {
   RESTRICT_USER: "Обмежено обліковий запис",
   BLOCK_USER: "Заблоковано обліковий запис",
   LIFT_RESTRICTION: "Знято обмеження",
+  GRANT_MODERATOR: "Надано роль модератора",
+  REVOKE_MODERATOR: "Знято роль модератора",
 };
 
 export function isModeratorRole(role: UserRole | undefined | null): boolean {

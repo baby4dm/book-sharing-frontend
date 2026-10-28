@@ -97,6 +97,17 @@ export async function liftRestriction(
   return data;
 }
 
+export async function changeUserRole(
+  id: string,
+  role: "USER" | "MODERATOR",
+): Promise<ModerationUserDetail> {
+  const { data } = await apiClient.patch<ModerationUserDetail>(
+    `/api/moderation/users/${id}/role`,
+    { role },
+  );
+  return data;
+}
+
 export async function getHiddenListings(
   page: number,
 ): Promise<SpringPage<ListingResponse>> {

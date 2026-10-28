@@ -13,6 +13,7 @@ import {
   getModerationUser,
   getModerationUsers,
   hideListing,
+  changeUserRole,
   liftRestriction,
   moderateDeleteComment,
   moderateDeletePost,
@@ -117,6 +118,14 @@ export function useLiftRestriction(id: string) {
   const invalidate = useInvalidateModeration();
   return useMutation({
     mutationFn: (reason?: string) => liftRestriction(id, reason),
+    onSuccess: invalidate,
+  });
+}
+
+export function useChangeUserRole(id: string) {
+  const invalidate = useInvalidateModeration();
+  return useMutation({
+    mutationFn: (role: "USER" | "MODERATOR") => changeUserRole(id, role),
     onSuccess: invalidate,
   });
 }

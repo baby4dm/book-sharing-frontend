@@ -20,6 +20,7 @@ import ModerationPage from "@/pages/ModerationPage";
 import ModerationDisputePage from "@/pages/ModerationDisputePage";
 import ModerationUserPage from "@/pages/ModerationUserPage";
 import ModeratorRoute from "@/components/routes/ModeratorRoute";
+import RegularUserRoute from "@/components/routes/RegularUserRoute";
 import NotificationsPage from "@/pages/NotificationsPage";
 import NotFoundPage from "@/pages/NotFoundPage";
 import UserProfilePage from "@/pages/UserProfilePage";
@@ -39,14 +40,19 @@ const routes = [
           {
             element: <ProtectedRoute />,
             children: [
-              { path: "requests", element: <RequestsPage /> },
-              { path: "exchanges", element: <ExchangesPage /> },
-              { path: "chat", element: <ChatPage /> },
-              { path: "chat/:roomId", element: <ChatPage /> },
+              {
+                element: <RegularUserRoute />,
+                children: [
+                  { path: "requests", element: <RequestsPage /> },
+                  { path: "exchanges", element: <ExchangesPage /> },
+                  { path: "exchanges/:id", element: <ExchangeDetailPage /> },
+                  { path: "chat", element: <ChatPage /> },
+                  { path: "chat/:roomId", element: <ChatPage /> },
+                  { path: "listings/create", element: <CreateListingPage /> },
+                ],
+              },
               { path: "profile", element: <ProfilePage /> },
               { path: "users/:id", element: <UserProfilePage /> },
-              { path: "listings/create", element: <CreateListingPage /> },
-              { path: "exchanges/:id", element: <ExchangeDetailPage /> },
               {
                 element: <ModeratorRoute />,
                 children: [
@@ -59,7 +65,6 @@ const routes = [
                     path: "moderation/users/:id",
                     element: <ModerationUserPage />,
                   },
-                  // старі сповіщення ведуть сюди — тепер це вкладка панелі
                   {
                     path: "moderation/feedback",
                     element: <Navigate to="/moderation?tab=feedback" replace />,

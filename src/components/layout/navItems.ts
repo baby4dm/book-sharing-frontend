@@ -4,15 +4,28 @@ import {
   IconFileText,
   IconHome,
   IconMessageCircle,
+  IconShield,
 } from "@tabler/icons-react";
 
-export const navItems = [
+type NavAudience = "all" | "user" | "staff";
+
+interface NavItem {
+  path: string;
+  label: string;
+  short: string;
+  icon: typeof IconHome;
+  match: string[];
+  audience: NavAudience;
+}
+
+const navItems: NavItem[] = [
   {
     path: "/feed",
     label: "Спільнота",
     short: "Спільнота",
     icon: IconHome,
     match: ["/feed"],
+    audience: "all",
   },
   {
     path: "/",
@@ -20,6 +33,7 @@ export const navItems = [
     short: "Каталог",
     icon: IconBook,
     match: ["/", "/listings"],
+    audience: "all",
   },
   {
     path: "/requests",
@@ -27,6 +41,7 @@ export const navItems = [
     short: "Заявки",
     icon: IconFileText,
     match: ["/requests"],
+    audience: "user",
   },
   {
     path: "/exchanges",
@@ -34,6 +49,7 @@ export const navItems = [
     short: "Обміни",
     icon: IconArrowsExchange,
     match: ["/exchanges"],
+    audience: "user",
   },
   {
     path: "/chat",
@@ -41,8 +57,25 @@ export const navItems = [
     short: "Чат",
     icon: IconMessageCircle,
     match: ["/chat"],
+    audience: "user",
+  },
+  {
+    path: "/moderation",
+    label: "Модерація",
+    short: "Модерація",
+    icon: IconShield,
+    match: ["/moderation"],
+    audience: "staff",
   },
 ];
+
+export function getNavItems(isModerator: boolean): NavItem[] {
+  return navItems.filter((item) =>
+    item.audience === "all"
+      ? true
+      : (item.audience === "staff") === isModerator,
+  );
+}
 
 export function isNavItemActive(match: string[], pathname: string) {
   return match.some((base) =>

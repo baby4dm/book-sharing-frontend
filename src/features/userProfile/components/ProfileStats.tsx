@@ -39,7 +39,10 @@ export default function ProfileStats({
     >
       <div>
         <p className="flex items-center gap-1.5 text-2xl font-bold tracking-[-0.02em]">
-          <IconStarFilled aria-hidden="true" className="size-5 text-star md:size-6" />
+          <IconStarFilled
+            aria-hidden="true"
+            className="size-5 text-star md:size-6"
+          />
           <span className="tabular">
             {hasRating ? userData.ratingAvg.toFixed(2) : "—"}
           </span>

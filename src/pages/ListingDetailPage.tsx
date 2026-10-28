@@ -354,6 +354,7 @@ export default function ListingDetailPage() {
           </UserLink>
 
           {!isOwner &&
+            !isModerator &&
             (myRequest?.status === "ACTIVE" && myRequest.exchangeId ? (
               <Button
                 className="h-10 w-full"
@@ -391,7 +392,7 @@ export default function ListingDetailPage() {
                     : "Подати заявку"}
               </Button>
             ))}
-          {isModerator && !isOwner && !isHidden && (
+          {isModerator && !isHidden && (
             <div className="flex items-center justify-between gap-3 rounded-xl border border-dashed border-border-strong px-4 py-3">
               <p className="flex items-center gap-2 text-[13px] text-muted-foreground">
                 <IconShield className="size-4" stroke={1.75} />
@@ -441,6 +442,7 @@ export default function ListingDetailPage() {
         listingStatus={listing.status}
         currentUserId={user?.id ?? null}
         isOwner={isOwner}
+        isModerator={isModerator}
       />
     </section>
   );

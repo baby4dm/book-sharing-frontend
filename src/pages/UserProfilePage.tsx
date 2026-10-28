@@ -7,6 +7,7 @@ import QueryErrorState from "@/components/errors/QueryErrorState";
 import ProfileReviews from "@/features/userProfile/components/ProfileReviews";
 import ProfileStats from "@/features/userProfile/components/ProfileStats";
 import ProfileView from "@/features/userProfile/components/ProfileView";
+import StaffProfileNote from "@/features/userProfile/components/StaffProfileNote";
 import UserShelf from "@/features/userProfile/components/UserShelf";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { useUserProfile } from "@/features/userProfile/hooks/useUserProfile";
@@ -37,6 +38,9 @@ export default function UserProfilePage() {
     );
   }
 
+  const viewerIsStaff = isModeratorRole(me?.role);
+  const targetIsStaff = isModeratorRole(user.role);
+
   return (
     <section className="mx-auto flex w-full max-w-295 flex-col items-start gap-4 px-4 pt-6 pb-20 md:gap-6 md:px-8 lg:flex-row lg:px-12 lg:pt-8">
       <ProfileView
@@ -44,17 +48,22 @@ export default function UserProfilePage() {
         actions={
           me && (
             <>
-              <Link
-                to={`/chat?user=${user.id}`}
-                className={buttonVariants({ className: "w-full" })}
-              >
-                <IconMessageCircle />
-                Написати
-              </Link>
-              {isModeratorRole(me.role) && (
+              {!viewerIsStaff && !targetIsStaff && (
+                <Link
+                  to={`/chat?user=${user.id}`}
+                  className={buttonVariants({ className: "w-full" })}
+                >
+                  <IconMessageCircle />
+                  Написати
+                </Link>
+              )}
+              {viewerIsStaff && (
                 <Link
                   to={`/moderation/users/${user.id}`}
-                  className={buttonVariants({ variant: "outline", className: "w-full" })}
+                  className={buttonVariants({
+                    variant: "outline",
+                    className: "w-full",
+                  })}
                 >
                   <IconShield />
                   Модерація
@@ -66,15 +75,21 @@ export default function UserProfilePage() {
       />
 
       <div className="flex w-full min-w-0 flex-1 flex-col gap-4 md:gap-6">
-        <ProfileStats
-          userData={user}
-          reviewsCount={reviewsData?.pages[0]?.totalElements}
-        />
-        <UserShelf userId={user.id} />
-        <ProfileReviews
-          userId={user.id}
-          emptyText="Вони з'являються, коли обмін із цією людиною завершено."
-        />
+        {targetIsStaff ? (
+          <StaffProfileNote />
+        ) : (
+          <>
+            <ProfileStats
+              userData={user}
+              reviewsCount={reviewsData?.pages[0]?.totalElements}
+            />
+            <UserShelf userId={user.id} />
+            <ProfileReviews
+              userId={user.id}
+              emptyText="Вони з'являються, коли обмін із цією людиною завершено."
+            />
+          </>
+        )}
       </div>
     </section>
   );

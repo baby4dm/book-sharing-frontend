@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { isNavItemActive, navItems } from "./navItems";
+import { getNavItems, isNavItemActive } from "./navItems";
 import {
   IconBooks,
   IconLogout2,
@@ -27,6 +27,7 @@ function AccountMenu() {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { data: me } = useCurrentUserProfile();
+  const staff = isModeratorRole(me?.role);
 
   const item =
     "flex h-9 w-full items-center gap-2.5 rounded-md px-2.5 text-[13px] font-medium text-foreground transition-colors duration-150 hover:bg-muted focus-visible:bg-muted outline-none";
@@ -67,11 +68,16 @@ function AccountMenu() {
           <IconUser className="size-4.5 text-muted-foreground" stroke={1.75} />
           Мій профіль
         </Link>
-        <Link to="/?tab=my" onClick={() => setOpen(false)} className={item}>
-          <IconBooks className="size-4.5 text-muted-foreground" stroke={1.75} />
-          Мої оголошення
-        </Link>
-        {isModeratorRole(me?.role) && (
+        {!staff && (
+          <Link to="/?tab=my" onClick={() => setOpen(false)} className={item}>
+            <IconBooks
+              className="size-4.5 text-muted-foreground"
+              stroke={1.75}
+            />
+            Мої оголошення
+          </Link>
+        )}
+        {staff && (
           <Link
             to="/moderation"
             onClick={() => setOpen(false)}
@@ -85,14 +91,19 @@ function AccountMenu() {
             <ModerationNavBadge className="tabular ml-auto flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white" />
           </Link>
         )}
-        <Link
-          to="/listings/create"
-          onClick={() => setOpen(false)}
-          className={item}
-        >
-          <IconPlus className="size-4.5 text-muted-foreground" stroke={1.75} />
-          Додати книгу
-        </Link>
+        {!staff && (
+          <Link
+            to="/listings/create"
+            onClick={() => setOpen(false)}
+            className={item}
+          >
+            <IconPlus
+              className="size-4.5 text-muted-foreground"
+              stroke={1.75}
+            />
+            Додати книгу
+          </Link>
+        )}
         <div className="my-1 h-px bg-border" role="separator" />
         <button
           type="button"
@@ -136,7 +147,7 @@ export default function Header() {
           aria-label="Головна навігація"
           className="isolate hidden h-full flex-1 items-center gap-0.5 lg:flex"
         >
-          {navItems.map((item) => {
+          {getNavItems(isModerator).map((item) => {
             const active = isNavItemActive(item.match, pathname);
             return (
               <Link
@@ -150,7 +161,6 @@ export default function Header() {
                     : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                {/* Активний пункт: плашка переїжджає на пружині, а не перемикається */}
                 {active && (
                   <motion.span
                     layoutId="header-nav-active"
@@ -161,37 +171,10 @@ export default function Header() {
                 <item.icon className="size-4" stroke={active ? 2 : 1.75} />
                 {item.label}
                 {item.path === "/chat" && <ChatNavBadge />}
+                {item.path === "/moderation" && <ModerationNavBadge />}
               </Link>
             );
           })}
-          {isModerator && (
-            <Link
-              to="/moderation"
-              aria-current={
-                pathname.startsWith("/moderation") ? "page" : undefined
-              }
-              className={cn(
-                "relative flex h-8 items-center gap-2 rounded-md px-3 text-[13px] font-semibold transition-colors duration-150 outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                pathname.startsWith("/moderation")
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
-              )}
-            >
-              {pathname.startsWith("/moderation") && (
-                <motion.span
-                  layoutId="header-nav-active"
-                  transition={springGlide}
-                  className="absolute inset-0 -z-10 rounded-md bg-muted shadow-[inset_0_0_0_1px_var(--border)]"
-                />
-              )}
-              <IconShield
-                className="size-4"
-                stroke={pathname.startsWith("/moderation") ? 2 : 1.75}
-              />
-              Модерація
-              <ModerationNavBadge />
-            </Link>
-          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-1 lg:gap-2">

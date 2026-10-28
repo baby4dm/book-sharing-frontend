@@ -54,8 +54,8 @@ export default function PostCard({
   const like = useTogglePostLike(post);
 
   const isAuthor = !!currentUser && currentUser.id === post.authorId;
-  // модератор видаляє чужий пост лише з причиною — автор отримає сповіщення
-  const moderatesPost = !isAuthor && isModeratorRole(currentUser?.role);
+  const isStaff = isModeratorRole(currentUser?.role);
+  const moderatesPost = !isAuthor && isStaff;
   const canDelete = isAuthor || moderatesPost;
   const [moderateOpen, setModerateOpen] = useState(false);
   const moderateDelete = useModerateDeletePost();
@@ -177,37 +177,47 @@ export default function PostCard({
       )}
 
       <div className="flex items-center gap-1 border-t border-border px-2 py-1.5 sm:px-2.5">
-        <button
-          type="button"
-          aria-pressed={post.likedByMe}
-          aria-label={post.likedByMe ? "Прибрати вподобання" : "Вподобати"}
-          onClick={handleLike}
-          className={cn(
-            "flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-[13px] font-semibold transition-[color,background-color,scale] duration-150 ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95",
-            post.likedByMe
-              ? "text-destructive hover:bg-tint-red"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          )}
-        >
-          <motion.span
-            key={post.likedByMe ? `on-${likePop}` : "off"}
-            initial={
-              post.likedByMe && likePop > 0
-                ? { transform: "scale(0.6)" }
-                : false
-            }
-            animate={{ transform: "scale(1)" }}
-            transition={springPop}
-            className="flex"
+        {isStaff ? (
+          <span
+            aria-label={`Вподобань: ${post.likesCount}`}
+            className="flex h-9 items-center gap-1.5 px-2.5 text-[13px] font-semibold text-muted-foreground"
           >
-            {post.likedByMe ? (
-              <IconHeartFilled className="size-4.5" />
-            ) : (
-              <IconHeart className="size-4.5" stroke={1.75} />
+            <IconHeart className="size-4.5" stroke={1.75} />
+            <span className="tabular">{post.likesCount}</span>
+          </span>
+        ) : (
+          <button
+            type="button"
+            aria-pressed={post.likedByMe}
+            aria-label={post.likedByMe ? "Прибрати вподобання" : "Вподобати"}
+            onClick={handleLike}
+            className={cn(
+              "flex h-9 cursor-pointer items-center gap-1.5 rounded-md px-2.5 text-[13px] font-semibold transition-[color,background-color,scale] duration-150 ease-out outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring active:scale-95",
+              post.likedByMe
+                ? "text-destructive hover:bg-tint-red"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
-          </motion.span>
-          <span className="tabular">{post.likesCount}</span>
-        </button>
+          >
+            <motion.span
+              key={post.likedByMe ? `on-${likePop}` : "off"}
+              initial={
+                post.likedByMe && likePop > 0
+                  ? { transform: "scale(0.6)" }
+                  : false
+              }
+              animate={{ transform: "scale(1)" }}
+              transition={springPop}
+              className="flex"
+            >
+              {post.likedByMe ? (
+                <IconHeartFilled className="size-4.5" />
+              ) : (
+                <IconHeart className="size-4.5" stroke={1.75} />
+              )}
+            </motion.span>
+            <span className="tabular">{post.likesCount}</span>
+          </button>
+        )}
 
         <button
           type="button"
@@ -221,7 +231,9 @@ export default function PostCard({
           <IconMessageCircle className="size-4.5" stroke={1.75} />
           {post.commentsCount > 0
             ? pluralizeComments(post.commentsCount)
-            : "Коментувати"}
+            : isStaff
+              ? "Коментарів немає"
+              : "Коментувати"}
         </button>
       </div>
 

@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/Spinner";
 import { useAuth } from "@/context/AuthContext";
 import PostCard from "@/features/feed/components/PostCard";
 import PostComposer from "@/features/feed/components/PostComposer";
+import { isModeratorRole } from "@/features/moderation/types";
 import { useFeed } from "@/features/feed/hooks/useFeed";
 import { useCurrentUserProfile } from "@/features/userProfile/hooks/useCurrentUserProfile";
 import { flattenFeed } from "@/features/feed/utils/feedCache";
@@ -67,13 +68,15 @@ export default function FeedPage() {
       <div className="mb-2">
         <h1 className="page-title">Спільнота</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Що читають люди на сервісі та що про це думають
+          {isModeratorRole(currentUser?.role)
+            ? "Перегляд для модерації: видаляйте дописи й коментарі, що порушують правила"
+            : "Що читають люди на сервісі та що про це думають"}
         </p>
       </div>
 
       {isAuthenticated && isMePending ? (
         <Skeleton className="h-18.5 rounded-xl" />
-      ) : (
+      ) : isModeratorRole(currentUser?.role) ? null : (
         <PostComposer currentUser={currentUser} />
       )}
 

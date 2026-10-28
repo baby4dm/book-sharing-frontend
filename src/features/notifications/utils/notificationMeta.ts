@@ -2,6 +2,7 @@ import {
   IconAlertTriangle,
   IconEye,
   IconEyeOff,
+  IconShield,
   IconShieldCheck,
   IconShieldX,
   IconBell,
@@ -53,6 +54,8 @@ const META: Record<NotificationType, { icon: Icon; tone: Tone }> = {
   CONTENT_REMOVED: { icon: IconShieldX, tone: "red" },
   ACCOUNT_RESTRICTED: { icon: IconShieldX, tone: "red" },
   ACCOUNT_RESTORED: { icon: IconShieldCheck, tone: "neutral" },
+  MODERATOR_GRANTED: { icon: IconShield, tone: "green" },
+  MODERATOR_REVOKED: { icon: IconShield, tone: "neutral" },
 };
 
 export function getNotificationMeta(type: NotificationType) {

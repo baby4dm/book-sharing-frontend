@@ -7,6 +7,7 @@ import { cn, formatDaysAgo } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import RequestFormDialog from "../../requests/components/RequestFormDialog";
 import SmartImage from "@/components/ui/SmartImage";
+import { useIsModerator } from "@/features/moderation/hooks/useModeration";
 
 interface ListingCardProps {
   listing: ListingResponse;
@@ -17,6 +18,7 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
   const [imageIsFailed, setImageIsFailed] = useState(false);
   const [requestDialogIsOpen, setRequestDialogIsOpen] = useState(false);
   const { isAuthenticated } = useAuth();
+  const { isModerator } = useIsModerator();
   const navigate = useNavigate();
   const location = useLocation();
   const status = STATUS_CONFIG[listing.status];
@@ -99,7 +101,7 @@ export default function ListingCard({ listing, owner }: ListingCardProps) {
         )}
       </div>
 
-      {!owner && isAvailable && !listing.hiddenAt && (
+      {!owner && !isModerator && isAvailable && !listing.hiddenAt && (
         <button
           type="button"
           onClick={handleRequest}

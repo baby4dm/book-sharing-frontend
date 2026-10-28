@@ -22,7 +22,9 @@ export type NotificationType =
   | "LISTING_RESTORED"
   | "CONTENT_REMOVED"
   | "ACCOUNT_RESTRICTED"
-  | "ACCOUNT_RESTORED";
+  | "ACCOUNT_RESTORED"
+  | "MODERATOR_GRANTED"
+  | "MODERATOR_REVOKED";
 
 export interface AppNotification {
   id: string;

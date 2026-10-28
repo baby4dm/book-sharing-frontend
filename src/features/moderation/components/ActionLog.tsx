@@ -5,6 +5,8 @@ import {
   IconEyeOff,
   IconMessageOff,
   IconScale,
+  IconShield,
+  IconShieldMinus,
   IconShieldCheck,
   IconShieldX,
   IconTrash,
@@ -30,6 +32,8 @@ const ICONS: Record<
   RESTRICT_USER: IconShieldX,
   BLOCK_USER: IconBan,
   LIFT_RESTRICTION: IconShieldCheck,
+  GRANT_MODERATOR: IconShield,
+  REVOKE_MODERATOR: IconShieldMinus,
 };
 
 const SEVERE: ModerationActionType[] = [

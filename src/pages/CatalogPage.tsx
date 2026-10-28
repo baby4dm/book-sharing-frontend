@@ -19,6 +19,7 @@ const gridClass =
   "stagger-in grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCurrentUserListings } from "@/features/listings/hooks/useCurrentUserListing";
+import { useIsModerator } from "@/features/moderation/hooks/useModeration";
 
 export default function CatalogPage() {
   const [filters, setFilters] = useState<ListingFilters>({
@@ -44,7 +45,9 @@ export default function CatalogPage() {
   const myListings = data?.pages.flatMap((page) => page.content) ?? [];
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const tab = searchParams.get("tab") === "my" ? "my" : "catalog";
+  const { isModerator } = useIsModerator();
+  const tab =
+    !isModerator && searchParams.get("tab") === "my" ? "my" : "catalog";
   function updateFilters(filters: ListingFilters) {
     setFilters((prev) => ({ ...prev, ...filters }));
   }
@@ -80,30 +83,34 @@ export default function CatalogPage() {
           <div className="flex flex-col gap-1">
             <h1 className="page-title">Каталог</h1>
             <p className="text-sm text-muted-foreground">
-              Книги, якими діляться люди поруч і по всій Україні
+              {isModerator
+                ? "Перегляд для модерації: відкрийте оголошення, щоб приховати його"
+                : "Книги, якими діляться люди поруч і по всій Україні"}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <TabsList>
-              <TabsTrigger className="cursor-pointer" value="catalog">
-                Каталог
-              </TabsTrigger>
-              <TabsTrigger className="cursor-pointer" value="my">
-                Мої{" "}
-                <span className="tabular text-muted-foreground">
-                  {myListings.length}
-                </span>
-              </TabsTrigger>
-            </TabsList>
-            <Button
-              aria-label="Додати книгу"
-              className="h-9 px-2.5 sm:px-3.5"
-              onClick={() => navigate("/listings/create")}
-            >
-              <IconPlus size={16} />
-              <span className="hidden sm:inline">Додати книгу</span>
-            </Button>
-          </div>
+          {!isModerator && (
+            <div className="flex items-center gap-2">
+              <TabsList>
+                <TabsTrigger className="cursor-pointer" value="catalog">
+                  Каталог
+                </TabsTrigger>
+                <TabsTrigger className="cursor-pointer" value="my">
+                  Мої{" "}
+                  <span className="tabular text-muted-foreground">
+                    {myListings.length}
+                  </span>
+                </TabsTrigger>
+              </TabsList>
+              <Button
+                aria-label="Додати книгу"
+                className="h-9 px-2.5 sm:px-3.5"
+                onClick={() => navigate("/listings/create")}
+              >
+                <IconPlus size={16} />
+                <span className="hidden sm:inline">Додати книгу</span>
+              </Button>
+            </div>
+          )}
         </div>
 
         <ListingFilterPanel filters={filters} onUpdateFilters={updateFilters} />
